@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>MK SSDM+ Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Docs layout shared with the erosion docs: brand header, left page nav, reading column,
+   filterable console-variable reference. Amber accent for SSDM+. Single dark theme. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0e; --panel:#16181c; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
+  --accent:#5b84ff; --accent-ink:#060a1a; --warn:#e8a23a;
+  --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--f-body)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+.display{font-family:var(--f-display);font-stretch:68%;font-weight:850;text-transform:uppercase;line-height:.92}
+.label{font:500 11.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand svg{height:22px;width:auto}
+.brand span{font:800 15px var(--f-display);font-stretch:80%;text-transform:uppercase;letter-spacing:.04em}
+.top nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.top nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.top nav a:hover,.top nav a[aria-current]{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;font:600 13px var(--f-body);text-decoration:none;background:var(--accent);color:var(--accent-ink)!important}
+
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;padding-block:40px 80px}
+.side{position:sticky;top:calc(70px + env(safe-area-inset-top,0px));align-self:start;max-height:calc(100vh - 90px);overflow:auto}
+.side ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px}
+.side a{display:block;padding:6px 10px;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:14.5px}
+.side a:hover{color:var(--ink)}
+.side a.on{color:var(--ink);border-left-color:var(--accent)}
+
+article{min-width:0;max-width:780px}
+.intro h1{font-size:clamp(44px,6vw,72px);margin:10px 0 14px}
+.intro p{color:var(--muted);font-size:18px;margin:0 0 8px;max-width:60ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.meta span{font:500 12px var(--f-mono);padding:5px 9px;border:1px solid var(--line);color:var(--muted)}
+.meta span.no{border-color:var(--warn);color:var(--warn)}
+section{padding-top:48px;scroll-margin-top:80px}
+section h2{font-size:clamp(32px,4vw,44px);margin:0 0 16px;padding-top:28px;border-top:1px solid var(--line)}
+section h3{font:600 18px var(--f-body);margin:28px 0 8px}
+p{margin:0 0 14px}
+ul.check{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+ul.check li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--panel);border:1px solid var(--line)}
+ul.check li::before{content:"";flex:0 0 14px;height:14px;margin-top:5px;border:1.5px solid var(--accent)}
+ul.check li.no::before{border-color:var(--warn);background:linear-gradient(45deg,transparent 45%,var(--warn) 45% 55%,transparent 55%)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+ol.steps li::before{content:counter(s,decimal-leading-zero);font:500 13px var(--f-mono);color:var(--accent);padding-top:2px}
+code{font:500 .88em var(--f-mono);background:var(--panel);border:1px solid var(--line);padding:1px 6px;overflow-wrap:anywhere}
+.path{font:500 13px var(--f-mono);color:var(--ink)}
+.note{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);padding:14px 16px;margin:16px 0}
+.note.warn{border-left-color:var(--warn)}
+.note b{display:block;font:500 11.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.note.warn b{color:var(--warn)}
+
+.scroll{overflow-x:auto;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--panel)}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+
+.pin{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.pin b{font:500 14px var(--f-mono)}
+
+.filter{display:flex;gap:10px;align-items:center;margin:4px 0 14px;flex-wrap:wrap}
+.filter input{flex:1 1 260px;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 13px;font:15px var(--f-body)}
+.filter span{color:var(--muted);font-size:13px}
+.group{margin-top:26px}
+.group h3{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:1px solid var(--accent);padding-bottom:6px;margin:0}
+.cv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.cv code{background:none;border:0;padding:0;color:var(--ink);font-size:13.5px}
+.cv .def{font:500 12.5px var(--f-mono);color:var(--accent);white-space:nowrap}
+.cv p{grid-column:1/-1;margin:0;color:#c4c8cf;font-size:15px}
+.empty{color:var(--muted);padding:14px 0}
+
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:24px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer a{color:var(--muted)}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;gap:20px}
+  .side{position:static;max-height:none;border:1px solid var(--line);padding:12px}
+  .side ol{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pin{grid-template-columns:1fr;gap:2px}
+  .top nav .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol></defs></svg>
+
+<header class="top gut">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Back to the product page"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <nav>
+      <a href="../">← Product</a>
+      <a href="./" aria-current="page">Docs</a>
+      <a class="btn" href="../#buy">Get it on Fab</a>
+    </nav>
+  </div>
+</header>
+
+<div class="gut"><div class="wrap layout">
+  <aside class="side" aria-label="On this page">
+    <span class="label">Docs</span>
+    <ol id="toc">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#requirements">Requirements</a></li>
+      <li><a href="#quick-start">Quick start</a></li>
+      <li><a href="#materials">Material setup</a></li>
+      <li><a href="#decals">Decals</a></li>
+      <li><a href="#settings">Settings &amp; modes</a></li>
+      <li><a href="#quality">Quality presets</a></li>
+      <li><a href="#reference">Console variables</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#support">Support</a></li>
+    </ol>
+  </aside>
+
+  <article>
+    <div class="intro" id="overview">
+      <span class="label">MK SSDM+ · Documentation</span>
+      <h1 class="display">SSDM+ docs</h1>
+      <p>Screen space displacement and height-aware contact shadows for Unreal Engine. Materials write a height through the <code>MK_SSDM_Height</code> node, a custom mesh pass collects it into one height buffer, and both effects read from that buffer.</p>
+      <div class="meta"><span>v0.1</span><span>UE 5.8</span><span>Win64</span><span class="no">Nanite not supported</span></div>
+    </div>
+
+    <section id="requirements">
+      <h2 class="display">Requirements</h2>
+      <ul class="check">
+        <li><span>Unreal Engine <b>5.8</b> on <b>Windows (Win64)</b>.</span></li>
+        <li class="no"><span><b>Nanite is not supported.</b> Use SSDM+ on regular, non-Nanite meshes and landscapes.</span></li>
+        <li><span>A <b>directional light</b> in the level for contact shadows.</span></li>
+        <li><span>A <b>Lit</b> view mode. Displacement doesn't run in unlit or debug view modes.</span></li>
+      </ul>
+    </section>
+
+    <section id="quick-start">
+      <h2 class="display">Quick start</h2>
+      <ol class="steps">
+        <li><span>Install MK SSDM+ from Fab and enable it in <span class="path">Edit › Plugins</span>. Restart the editor.</span></li>
+        <li><span>Open <span class="path">Project Settings › Plugins › MK SSDM Plus</span>. Check <b>Enabled</b> and pick a <b>Mode</b>.</span></li>
+        <li><span>In a material, add the <code>MK_SSDM_Height</code> node and connect your height (in cm) to its <b>Height</b> pin. See <a href="#materials">Material setup</a>.</span></li>
+        <li><span>Apply the material to a mesh or landscape. The surface displaces in the viewport.</span></li>
+        <li><span>Fine-tune in <span class="path">Window › MK SSDM Plus Settings</span>, or set <code>r.MKSSDMPlus.Quality</code> to pick a preset.</span></li>
+      </ol>
+      <div class="note"><b>Demo</b>Open the <code>SSDM_Plus</code> map in the plugin's content folder to see a landscape set up with RVTs, plus a working landscape material.</div>
+    </section>
+
+    <section id="materials">
+      <h2 class="display">Material setup</h2>
+      <p>Add <code>MK_SSDM_Height</code> to any material that should displace. Only materials that use the node are drawn into the height buffer, so everything else costs nothing.</p>
+      <div class="pin"><b>Height</b><span>Displacement amount in world space, in centimetres. Typically <em>HeightMap × Amplitude</em>.</span></div>
+      <div class="pin"><b>Direction</b><span>Optional world-space direction (float3). Leave it unconnected to displace along the smooth vertex normal.</span></div>
+      <div class="note"><b>Tip</b>If your material already lights its displaced detail with a matching normal map, set <code>r.MKSSDMPlus.ContactShadows.SelfShadow</code> to 0 so the surface isn't darkened twice.</div>
+    </section>
+
+    <section id="decals">
+      <h2 class="display">Decals</h2>
+      <p>Decals can write height too. Use a <b>Deferred Decal</b> domain material with the <code>MK_SSDM_Height</code> node, either on a decal component or on a mesh. Inside the decal, its height <b>replaces</b> the surface height underneath.</p>
+      <p><code>r.MKSSDMPlus.Decals</code> turns all decal height on or off. <code>r.MKSSDMPlus.Decals.Deferred</code> turns decal components alone on or off.</p>
+    </section>
+
+    <section id="settings">
+      <h2 class="display">Settings &amp; modes</h2>
+      <p>Project Settings holds only the master switches. Every tuning value is a console variable, editable in the settings panel or the console.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Where</th><th>What it holds</th></tr></thead>
+        <tbody>
+          <tr><td><span class="path">Project Settings › Plugins › MK SSDM Plus</span></td><td><b>Enabled</b> (master switch: no height pass, displacement or shadows when off) and <b>Mode</b>.</td></tr>
+          <tr><td><span class="path">Window › MK SSDM Plus Settings</span></td><td>Panel for every tuning value below.</td></tr>
+          <tr><td>Console</td><td>All <code>r.MKSSDMPlus.*</code> variables. A console command or scalability setting applied later overrides the Project Settings switches, which keeps them handy for debugging.</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Modes</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>Mode</th><th>Runs</th></tr></thead>
+        <tbody>
+          <tr><td>Screen Space Displacement</td><td>Height pass and displacement</td></tr>
+          <tr><td>Contact Shadows</td><td>Height pass and contact shadows</td></tr>
+          <tr><td>Both <span class="label">default</span></td><td>Height pass, displacement and contact shadows. Both read the same buffer, so shadows match the displaced surface.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="quality">
+      <h2 class="display">Quality presets</h2>
+      <p>Set <code>r.MKSSDMPlus.Quality</code> to 0–3. It's a scalability variable, so it can follow your project's scalability levels. A value you change by hand afterwards wins over the preset.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Variable</th><th>Low (0)</th><th>Medium (1)</th><th>High (2)</th><th>Epic (3)</th></tr></thead>
+        <tbody>
+          <tr><td><code>Resolution</code></td><td class="num">0.5</td><td class="num">1.0</td><td class="num">1.0</td><td class="num">1.0</td></tr>
+          <tr><td><code>FilterQuality</code></td><td class="num">0</td><td class="num">0</td><td class="num">1</td><td class="num">2</td></tr>
+          <tr><td><code>LowPass.Radius</code></td><td class="num">3</td><td class="num">5</td><td class="num">5</td><td class="num">6</td></tr>
+          <tr><td><code>CreaseSmooth.Radius</code></td><td class="num">3</td><td class="num">6</td><td class="num">6</td><td class="num">8</td></tr>
+          <tr><td><code>SilhouetteFade.Radius</code></td><td class="num">3</td><td class="num">4</td><td class="num">4</td><td class="num">6</td></tr>
+          <tr><td><code>ContactShadows.Steps</code></td><td class="num">8</td><td class="num">12</td><td class="num">20</td><td class="num">32</td></tr>
+          <tr><td><code>ContactShadows.Length</code></td><td class="num">40</td><td class="num">50</td><td class="num">50</td><td class="num">60</td></tr>
+          <tr><td><code>ContactShadows.HalfRes</code></td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">0</td></tr>
+        </tbody>
+      </table></div>
+      <p class="label" style="margin-top:10px">Medium is the default. Names above drop the r.MKSSDMPlus. prefix.</p>
+    </section>
+
+    <section id="reference">
+      <h2 class="display">Console variables</h2>
+      <p>Every variable starts with <code>r.MKSSDMPlus.</code>. Defaults are the built-in values before a quality preset is applied.</p>
+      <div class="filter"><label for="cvFilter" class="label" style="position:absolute;left:-9999px">Filter console variables</label><input id="cvFilter" type="search" placeholder="Filter, e.g. fade, shadow, TSR"><span id="cvCount"></span></div>
+      <div id="cvList"></div>
+      <p class="empty" id="cvEmpty" hidden>No variables match.</p>
+    </section>
+
+    <section id="troubleshooting">
+      <h2 class="display">Troubleshooting</h2>
+      <div class="scroll"><table>
+        <thead><tr><th>Problem</th><th>Try</th></tr></thead>
+        <tbody>
+          <tr><td>Nothing displaces</td><td>Check <b>Enabled</b> and <b>Mode</b> in Project Settings, that the material uses <code>MK_SSDM_Height</code>, that the view is Lit, and that the mesh isn't Nanite.</td></tr>
+          <tr><td>See what's in the height buffer</td><td><code>r.MKSSDMPlus.DebugView 1</code>; raise <code>DebugScale</code> if it looks black.</td></tr>
+          <tr><td>See only the contact shadows</td><td><code>r.MKSSDMPlus.ContactShadows.Debug 1</code></td></tr>
+          <tr><td>Fine detail shimmers under TAA/TSR</td><td>Raise <code>LowPass.Radius</code> or lower <code>LowPass.Start</code>.</td></tr>
+          <tr><td>Hard edges tear apart</td><td>Raise <code>CreaseSmooth.Radius</code> or lower <code>CreaseSmooth.Threshold</code>.</td></tr>
+          <tr><td>Object edges tear as the camera moves</td><td>Raise <code>SilhouetteFade.Radius</code>.</td></tr>
+          <tr><td>Seam where terrain meets a buried mesh or a character</td><td>Set <code>OcclusionRamp.Radius</code> above 0.</td></tr>
+          <tr><td>Undisplaced strip at the screen edge</td><td>Try <code>EdgeClampSlope</code> 0.2–0.4. Higher keeps more displacement but warps more.</td></tr>
+          <tr><td>Seam or aliasing in the far distance</td><td>Lower <code>DepthFade.Start</code> and <code>DepthFade.End</code>.</td></tr>
+          <tr><td>Ghosting on displaced pixels with TSR</td><td>Set <code>TemporalResponsiveness</code> to 1.</td></tr>
+          <tr><td>Displaced surface looks too dark</td><td>Lower <code>ContactShadows.SelfShadow</code> (0 if the material already lights its detail).</td></tr>
+          <tr><td>Too expensive</td><td>Use a lower <code>Quality</code>, lower <code>Resolution</code>, or <code>ContactShadows.HalfRes 1</code>.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="support">
+      <h2 class="display">Support</h2>
+      <p>Found a bug or need help? Contact Michael Kinsey through the Fab listing's support link.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Version</th><th>Changes</th></tr></thead>
+        <tbody><tr><td class="num">0.1</td><td>First release on Fab. UE 5.8, Win64.</td></tr></tbody>
+      </table></div>
+    </section>
+  </article>
+</div></div>
+
+<footer class="gut"><div class="wrap"><span>© 2026 Michael Kinsey</span><span><a href="../">MK SSDM+</a></span></div></footer>
+
+<script>
+/* name, default, description — from the plugin source (v0.1) */
+const CV=[
+ ["General",[
+  ["Quality","1","Quality preset. 0 Low, 1 Medium, 2 High, 3 Epic. Sets resolution, filter quality, smoothing radii and contact-shadow steps together."],
+  ["MeshPass","0","Runs the height mesh pass. Set automatically from Project Settings (on when either effect is on)."],
+  ["SSDM","0","Applies screen space displacement. Set automatically from Project Settings."],
+  ["ContactShadows","1","Height-aware contact shadows from the directional light. Set automatically from Project Settings."]]],
+ ["Height pass",[
+  ["CullBackfaces","1","1 ignores back faces like the base pass (two-sided materials still displace both faces). 0 displaces every face."],
+  ["AngleFadeStart","0.05","Displacement is zero where |normal · view| is at or below this (surfaces seen edge-on). Below 0 disables the fade."],
+  ["AngleFadeEnd","0.30","Full displacement where |normal · view| is at or above this."],
+  ["Landscape.AngleFadeStart","0.03","Landscape-only angle fade start. Set both landscape values to 0 or below to disable."],
+  ["Landscape.AngleFadeEnd","0.12","Landscape-only angle fade end."],
+  ["ScreenFade","1","Fades out displacement too small to see (under ScreenFade.Pixels), which would only alias."],
+  ["ScreenFade.Pixels","0.2","Screen fade size in pixels. Larger values can leave thin rings along contours of near-zero height."],
+  ["DepthFade","1","Fades displacement out with view depth between DepthFade.Start and DepthFade.End."],
+  ["DepthFade.Start","10000","View depth (cm) where the depth fade starts."],
+  ["DepthFade.End","30000","View depth (cm) where displacement reaches zero. At or below Start turns the fade off."],
+  ["EdgeFade","0.01","Fades displacement towards the screen edges over this fraction of the view height. 0 is off."],
+  ["EdgeClampSlope","0.1","A pixel may move at most this many times its distance to the screen edge it moves away from. Try 0.2–0.4 if an undisplaced strip at the edge bothers you; higher warps more."]]],
+ ["Displacement",[
+  ["Resolution","1.0","Resolution scale of the displacement field, 0.25–1. 0.5 is a quarter of the work; colour, depth and velocity stay full resolution."],
+  ["SurfaceTolerance","20","An object nearer than the displaced surface by more than this (cm) occludes it, leaving the pixel undisplaced."],
+  ["StretchPixels","6","Displaced triangles with an edge longer than this (pixels) are treated as walls between cells of different height."],
+  ["WallAverage","1","1 gives stretched wall triangles the average colour of their corners (stable under TAA/TSR). 0 uses the nearest corner."],
+  ["StretchLimit","1","Scales displacement down where the screen mapping would stretch or fold too much. Keeps grazing views stable."],
+  ["StretchLimit.Min","0.35","Smallest allowed local slope of the displaced mapping."],
+  ["StretchLimit.Max","2.5","Largest allowed local slope of the displaced mapping."],
+  ["OcclusionRamp.Radius","0","Ramps displacement to 0 over this many pixels where the surface would be hidden behind nearer geometry, so it meets the occluder without a seam. 0 is off."],
+  ["DepthGap.Relative","0.05","Depth jump, as a fraction of depth, above which neighbouring texels count as different surfaces."],
+  ["DepthGap.Cm","5","Constant (cm) added to the relative depth-gap threshold."]]],
+ ["Smoothing",[
+  ["FilterQuality","0","0 fast, 1 exact crease search and blur at full resolution, 2 also full-resolution detail low-pass. Set by Quality."],
+  ["LowPass.Radius","5","Blurs displacement finer than the screen can hold over this many pixels, to stop shimmer. 0 is off."],
+  ["LowPass.Start","0.5","Displacement step (pixels) between neighbouring texels where the low-pass starts."],
+  ["LowPass.Range","1.5","Pixels over which the low-pass ramps to full strength."],
+  ["CreaseSmooth.Radius","6","Blends displacement over this many pixels around hard edges (split normals) so faces stay connected. 0 is off."],
+  ["CreaseSmooth.Threshold","0.35","Crease detection sensitivity. Lower smooths more edges."],
+  ["SilhouetteFade.Radius","4","Fades displacement to 0 over this many pixels near real depth edges, so silhouettes don't tear. 0 is off."]]],
+ ["Temporal (TAA / TSR)",[
+  ["WriteDepthVelocity","1","Writes the displaced depth and velocity so TAA/TSR reproject displaced surfaces correctly. 0 is colour only."],
+  ["CorrectVelocity","1","Adds the camera-parallax difference to the velocity of moving and skinned objects. Needs WriteDepthVelocity 1."],
+  ["TemporalResponsiveness","0","Flags for TSR on displaced pixels. 0 none, 1 HasPixelAnimation, 3 also fully responsive."]]],
+ ["Contact shadows",[
+  ["ContactShadows.Length","50","Ray length in cm."],
+  ["ContactShadows.Steps","12","Ray-march steps per pixel."],
+  ["ContactShadows.Thickness","25","Occluders thicker than this (cm, along the view ray) are ignored, so distant objects don't shadow near ones."],
+  ["ContactShadows.Bias","3","Depth bias (cm) that prevents self-shadowing."],
+  ["ContactShadows.Intensity","0.75","Shadow darkness, 0–1."],
+  ["ContactShadows.BlurDepthTolerance","0.02","Depth-aware blur: neighbours further apart than this fraction of depth are ignored."],
+  ["ContactShadows.TemporalNoise","0","1 rotates ray-start noise each frame for TAA/TSR, 0 uses a fixed pattern."],
+  ["ContactShadows.SelfShadow","1.0","0–1. Darkens displaced surfaces facing away from the light. Set 0 if the material already lights its displaced normals."],
+  ["ContactShadows.HalfRes","0","1 marches rays at half resolution (a quarter of the cost) with a depth-aware upsample."]]],
+ ["Decals",[
+  ["Decals","1","Decal materials with the MK_SSDM_Height node write their height, replacing the surface height."],
+  ["Decals.Deferred","1","Decal components with the node write their height. Needs Decals 1."]]],
+ ["Debug",[
+  ["DebugView","0","1 draws the height buffer as greyscale."],
+  ["DebugScale","1.0","Height multiplier for the debug view."],
+  ["ContactShadows.Debug","0","1 shows only the contact shadow mask (white = shadowed)."],
+  ["ContactShadows.FlipLight","0","Diagnostic: 1 reverses the light vector used by the shadow march."]]]
+];
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const list=document.getElementById('cvList');let total=0;
+list.innerHTML=CV.map(([g,rows])=>{total+=rows.length;return `<div class="group" data-g><h3><span>${g}</span><span class="label">${rows.length}</span></h3>${rows.map(([n,d,t])=>`<div class="cv"><code>r.MKSSDMPlus.${n}</code><span class="def">${d}</span><p>${esc(t)}</p></div>`).join('')}</div>`}).join('');
+const inp=document.getElementById('cvFilter'),count=document.getElementById('cvCount'),empty=document.getElementById('cvEmpty');
+function upd(){const q=inp.value.trim().toLowerCase();let n=0;
+  list.querySelectorAll('.group').forEach(g=>{let gn=0;g.querySelectorAll('.cv').forEach(r=>{const hit=!q||r.textContent.toLowerCase().includes(q);r.hidden=!hit;if(hit){n++;gn++}});g.hidden=gn===0});
+  count.textContent=q?`${n} of ${total}`:`${total} variables`;empty.hidden=n>0}
+inp.addEventListener('input',upd);upd();
+const links=[...document.querySelectorAll('#toc a')];
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))})},{rootMargin:'-30% 0px -60% 0px'});
+links.forEach(a=>{const el=document.getElementById(a.getAttribute('href').slice(1));if(el)io.observe(el)});
+</script>
+</body>
+</html>

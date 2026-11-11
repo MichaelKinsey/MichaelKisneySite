@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>MK Fast Landscape Erosion Brush Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Docs layout: same brand header as the product page, calm reading column, left page nav,
+   filterable settings reference. Single dark theme to match the product pages. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0e; --panel:#16181c; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
+  --accent:#5b84ff; --accent-ink:#060a1a;
+  --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--f-body)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto}
+.display{font-family:var(--f-display);font-stretch:68%;font-weight:850;text-transform:uppercase;line-height:.92}
+.label{font:500 11.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand svg{height:24px;width:auto}
+.brand span{font:800 15px var(--f-display);font-stretch:80%;text-transform:uppercase;letter-spacing:.04em}
+.top nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.top nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.top nav a:hover,.top nav a[aria-current]{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;font:600 13px var(--f-body);text-decoration:none;background:var(--accent);color:var(--accent-ink)!important}
+
+.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;padding-block:40px 80px}
+.side{position:sticky;top:calc(70px + env(safe-area-inset-top,0px));align-self:start;max-height:calc(100vh - 90px);overflow:auto}
+.side ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px}
+.side a{display:block;padding:6px 10px;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:14.5px}
+.side a:hover{color:var(--ink)}
+.side a.on{color:var(--ink);border-left-color:var(--accent)}
+
+article{min-width:0;max-width:760px}
+.intro h1{font-size:clamp(44px,6vw,72px);margin:10px 0 14px}
+.intro p{color:var(--muted);font-size:18px;margin:0 0 8px;max-width:60ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.meta span{font:500 12px var(--f-mono);padding:5px 9px;border:1px solid var(--line);color:var(--muted)}
+section{padding-top:48px;scroll-margin-top:80px}
+section h2{font-size:clamp(32px,4vw,44px);margin:0 0 16px;padding-top:28px;border-top:1px solid var(--line)}
+section h3{font:600 18px var(--f-body);margin:28px 0 8px}
+p{margin:0 0 14px}
+ul.check{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+ul.check li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:var(--panel);border:1px solid var(--line)}
+ul.check li::before{content:"";flex:0 0 14px;height:14px;margin-top:5px;border:1.5px solid var(--accent)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:0}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+ol.steps li::before{content:counter(s,decimal-leading-zero);font:500 13px var(--f-mono);color:var(--accent);padding-top:2px}
+code,kbd{font:500 .9em var(--f-mono);background:var(--panel);border:1px solid var(--line);padding:1px 6px}
+.path{font:500 13px var(--f-mono);color:var(--ink)}
+.note{border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--panel);padding:14px 16px;margin:16px 0}
+.note.warn{border-left-color:#e8a23a}
+.note b{display:block;font:500 11.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.note.warn b{color:#e8a23a}
+.video{aspect-ratio:16/9;max-width:100%;border:1px dashed #3a3e46;display:grid;place-items:center;color:var(--muted);font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;
+  background:repeating-linear-gradient(135deg,#121418 0 14px,#1f2228 14px 28px)}
+
+.filter{display:flex;gap:10px;align-items:center;margin:4px 0 18px;flex-wrap:wrap}
+.filter input{flex:1 1 260px;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:11px 13px;font:15px var(--f-body)}
+.filter span{color:var(--muted);font-size:13px}
+dl.ref{margin:0;border-top:1px solid var(--line)}
+dl.ref div{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;padding:14px 0;border-bottom:1px solid var(--line)}
+dl.ref dt{font:500 14px var(--f-mono);color:var(--ink)}
+dl.ref dd{margin:0;color:#c4c8cf}
+dl.ref dd em{font-style:normal;color:var(--accent)}
+.empty{color:var(--muted);padding:14px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chips span{font:500 12px var(--f-mono);border:1px solid var(--line);padding:2px 8px;color:var(--ink)}
+
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:24px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer a{color:var(--muted)}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;gap:20px}
+  .side{position:static;max-height:none;border:1px solid var(--line);padding:12px}
+  .side ol{grid-template-columns:repeat(2,minmax(0,1fr))}
+  dl.ref div{grid-template-columns:1fr;gap:4px}
+  .top nav .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol>
+</defs></svg>
+
+<header class="top gut">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Back to the product page"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <nav>
+      <a href="../">← Product</a>
+      <a href="./" aria-current="page">Docs</a>
+      <a class="btn" href="../#buy">Get it on Fab</a>
+    </nav>
+  </div>
+</header>
+
+<div class="gut"><div class="wrap layout">
+  <aside class="side" aria-label="On this page">
+    <span class="label">Docs</span>
+    <ol id="toc">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#quick-start">Quick start</a></li>
+      <li><a href="#things-to-know">Things to know</a></li>
+      <li><a href="#video">Walkthrough video</a></li>
+      <li><a href="#erosion-settings">Erosion settings</a></li>
+      <li><a href="#weightmap-settings">Weightmap settings</a></li>
+      <li><a href="#support">Support</a></li>
+    </ol>
+  </aside>
+
+  <article>
+    <div class="intro" id="overview">
+      <span class="label">MK Fast Landscape Erosion Brush · Documentation</span>
+      <h1 class="display">Erosion brush docs</h1>
+      <p>A Landmass brush that adds procedural Phacelle erosion to your landscape and paints matching weightmap layers. Everything is driven by your landscape's height, and you can save your settings as presets for later projects.</p>
+      <div class="meta"><span>v1</span><span>UE 5.8</span><span>Requires Landmass</span><span>Fab</span></div>
+    </div>
+
+    <section id="prerequisites">
+      <h2 class="display">Prerequisites</h2>
+      <ul class="check">
+        <li><span>Purchase and install the plugin from <a href="../#buy">Fab</a>.</span></li>
+        <li><span>Enable Unreal's <b>Landmass</b> plugin.</span></li>
+        <li><span>Enable <b>Edit Layers</b> on your landscape actor.</span></li>
+      </ul>
+    </section>
+
+    <section id="quick-start">
+      <h2 class="display">Quick start</h2>
+      <ol class="steps">
+        <li><span>Go into <b>Landscape mode</b> in the editor.</span></li>
+        <li><span>Open <span class="path">Manage › Blueprint</span>.</span></li>
+        <li><span>Add <code>MK_ErosionBrush</code> to your landscape.</span></li>
+        <li><span>Choose an erosion preset, or start tweaking the erosion values on the brush.</span></li>
+        <li><span>Give the landscape some height variation. The effect is driven by landscape height, so a flat landscape shows little or no erosion.</span></li>
+        <li><span>Add layer data. Type the name of one of your landscape's paint layers at the top of a weightmap entry, and its settings drive the effect onto that layer. The demo landscape material shows a working setup.</span></li>
+        <li><span>Choose a blend type for each layer, and save your settings as a preset to reuse in later projects.</span></li>
+      </ol>
+      <div class="note"><b>Tip</b>If nothing seems to happen, check that the landscape has slopes. Flat ground gives the erosion nothing to follow.</div>
+    </section>
+
+    <section id="things-to-know">
+      <h2 class="display">Things to know</h2>
+      <div class="note warn"><b>VRAM</b>Performance and VRAM use depend mostly on your landscape's size. A very large landscape can run out of VRAM.</div>
+      <div class="note warn"><b>Brush count</b>Keep the number of landscape brushes low to keep painting and sculpting responsive.</div>
+      <div class="note warn"><b>Known issue</b>Because of the render target backend in Landmass, some pixels can bleed at the outer edges of the landscape. A fix is being investigated.</div>
+    </section>
+
+    <section id="video">
+      <h2 class="display">Walkthrough video</h2>
+      <div class="video">Coming soon</div>
+    </section>
+
+    <section id="erosion-settings">
+      <h2 class="display">Erosion settings</h2>
+      <p>These shape the erosion carved into the height.</p>
+      <div class="filter"><label for="f1" class="label" style="position:absolute;left:-9999px">Filter erosion settings</label><input id="f1" type="search" placeholder="Filter settings, e.g. octaves" data-target="ero"><span id="c1"></span></div>
+      <dl class="ref" id="ero">
+        <div><dt>Erosion Scale</dt><dd>Horizontal size of erosion features. Higher values give larger, broader gullies and ridges; lower values give finer, more detailed patterns. Think of it as the zoom level of the effect.</dd></div>
+        <div><dt>Erosion Strength</dt><dd>Overall depth and intensity of the displacement. Higher values carve deeper gullies and raise ridges more. Keep it low for subtle weathering; raise it for dramatic erosion.</dd></div>
+        <div><dt>Octaves</dt><dd>Number of erosion detail layers stacked together. More octaves add finer gully detail but cost more performance. <em>4–6 suits most landscapes.</em></dd></div>
+        <div><dt>Gully Weight</dt><dd>How strongly gullies carve in versus how much the effect spreads across slopes. Higher values give deeper, more pronounced channels; lower values spread erosion more evenly.</dd></div>
+        <div><dt>Detail</dt><dd>How quickly fine-detail octaves fade out on flat areas. Lower values keep fine erosion to steep slopes; higher values let it appear on gentle slopes too.</dd></div>
+        <div><dt>Gain</dt><dd>How much each octave contributes relative to the previous one. At <em>0.5</em> each octave is half the strength of the last. Lower values let large features dominate; higher values favour fine detail.</dd></div>
+        <div><dt>Lacunarity</dt><dd>How much frequency increases per octave. At <em>2.0</em> each octave is twice the frequency of the last. Higher values add very fine detail quickly; lower values keep octaves closer in scale.</dd></div>
+        <div><dt>Resolution Multiplier</dt><dd>Scales the internal texture resolution used for erosion. Higher values give more precise slope detection at a performance cost. Match it to your landscape resolution for best results.</dd></div>
+        <div><dt>Noise Scale</dt><dd>Offsets the base frequency of the Phacelle noise independently of Erosion Scale. Lower values give broader noise features; higher values give finer patterns. Use it to tune the pattern without changing the overall scale.</dd></div>
+        <div><dt>Cell Scale</dt><dd>Size of the internal Phacelle cells relative to the stripe width. Lower values give short, fragmented gullies with a rocky feel; higher values give long, unbroken channels that run further downhill.</dd></div>
+      </dl>
+      <p class="empty" id="e1" hidden>No settings match.</p>
+    </section>
+
+    <section id="weightmap-settings">
+      <h2 class="display">Weightmap settings</h2>
+      <p>Each weightmap entry paints one landscape layer from an erosion mask.</p>
+      <div class="filter"><label for="f2" class="label" style="position:absolute;left:-9999px">Filter weightmap settings</label><input id="f2" type="search" placeholder="Filter settings, e.g. slope" data-target="wm"><span id="c2"></span></div>
+      <dl class="ref" id="wm">
+        <div><dt>Weightmap Name</dt><dd>The name of the landscape layer this entry paints. It must match one of your landscape's layer names.</dd></div>
+        <div><dt>Enable Layer</dt><dd>Turns this layer on or off. When off, the layer gets no paint and keeps its current values.</dd></div>
+        <div><dt>Effect</dt><dd>Which erosion output drives this layer.<div class="chips"><span>Slope</span><span>Ridge</span><span>Deposition</span><span>Altitude mask</span></div></dd></div>
+        <div><dt>Blend Type</dt><dd>How the mask is applied. <em>Add</em> blends on top of existing values, <em>Replace</em> overwrites them, <em>Multiply</em> scales them by the mask.</dd></div>
+        <div><dt>Erosion Splat Strength</dt><dd>Overall intensity of the mask on this layer. At 0 the layer gets no paint; at 1 the full mask is applied.</dd></div>
+        <div><dt>Erosion Offset</dt><dd>Shifts the mask value up or down before it's applied. Use it to grow or shrink the painted area without changing its shape.</dd></div>
+        <div><dt>Normalization</dt><dd>Consistency of the Phacelle noise output. Lower values allow more variation in gully intensity; higher values make the pattern more uniform.</dd></div>
+        <div><dt>Sample Step</dt><dd>Distance in texels between height samples used for slope. Higher values smooth quantization artifacts and broaden slope detection; lower values are more precise but noisier.</dd></div>
+        <div><dt>Octaves</dt><dd>Detail layers used for this layer's mask. More octaves add finer detail to the painted edges.</dd></div>
+        <div><dt>Gain</dt><dd>Amplitude falloff per octave for this mask. Lower values let large features dominate the painted area.</dd></div>
+        <div><dt>Lacunarity</dt><dd>Frequency increase per octave for this mask. Higher values add finer edge detail sooner.</dd></div>
+        <div><dt>Resolution Multiplier</dt><dd>Sampling resolution for this mask. Match it to your landscape resolution for accurate results.</dd></div>
+        <div><dt>Mask Slope</dt><dd>Enables slope masking. The layer is only painted where the slope is inside the set range.</dd></div>
+        <div><dt>Slope Mask Strength</dt><dd>Intensity of the slope mask. Higher values make the cutoff sharper and more dominant.</dd></div>
+        <div><dt>Slope Mask Scale</dt><dd>Coverage threshold. Lower values include gentle slopes; higher values restrict paint to steep slopes.</dd></div>
+        <div><dt>Slope Mask Falloff</dt><dd>Softness of the slope mask edge. Lower values feather the transition; higher values give a hard cutoff.</dd></div>
+        <div><dt>Invert Slope Amount</dt><dd>Offsets and inverts the slope mask. At 0 steep slopes are white; at 1 flat areas are white. Values in between create bands or outlines at specific slope angles.</dd></div>
+        <div><dt>Mask Altitude</dt><dd>Enables altitude masking. The layer is only painted inside the set height range.</dd></div>
+        <div><dt>Invert Altitude Mask</dt><dd>Flips the altitude mask, so you can paint valley floors instead of peaks with the same settings.</dd></div>
+        <div><dt>Altitude Mask Strength</dt><dd>Intensity of the altitude mask. Higher values make the height cutoff sharper and more dominant.</dd></div>
+        <div><dt>Altitude Offset</dt><dd>Moves the painted band up or down the landscape without changing its shape.</dd></div>
+        <div><dt>Altitude Distance</dt><dd>Range of heights that get full paint. Larger values paint a wider band; smaller values a narrow one.</dd></div>
+      </dl>
+      <p class="empty" id="e2" hidden>No settings match.</p>
+    </section>
+
+    <section id="support">
+      <h2 class="display">Support</h2>
+      <p>Found a bug or need help? Contact Michael Kinsey through the Fab listing's support link.</p>
+      <p class="label">Changelog</p>
+      <dl class="ref"><div><dt>v1</dt><dd>First release on Fab.</dd></div></dl>
+    </section>
+  </article>
+</div></div>
+
+<footer class="gut"><div class="wrap"><span>© 2026 Michael Kinsey</span><span><a href="../">MK Fast Landscape Erosion Brush</a></span></div></footer>
+
+<script>
+document.querySelectorAll('.filter input').forEach((inp,k)=>{
+  const list=document.getElementById(inp.dataset.target),rows=[...list.children],count=document.getElementById('c'+(k+1)),empty=document.getElementById('e'+(k+1));
+  const upd=()=>{const q=inp.value.trim().toLowerCase();let n=0;rows.forEach(r=>{const hit=!q||r.textContent.toLowerCase().includes(q);r.hidden=!hit;if(hit)n++});count.textContent=q?n+' of '+rows.length:rows.length+' settings';empty.hidden=n>0};
+  inp.addEventListener('input',upd);upd();
+});
+/* highlight the section in view */
+const links=[...document.querySelectorAll('#toc a')];
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-30% 0px -60% 0px'});
+['overview','prerequisites','quick-start','things-to-know','video','erosion-settings','weightmap-settings','support'].forEach(id=>{const el=document.getElementById(id);if(el)io.observe(el)});
+</script>
+</body>
+</html>

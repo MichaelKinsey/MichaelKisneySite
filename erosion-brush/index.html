@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="MK Fast Landscape Erosion Brush: instant procedural erosion for Unreal Engine landscapes.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>MK Fast Landscape Erosion Brush</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: product promo template (shared with MK SSDM+). Black-and-white Michael Kinsey brand,
+   one accent per product: a cold "runoff" blue for erosion. Live eroded terrain inside the mark;
+   placeholders double as the capture shot list. Deliberately single dark theme. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0e; --panel:#16181c; --panel-2:#1f2228; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
+  --accent:#5b84ff; --accent-ink:#060a1a; --ph:#3a3e46;
+  --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1200px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.display{font-family:var(--f-display);font-stretch:68%;font-weight:850;text-transform:uppercase;letter-spacing:.005em;line-height:.9}
+.label{font:500 11.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;font:600 15px var(--f-body);text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:hover{border-color:var(--ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{height:26px;width:auto}
+.brand span{font:800 15px var(--f-display);font-stretch:80%;text-transform:uppercase;letter-spacing:.04em}
+.top nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.top nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.top nav a:hover{color:var(--ink)}
+.top .btn{padding:8px 14px;font-size:13px}
+
+.draft{background:var(--panel);border-bottom:1px solid var(--line)}
+.draft .wrap{padding-block:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.draft b{color:var(--accent);font:500 11.5px var(--f-mono);letter-spacing:.12em}
+.draft span{color:var(--muted);font-size:13px}
+
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:center;padding-block:56px 72px}
+.hero h1{font-size:clamp(50px,7.2vw,100px);margin:14px 0 18px;overflow-wrap:anywhere}
+.hero h1 em{font-style:normal;color:var(--accent);display:block}
+.pitch{font-size:clamp(18px,2vw,22px);line-height:1.45;max-width:32ch;margin:0 0 26px;text-wrap:balance}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.badges span{font:500 12px var(--f-mono);letter-spacing:.06em;padding:6px 10px;border:1px solid var(--line);color:var(--muted)}
+.badges span.live{border-color:var(--accent);color:var(--accent)}
+.badges span.tbd{border-style:dashed}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.mark-wrap{position:relative;max-width:520px;width:100%;justify-self:center}
+.mark-wrap canvas{display:block;width:100%;aspect-ratio:1;max-width:100%}
+.mark-wrap .label{margin-top:12px;text-align:center}
+
+section.block{padding-block:72px;border-top:1px solid var(--line)}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:36px}
+.head h2{font-size:clamp(44px,6vw,76px);margin:8px 0 0}
+.head p{margin:0;color:var(--muted);max-width:52ch}
+
+.ba{position:relative;aspect-ratio:16/8;max-width:100%;background:#000;overflow:hidden;touch-action:pan-y;user-select:none}
+.ba canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ba #baOn{clip-path:inset(0 0 0 var(--split,50%))}
+.ba .divider{position:absolute;top:0;bottom:0;left:var(--split,50%);width:2px;background:var(--accent);transform:translateX(-1px);pointer-events:none}
+.ba .divider::after{content:"⟷";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:50%}
+.ba .tag{position:absolute;top:14px;padding:5px 9px;background:rgba(0,0,0,.65);font:500 11.5px var(--f-mono);letter-spacing:.1em;pointer-events:none}
+.ba .tag.l{left:14px}.ba .tag.r{right:14px;color:var(--accent)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.under{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{background:transparent;border:0;color:var(--muted);font:500 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+
+.feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:28px}
+.feat:nth-child(even) .media{order:2}
+.feat h3{font-size:clamp(34px,4.2vw,52px);margin:10px 0 14px}
+.feat p{color:var(--muted);margin:0;max-width:46ch}
+.media{aspect-ratio:16/9;max-width:100%;border:1px dashed var(--ph);display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:16px;
+  background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--panel-2) 14px 28px)}
+.media b{font:500 11.5px var(--f-mono);letter-spacing:.12em;color:var(--accent)}
+.media span{font-size:14px;color:var(--ink);max-width:42ch}
+
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);counter-reset:s}
+.step{background:var(--bg);padding:24px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.step::before{counter-increment:s;content:counter(s,decimal-leading-zero);font:500 12px var(--f-mono);color:var(--accent);letter-spacing:.1em}
+.step h3{font-size:30px;margin:0}
+.step p{margin:0;color:var(--muted);font-size:15px}
+
+.road{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.rcol{border:1px solid var(--line);padding:24px;min-width:0}
+.rcol.now{border-color:var(--accent)}
+.rcol h3{font-size:32px;margin:6px 0 12px}
+.rcol ul{margin:0;padding-left:18px;color:var(--muted)}
+.rcol li{margin:4px 0}
+.rcol .label.on{color:var(--accent)}
+
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th,.tbl td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font:500 11.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;width:36%}
+.tbl .tbd{color:var(--muted);border:1px dashed var(--ph);padding:1px 6px;font-family:var(--f-mono);font-size:12px}
+.tbl .yes{color:var(--accent)}
+.scroll{overflow-x:auto}
+.card{border:1px solid var(--line);padding:24px;min-width:0}
+.card h3{font-size:30px;margin:0 0 6px}
+.card .label{margin-bottom:16px;display:block}
+
+.faq{display:grid;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line);padding-block:18px}
+.faq summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::after{content:"+";color:var(--accent);font-family:var(--f-mono)}
+.faq details[open] summary::after{content:"−"}
+.faq p{color:var(--muted);margin:10px 0 0;max-width:70ch}
+
+.cta h2{font-size:clamp(52px,8vw,112px);margin:0 0 24px}
+.news{display:flex;gap:10px;flex-wrap:wrap;margin-top:36px;align-items:center}
+.news input{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:12px 14px;font:15px var(--f-body);min-width:0;flex:1 1 240px;max-width:360px}
+.news .msg{color:var(--muted);font-size:14px;flex-basis:100%}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+@media (max-width:860px){
+  .hero .wrap,.head,.feat,.two,.road{grid-template-columns:1fr}
+  .feat:nth-child(even) .media{order:0}
+  .steps{grid-template-columns:1fr 1fr}
+  .top nav a.hide-sm{display:none}
+  .ba{aspect-ratio:4/3}
+}
+@media (max-width:480px){.steps{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol>
+</defs></svg>
+
+<header class="top gut">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Michael Kinsey"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <nav>
+      <a href="#workflow" class="hide-sm">Workflow</a>
+      <a href="#specs" class="hide-sm">Specs</a>
+      <a href="#roadmap" class="hide-sm">Roadmap</a>
+      <a href="docs/">Docs</a>
+      <a class="btn primary" href="#buy">Get it on Fab</a>
+    </nav>
+  </div>
+</header>
+
+<div class="draft gut"><div class="wrap"><b>DRAFT</b><span>Dashed boxes are placeholders. Each one names the capture it needs. The Fab link and price are still to add. <a href="docs/">Docs page →</a></span></div></div>
+
+<main id="top">
+  <section class="hero gut">
+    <div class="wrap">
+      <div>
+        <span class="label">Unreal Engine plugin · Landmass brush</span>
+        <h1 class="display">MK Fast Landscape <em>Erosion Brush</em></h1>
+        <p class="pitch">Drop a brush on your landscape and get eroded ridges and gullies instantly. No simulation to wait for, and nothing baked in.</p>
+        <div class="badges">
+          <span class="live">Out now on Fab</span>
+          <span>UE 5.8</span>
+          <span>Non-destructive</span>
+          <span class="tbd">Price TBD</span>
+        </div>
+        <div class="ctas">
+          <a class="btn primary" href="#buy">Get it on Fab →</a>
+          <a class="btn" href="#compare">See it on / off</a>
+        </div>
+      </div>
+      <div class="mark-wrap">
+        <canvas id="hero" width="340" height="340" aria-label="Logo mark filled with eroded terrain. The light follows the cursor."></canvas>
+        <div class="label">Move the cursor to move the sun</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="compare">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">01 · Before / after</span><h2 class="display">Drag to compare</h2></div>
+        <p>Left is the base landscape. Right is the same landscape with one erosion brush over it. Switch to the splat mask to see the layer output the brush writes for your landscape material.</p>
+      </div>
+      <div class="ba" id="ba">
+        <canvas id="baOff" width="640" height="320"></canvas>
+        <canvas id="baOn" width="640" height="320"></canvas>
+        <div class="divider"></div>
+        <span class="tag l">BASE</span><span class="tag r" id="onTag">ERODED</span>
+        <label for="baRange" class="label" style="position:absolute;left:-9999px">Comparison position</label>
+        <input type="range" id="baRange" min="0" max="100" value="50">
+      </div>
+      <div class="under">
+        <div class="seg" role="group" aria-label="Right side view">
+          <button type="button" id="vShaded" aria-pressed="true">Shaded</button>
+          <button type="button" id="vSplat" aria-pressed="false">Splat mask</button>
+        </div>
+        <span class="label">Drawn in the browser · final page uses in-engine captures</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="strengths">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">02 · What it does</span><h2 class="display">Erosion in seconds</h2></div>
+        <p>Built on Phacelle noise and driven by your landscape's own height.</p>
+      </div>
+      <div id="feats"></div>
+    </div>
+  </section>
+
+  <section class="block gut" id="workflow">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">03 · Workflow</span><h2 class="display">Four steps</h2></div>
+        <p>From a blank landscape to eroded terrain with painted layers.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><h3 class="display">Enable</h3><p>Turn on the Landmass plugin and enable Edit Layers on your landscape actor.</p></div>
+        <div class="step"><h3 class="display">Add</h3><p>In Landscape mode, open Manage › Blueprint and add MK_ErosionBrush.</p></div>
+        <div class="step"><h3 class="display">Tune</h3><p>Pick a preset or adjust scale, strength, octaves and gully weight. Save your own presets for later projects.</p></div>
+        <div class="step"><h3 class="display">Paint</h3><p>Name a landscape layer, choose slope, ridge, deposition or altitude, and pick Add, Replace or Multiply.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="specs">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">04 · Specs</span><h2 class="display">What you get</h2></div>
+        <p>Dashed values are placeholders.</p>
+      </div>
+      <div class="two">
+        <div class="card">
+          <h3 class="display">Plugin</h3><span class="label">Version 1</span>
+          <div class="scroll"><table class="tbl"><tbody>
+            <tr><th>Engine</th><td>UE 5.8 <span class="tbd">5.6 with v1.1</span></td></tr>
+            <tr><th>Built with</th><td>Blueprint and materials (HLSL)</td></tr>
+            <tr><th>Requires</th><td>Landmass plugin, landscape Edit Layers</td></tr>
+            <tr><th>Non-destructive</th><td class="yes">Yes</td></tr>
+            <tr><th>Nanite</th><td class="yes">Not required</td></tr>
+            <tr><th>Outputs</th><td>Height, weightmap layers (slope, ridge, deposition, altitude)</td></tr>
+            <tr><th>Presets</th><td class="yes">Yes, save and reuse</td></tr>
+            <tr><th>Author</th><td>Michael Kinsey</td></tr>
+          </tbody></table></div>
+        </div>
+        <div class="card">
+          <h3 class="display">Parameters</h3><span class="label">Full reference in the <a href="docs/#erosion-settings">docs</a></span>
+          <div class="scroll"><table class="tbl"><tbody>
+            <tr><th>Shape</th><td>Erosion Scale, Erosion Strength, Gully Weight, Cell Scale</td></tr>
+            <tr><th>Detail</th><td>Octaves, Gain, Lacunarity, Detail, Noise Scale</td></tr>
+            <tr><th>Quality</th><td>Resolution Multiplier, Sample Step</td></tr>
+            <tr><th>Layers</th><td>Effect, Blend Type, Splat Strength, Offset</td></tr>
+            <tr><th>Masks</th><td>Slope and altitude masks with strength, scale, falloff and invert</td></tr>
+          </tbody></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="roadmap">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">05 · Roadmap</span><h2 class="display">Actively developed</h2></div>
+        <p>Buying v1 gets you the updates below as they land on Fab.</p>
+      </div>
+      <div class="road">
+        <div class="rcol now"><span class="label on">Out now</span><h3 class="display">v1</h3><ul><li>Fast procedural erosion brush</li><li>Slope-aware gullies</li><li>Splat mask output</li><li>UE 5.8</li></ul></div>
+        <div class="rcol"><span class="label">In progress</span><h3 class="display">v1.1</h3><ul><li>Full C++ rewrite, same workflow</li><li>Back-port to UE 5.6</li><li>Height and layers update live as you move or resize the brush</li></ul></div>
+        <div class="rcol"><span class="label">Planned</span><h3 class="display">More brushes</h3><ul><li>Thermal erosion</li><li>Shoreline terraces</li><li>Deposition</li><li>Wind erosion</li><li>Smoothing</li><li>More noise types</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="docs">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">06 · Questions</span><h2 class="display">FAQ</h2></div>
+        <p>Setup, every parameter and known issues live in the docs. <a href="docs/">Read the docs →</a></p>
+      </div>
+      <div class="faq">
+        <details><summary>Is this a simulation?</summary><p>No. Erosion is generated procedurally, so it appears immediately instead of running hundreds of iterations. You can move or remove the brush at any time.</p></details>
+        <details><summary>Does it change my landscape permanently?</summary><p>No. It's a Landmass brush on an edit layer, so the original landscape stays untouched underneath.</p></details>
+        <details><summary>Do I need Nanite?</summary><p>No. It works on regular landscapes.</p></details>
+        <details><summary>Which engine versions are supported?</summary><p>UE 5.8 for v1. Version 1.1 adds UE 5.6.</p></details>
+        <details><summary>Can I texture the erosion?</summary><p>Yes. The splat mask output marks gullies and ridges so your landscape material can layer rock, sediment or grass on them.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="buy">
+    <div class="wrap cta">
+      <span class="label">Available on Fab</span>
+      <h2 class="display">Erode your landscape<span style="color:var(--accent)">.</span></h2>
+      <div class="ctas">
+        <a class="btn primary" href="#buy">Get it on Fab →</a>
+        <a class="btn" href="docs/">Read the docs</a>
+      </div>
+      <form class="news" id="newsForm">
+        <label for="newsEmail" class="label" style="flex-basis:100%">Get told when v1.1 and new brushes land</label>
+        <input type="email" id="newsEmail" placeholder="you@studio.com" required>
+        <button class="btn" type="submit">Subscribe</button>
+        <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once the site is live.</span>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="gut"><div class="wrap"><span>© 2026 Michael Kinsey</span><span>Fab · Tutorials · Patreon · YouTube</span></div></footer>
+
+<script>
+/* ---------- strengths ---------- */
+const FEATS=[
+ ["Speed","Instant, not simulated","Erosion is generated procedurally, so it shows up the moment you place the brush. No iterations, no waiting for a bake.","Place the brush on a flat hillside; erosion appears immediately. Real-time screen recording, 8 s."],
+ ["Non-destructive","Move it, resize it, remove it","It's a Landmass brush on an edit layer. Your sculpted landscape stays untouched underneath.","Drag and scale the brush across terrain, then delete it to show the original. 8 s."],
+ ["Slope-aware","Gullies follow the terrain","Slope is measured across the heightmap, so channels run downhill and deepen on steep faces.","Top-down orbit over a mountain flank showing gullies running downhill. 8 s."],
+ ["Layers","Paints your landscape layers","Pick any landscape layer by name and drive it from slope, ridge, deposition or altitude, with Add, Replace or Multiply blending.","Weightmap entry set to Ridge, then the textured result appearing. 6 s."],
+ ["Presets","Tune once, reuse everywhere","Scale, strength, octaves, gully weight and cell scale are all exposed. Save a look as a preset and reuse it in later projects.","Switching between two presets on the same landscape. 10 s."]
+];
+document.getElementById('feats').innerHTML=FEATS.map(f=>`
+ <div class="feat"><div class="media"><b>CAPTURE</b><span>${f[3]}</span></div>
+ <div><span class="label">${f[0]}</span><h3 class="display">${f[1]}</h3><p>${f[2]}</p></div></div>`).join('');
+
+/* ---------- terrain: base + procedural slope-aligned erosion ---------- */
+const N=448;
+const P=new Uint8Array(512);{let s=91;const p=[...Array(256).keys()];for(let i=255;i>0;i--){s=(s*16807)%2147483647;const j=s%(i+1);[p[i],p[j]]=[p[j],p[i]]}for(let i=0;i<512;i++)P[i]=p[i&255]}
+const fade=t=>t*t*(3-2*t);
+function vn(x,y){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,h=(a,b)=>P[(P[a&255]+b)&255]/255,u=fade(xf),v=fade(yf),a=h(xi,yi),b=h(xi+1,yi),c=h(xi,yi+1),d=h(xi+1,yi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v}
+function fbm(x,y,o){let s=0,a=.5,f=1;for(let i=0;i<o;i++){s+=a*vn(x*f,y*f);f*=2.02;a*=.5}return s}
+const B=new Float32Array(N*N),E=new Float32Array(N*N);
+(function build(){
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const r=1-Math.abs(fbm(x/190+3,y/190+7,3)*2-1);
+    B[y*N+x]=fbm(x/210,y/210,4)*1.1+r*r*.45;
+  }
+  const cur=Float32Array.from(B), S=new Float32Array(N*N);
+  const at=(a,x,y)=>a[Math.min(N-1,Math.max(0,y))*N+Math.min(N-1,Math.max(0,x))];
+  const blur=(src,dst,R)=>{const tmp=new Float32Array(N*N);
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){let s=0;for(let k=-R;k<=R;k++)s+=at(src,x+k,y);tmp[y*N+x]=s/(2*R+1)}
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){let s=0;for(let k=-R;k<=R;k++)s+=at(tmp,x,y+k);dst[y*N+x]=s/(2*R+1)}};
+  const hash=(i,j,k)=>{let h=(i*374761393+j*668265263+k*2147483647)|0;h=(h^(h>>>13))*1274126177|0;return((h^(h>>>16))>>>0)/4294967295};
+  let C=48, amp=.06;
+  for(let o=0;o<4;o++){
+    blur(cur,S,Math.max(1,6-o*2));
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+      // Sobel slope on the smoothed height
+      const gx=(at(S,x+1,y-1)+2*at(S,x+1,y)+at(S,x+1,y+1))-(at(S,x-1,y-1)+2*at(S,x-1,y)+at(S,x-1,y+1));
+      const gy=(at(S,x-1,y+1)+2*at(S,x,y+1)+at(S,x+1,y+1))-(at(S,x-1,y-1)+2*at(S,x,y-1)+at(S,x+1,y-1));
+      const m=Math.hypot(gx,gy)+1e-7, px=-gy/m, py=gx/m;
+      // phase blended over jittered cells, so stripes follow the slope without forming rings
+      const fx=x/C-.5, fy=y/C-.5, i0=Math.floor(fx), j0=Math.floor(fy);
+      let sc=0,ss=0;
+      for(let j=j0;j<=j0+1;j++)for(let i=i0;i<=i0+1;i++){
+        const cx=(i+.5+(hash(i,j,o)-.5)*.6)*C, cy=(j+.5+(hash(j,i,o+9)-.5)*.6)*C;
+        const wx=Math.max(0,1-Math.abs(x-cx)/C), wy=Math.max(0,1-Math.abs(y-cy)/C), w=wx*wx*wy*wy;
+        const ph=((x-cx)*px+(y-cy)*py)/C*Math.PI*2*2.2;
+        sc+=w*Math.cos(ph);ss+=w*Math.sin(ph);
+      }
+      const cs=sc/(Math.hypot(sc,ss)+1e-6);
+      const g=Math.min(1,m*70);
+      const e=amp*g*(cs*.5-.15) - amp*.6*g*Math.pow(.5-.5*cs,3);
+      cur[y*N+x]+=e;E[y*N+x]+=e;
+    }
+    C*=.5;amp*=.5;
+  }
+})();
+
+/* ---------- mark mask (same shape as the brand svg) ---------- */
+function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;let t=((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy);t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-dx*t,py-ay-dy*t)}
+function inMark(u,v){if(u<.06||u>.94||v<.06||v>.94)return false;const w=.06;
+  if(segDist(u,v,.04,-.06,.62,1.06)<w)return false;if(segDist(u,v,1.02,.08,.48,.86)<w)return false;if(segDist(u,v,-.06,.42,.40,1.06)<w)return false;return true}
+
+/* ---------- renderer ---------- */
+function render(ctx,W,H,o){
+  const img=ctx.createImageData(W,H),d=img.data;
+  const L=o.light,lm=Math.hypot(...L),s=o.s,k=26;
+  const hAt=(x,y)=>{x=Math.min(N-1.001,Math.max(0,x));y=Math.min(N-1.001,Math.max(0,y));const xi=x|0,yi=y|0,fx=x-xi,fy=y-yi,i=yi*N+xi;
+    const a=B[i]+s*E[i],b=B[i+1]+s*E[i+1],c=B[i+N]+s*E[i+N],d=B[i+N+1]+s*E[i+N+1];return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy};
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=(y*W+x)*4;
+    if(o.mask&&!inMark(x/W,y/H)){d[i+3]=0;continue}
+    const tx=o.ox+x*o.sc, ty=o.oy+y*o.sc;
+    const dx=(hAt(tx+1,ty)-hAt(tx-1,ty))*k, dy=(hAt(tx,ty+1)-hAt(tx,ty-1))*k;
+    let nx=-dx,ny=-dy,nz=1;const nm=Math.hypot(nx,ny,nz);nx/=nm;ny/=nm;nz/=nm;
+    const diff=Math.max(0,(nx*L[0]+ny*L[1]+nz*L[2])/lm);
+    if(o.splat){
+      const e=E[Math.min(N-1,ty|0)*N+Math.min(N-1,tx|0)]*s, slope=1-nz;
+      const gully=Math.min(1,Math.max(0,-e*22)), ridge=Math.min(1,Math.max(0,e*30)), rock=Math.min(1,slope*3);
+      const sh=.35+.65*diff;
+      d[i]=(18+ridge*220+rock*60)*sh; d[i+1]=(22+ridge*150+gully*120+rock*55)*sh; d[i+2]=(30+gully*235+rock*50)*sh;
+    }else{
+      const v=Math.min(255,(.12+diff*1.0)*232);
+      d[i]=v;d[i+1]=v*.985;d[i+2]=v*.96;
+    }
+    d[i+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+}
+
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lerp=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+
+const hero=document.getElementById('hero'),hctx=hero.getContext('2d');
+let heroL=[-.6,-.6,.5],heroT=null,grow=reduce?1:0;
+hero.parentElement.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;heroT=[x,y,.3+(1-Math.min(1,Math.hypot(x,y)*1.6))*.8]});
+hero.parentElement.addEventListener('pointerleave',()=>heroT=null);
+
+const ba=document.getElementById('ba'),offC=document.getElementById('baOff'),onC=document.getElementById('baOn');
+const octx=offC.getContext('2d'),nctx=onC.getContext('2d');
+const range=document.getElementById('baRange');
+range.addEventListener('input',()=>ba.style.setProperty('--split',range.value+'%'));
+let baL=[-.7,-.4,.35],baT=null,splat=false;
+ba.addEventListener('pointermove',e=>{const r=ba.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;baT=[x*1.4,y,.25+(1-Math.min(1,Math.hypot(x,y)*1.6))*.5]});
+ba.addEventListener('pointerleave',()=>baT=null);
+const vS=document.getElementById('vShaded'),vM=document.getElementById('vSplat'),onTag=document.getElementById('onTag');
+function setView(m){splat=m;vS.setAttribute('aria-pressed',!m);vM.setAttribute('aria-pressed',m);onTag.textContent=m?'SPLAT MASK':'ERODED';draw(performance.now(),true)}
+vS.addEventListener('click',()=>setView(false));vM.addEventListener('click',()=>setView(true));
+
+let t0=performance.now(),last=0;
+function draw(now,force){
+  const t=(now-t0)/1000;
+  if(grow<1&&t>.3)grow=Math.min(1,grow+.025);
+  heroL=lerp(heroL,heroT||[Math.cos(t*.4)*.7,Math.sin(t*.4)*.7,.55],.12);
+  baL=lerp(baL,baT||[Math.cos(t*.3)*.8,Math.sin(t*.3)*.5,.35],.12);
+  if(force||now-last>45){
+    render(hctx,hero.width,hero.height,{light:heroL,s:fade(grow),mask:true,sc:1.1,ox:40,oy:30});
+    render(octx,offC.width,offC.height,{light:baL,s:0,sc:.66,ox:10,oy:80});
+    render(nctx,onC.width,onC.height,{light:baL,s:1,splat,sc:.66,ox:10,oy:80});
+    last=now;
+  }
+}
+function frame(now){draw(now);if(!reduce)requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('newsMsg').hidden=false});
+</script>
+</body>
+</html>

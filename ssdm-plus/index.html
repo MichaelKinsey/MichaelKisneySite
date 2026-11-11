@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="MK SSDM+: screen space displacement and height-aware contact shadows for Unreal Engine 5.8.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>MK SSDM+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: product promo template. Black-and-white Michael Kinsey brand (heavy condensed caps, logo mark),
+   one amber accent for SSDM+. Product thumbnail in the hero; placeholders double as the capture shot list.
+   Deliberately single dark theme: the brand is white on black. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0e; --panel:#16181c; --panel-2:#1f2228; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
+  --accent:#5b84ff; --accent-ink:#060a1a; --ph:#3a3e46;
+  --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1200px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.display{font-family:var(--f-display);font-stretch:68%;font-weight:850;text-transform:uppercase;letter-spacing:.005em;line-height:.9}
+.label{font:500 11.5px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;font:600 15px var(--f-body);text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:hover{border-color:var(--ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{height:26px;width:auto}
+.brand span{font:800 15px var(--f-display);font-stretch:80%;text-transform:uppercase;letter-spacing:.04em}
+.top nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.top nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.top nav a:hover{color:var(--ink)}
+.top .btn{padding:8px 14px;font-size:13px}
+
+/* draft ribbon */
+.draft{background:var(--panel);border-bottom:1px solid var(--line)}
+.draft .wrap{padding-block:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.draft b{color:var(--accent);font:500 11.5px var(--f-mono);letter-spacing:.12em}
+.draft span{color:var(--muted);font-size:13px}
+
+/* hero */
+.hero .wrap{padding-block:28px 56px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.banner{margin:0 0 32px}
+.banner img{display:block;width:100%;height:auto;max-width:100%;border:1px solid var(--line)}
+.hero-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+.hero-row .label{display:block;margin-bottom:12px}
+.hero-row .badges{margin-bottom:16px}
+.hero-row .compat{margin:0}
+.pitch{font-size:clamp(20px,2.2vw,26px);line-height:1.35;max-width:30ch;margin:0 0 22px;text-wrap:balance}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.badges span{font:500 12px var(--f-mono);letter-spacing:.06em;padding:6px 10px;border:1px solid var(--line);color:var(--muted)}
+.badges span.tbd{border-style:dashed}
+.badges span.no{border-color:#e8a23a;color:#e8a23a}
+.compat{display:flex;gap:10px;align-items:flex-start;max-width:52ch;margin:-8px 0 22px;padding:10px 12px;border-left:3px solid #e8a23a;background:var(--panel);font-size:14.5px}
+.compat b{color:#e8a23a;font:500 11.5px var(--f-mono);letter-spacing:.12em;white-space:nowrap;padding-top:2px}
+.tbl td.no{color:#e8a23a}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+
+/* section heads */
+section.block{padding-block:72px;border-top:1px solid var(--line)}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:36px}
+.head h2{font-size:clamp(44px,6vw,76px);margin:8px 0 0}
+.head p{margin:0;color:var(--muted);max-width:52ch}
+
+/* before / after */
+.ba{position:relative;aspect-ratio:2560/1360;max-width:100%;background:#000;overflow:hidden;touch-action:pan-y;user-select:none}
+.ba .shot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ba .shot{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:22px 24px;
+  background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--panel-2) 14px 28px)}
+.ba .shot.on{align-items:flex-end;text-align:right;background:repeating-linear-gradient(135deg,#141a2a 0 14px,#18203a 14px 28px)}
+.ba .shot b{font:500 11.5px var(--f-mono);letter-spacing:.12em;color:var(--accent)}
+.ba .shot span{font-size:14px;max-width:34ch}
+.ba #baOn{clip-path:inset(0 0 0 var(--split,50%))}
+.ba .divider{position:absolute;top:0;bottom:0;left:var(--split,50%);width:2px;background:var(--accent);transform:translateX(-1px);pointer-events:none}
+.ba .divider::after{content:"⟷";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:50%}
+.ba .tag{position:absolute;top:14px;padding:5px 9px;background:rgba(0,0,0,.65);font:500 11.5px var(--f-mono);letter-spacing:.1em}
+.ba .tag.l{left:14px}.ba .tag.r{right:14px;color:var(--accent)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.under{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:12px}
+
+/* strengths */
+.feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:28px}
+.feat:nth-child(even) .media{order:2}
+.feat h3{font-size:clamp(34px,4.2vw,52px);margin:10px 0 14px}
+.feat p{color:var(--muted);margin:0;max-width:46ch}
+.media{aspect-ratio:16/9;max-width:100%;border:1px dashed var(--ph);display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:16px;
+  background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--panel-2) 14px 28px)}
+.media b{font:500 11.5px var(--f-mono);letter-spacing:.12em;color:var(--accent)}
+.media span{font-size:14px;color:var(--ink);max-width:42ch}
+
+/* modes */
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.mode{background:var(--bg);padding:26px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.mode h3{font-size:34px;margin:0}
+.mode p{margin:0;color:var(--muted);font-size:15px}
+.mode .sw{display:flex;gap:6px}
+.mode .sw i{width:30px;height:6px;background:var(--line)}
+.mode .sw i.on{background:var(--accent)}
+
+/* diagram */
+.diagram{overflow-x:auto;border:1px solid var(--line);background:var(--panel);padding:20px}
+.diagram svg{display:block;min-width:760px;width:100%;height:auto}
+.diagram .box{fill:var(--bg);stroke:var(--line)}
+.diagram .box.hl{stroke:var(--accent)}
+.diagram text{fill:var(--ink);font-family:var(--f-body);font-size:14px}
+.diagram .t{font-family:var(--f-display);font-weight:800;font-stretch:75%;font-size:19px;text-transform:uppercase}
+.diagram .s{fill:var(--muted);font-family:var(--f-mono);font-size:11.5px}
+.diagram .arrow{stroke:var(--muted);stroke-width:1.5;fill:none}
+.diagram .arrow.hl{stroke:var(--accent)}
+
+/* proof + specs */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th,.tbl td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font:500 11.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.tbl td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.tbl .tbd{color:var(--muted);border:1px dashed var(--ph);padding:1px 6px;font-family:var(--f-mono);font-size:12px}
+.tbl .yes{color:var(--accent)}
+.scroll{overflow-x:auto}
+.card{border:1px solid var(--line);padding:24px;min-width:0}
+.card h3{font-size:30px;margin:0 0 6px}
+.card .label{margin-bottom:16px;display:block}
+
+/* faq */
+.faq{display:grid;gap:0;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line);padding-block:18px}
+.faq summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::after{content:"+";color:var(--accent);font-family:var(--f-mono)}
+.faq details[open] summary::after{content:"−"}
+.faq p{color:var(--muted);margin:10px 0 0;max-width:70ch}
+
+/* cta */
+.cta{text-align:left}
+.cta{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:48px;align-items:center}
+.cta-text{min-width:0}
+.cta-logo{display:block;width:100%;height:auto;max-width:320px;justify-self:end;border:1px solid var(--line)}
+.cta h2{font-size:clamp(56px,9vw,128px);margin:0 0 24px}
+.news{display:flex;gap:10px;flex-wrap:wrap;margin-top:36px;align-items:center}
+.news input{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:12px 14px;font:15px var(--f-body);min-width:0;flex:1 1 240px;max-width:360px}
+.news .msg{color:var(--muted);font-size:14px;flex-basis:100%}
+
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+@media (max-width:860px){
+  .hero .wrap,.head,.feat,.two,.hero-row,.cta{grid-template-columns:1fr}
+  .cta-logo{justify-self:start;max-width:200px;order:-1}
+  .hero-row{gap:20px}
+  .banner{margin-bottom:20px}
+    .feat:nth-child(even) .media{order:0}
+  .modes{grid-template-columns:1fr}
+  .top nav a.hide-sm{display:none}
+  .ba{aspect-ratio:4/3}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol></defs></svg>
+<header class="top gut">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Michael Kinsey">
+      <svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg>
+      <span>Michael Kinsey</span>
+    </a>
+    <nav>
+      <a href="#how" class="hide-sm">How it works</a>
+      <a href="#specs" class="hide-sm">Specs</a>
+      <a href="docs/">Docs</a>
+      <a class="btn primary" href="#buy">Get it on Fab</a>
+    </nav>
+  </div>
+</header>
+
+<div class="draft gut"><div class="wrap"><b>DRAFT</b><span>Dashed boxes are placeholders. Each one names the capture it needs. Price, versions and numbers are TBD.</span></div></div>
+
+<main id="top">
+  <section class="hero gut">
+    <div class="wrap">
+      <h1 class="sr">MK SSDM+</h1>
+      <figure class="banner"><img src="banner.webp" width="2000" height="627" alt="MK SSDM+ spelled out in displaced stone letters on a desert landscape"></figure>
+      <div class="hero-row">
+        <div>
+          <span class="label">Unreal Engine plugin · Screen space</span>
+          <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
+          <div class="ctas">
+            <a class="btn primary" href="#buy">Get it on Fab →</a>
+            <a class="btn" href="#compare">See it on / off</a>
+          </div>
+        </div>
+        <div>
+          <div class="badges">
+            <span>UE 5.8 · Win64</span>
+            <span>Plugin only · no engine changes</span>
+            <span class="no">Nanite not supported</span>
+            <span class="tbd">Price TBD</span>
+          </div>
+          <p class="compat"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="compare">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">01 · Before / after</span><h2 class="display">Drag to compare</h2></div>
+        <p>Left is the stone wall with normal mapping only. Right adds SSDM+ displacement and contact shadows, including a decal that writes its own height.</p>
+      </div>
+      <div class="ba" id="ba">
+        <img class="shot-img" id="baOff" src="ba-off.webp" alt="Stone wall with SSDM+ off: flat surface">
+        <img class="shot-img" id="baOn" src="ba-on.webp" alt="Same wall with SSDM+ on: displaced stones and a displacement decal">
+        <div class="divider"></div>
+        <span class="tag l">SSDM+ OFF</span><span class="tag r">SSDM+ ON</span>
+        <label for="baRange" class="label" style="position:absolute;left:-9999px">Comparison position</label>
+        <input type="range" id="baRange" min="0" max="100" value="50">
+      </div>
+      <div class="under"><span class="label">In-engine · same camera and light</span><span class="label">Drag the handle</span></div>
+    </div>
+  </section>
+
+  <section class="block gut" id="strengths">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">02 · What it does</span><h2 class="display">Lots of depth, little cost</h2></div>
+        <p>Add one node to a material and it displaces. Everything below ships in v0.1.</p>
+      </div>
+      <div id="feats"></div>
+    </div>
+  </section>
+
+  <section class="block gut" id="modes">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">03 · Modes</span><h2 class="display">Use one or both</h2></div>
+        <p>Pick a mode in Project Settings. Tune everything else in the MK SSDM Plus Settings panel, or with one quality preset from Low to Epic.</p>
+      </div>
+      <div class="modes">
+        <div class="mode"><div class="sw"><i class="on"></i><i></i></div><h3 class="display">SSDM only</h3><p>Screen space displacement from the height buffer, with your existing shadow setup.</p></div>
+        <div class="mode"><div class="sw"><i></i><i class="on"></i></div><h3 class="display">Contact shadows only</h3><p>Height-aware contact shadows without displacement. Fixes self-shadowing on surfaces using pixel depth offset.</p></div>
+        <div class="mode"><div class="sw"><i class="on"></i><i class="on"></i></div><h3 class="display">Both</h3><p>Displacement and shadows read the same buffer, so the shadows always match the displaced surface.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="how">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">04 · How it works</span><h2 class="display">One height buffer</h2></div>
+        <p>Materials write height through a custom output. A custom mesh pass fills the buffer using the main view's existing culling, so there's no second scene traversal. Both effects read from it.</p>
+      </div>
+      <div class="diagram">
+        <svg viewBox="0 0 980 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8b9099"/></marker>
+          <marker id="ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b84ff"/></marker></defs>
+          <rect class="box" x="10" y="40" width="200" height="86"/>
+          <text class="t" x="28" y="76">Materials</text><text class="s" x="28" y="100">custom height output</text>
+          <rect class="box" x="10" y="170" width="200" height="86"/>
+          <text class="t" x="28" y="206">Decals</text><text class="s" x="28" y="230">deferred + mesh</text>
+          <rect class="box hl" x="290" y="105" width="220" height="86"/>
+          <text class="t" x="308" y="141">Height buffer</text><text class="s" x="308" y="165">custom mesh pass</text>
+          <rect class="box" x="590" y="40" width="190" height="86"/>
+          <text class="t" x="608" y="76">SSDM</text><text class="s" x="608" y="100">depth overlap fix</text>
+          <rect class="box" x="590" y="170" width="190" height="86"/>
+          <text class="t" x="608" y="206">Contact shadows</text><text class="s" x="608" y="230">height-aware</text>
+          <rect class="box" x="850" y="105" width="120" height="86"/>
+          <text class="t" x="868" y="141">Final</text><text class="s" x="868" y="165">image</text>
+          <path class="arrow" d="M210 83 C 250 83, 250 135, 288 135" marker-end="url(#ah)"/>
+          <path class="arrow" d="M210 213 C 250 213, 250 162, 288 162" marker-end="url(#ah)"/>
+          <path class="arrow hl" d="M510 135 C 550 135, 550 83, 588 83" marker-end="url(#ahA)"/>
+          <path class="arrow hl" d="M510 162 C 550 162, 550 213, 588 213" marker-end="url(#ahA)"/>
+          <path class="arrow" d="M780 83 C 815 83, 815 135, 848 135" marker-end="url(#ah)"/>
+          <path class="arrow" d="M780 213 C 815 213, 815 162, 848 162" marker-end="url(#ah)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="specs">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">05 · Proof &amp; specs</span><h2 class="display">The numbers</h2></div>
+        <p>Measured with <code>stat gpu</code>; each pass shows under its own MKSSDM label. Dashed values are placeholders.</p>
+      </div>
+      <div class="two">
+        <div class="card">
+          <h3 class="display">GPU cost</h3><span class="label">Medium preset · test scene TBD</span>
+          <div class="scroll"><table class="tbl">
+            <thead><tr><th>Pass</th><th>1080p</th><th>1440p</th><th>4K</th></tr></thead>
+            <tbody>
+              <tr><td>MKSSDM Height</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
+              <tr><td>MKSSDM Smooth + Scatter</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
+              <tr><td>MKSSDM Resolve</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
+              <tr><td>Contact shadows</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <h3 class="display">Specs</h3><span class="label">What you get</span>
+          <div class="scroll"><table class="tbl">
+            <tbody>
+              <tr><th>Engine</th><td>UE 5.8</td></tr>
+              <tr><th>Platform</th><td>Windows (Win64)</td></tr>
+              <tr><th>Version</th><td>0.1</td></tr>
+              <tr><th>Type</th><td>C++ code plugin</td></tr>
+              <tr><th>Modules</th><td>MKSSDMPlus, MKSSDMPlusMeshPass, MKSSDMPlusEditor</td></tr>
+              <tr><th>Engine changes</th><td class="yes">None</td></tr>
+              <tr><th>Nanite</th><td class="no">Not supported</td></tr>
+              <tr><th>Settings</th><td>Project Settings, settings panel, console variables</td></tr>
+              <tr><th>Quality presets</th><td>Low, Medium, High, Epic</td></tr>
+              <tr><th>TAA / TSR</th><td class="yes">Writes displaced depth and velocity</td></tr>
+              <tr><th>Includes</th><td>Demo map with RVT landscape</td></tr>
+              <tr><th>Author</th><td>Michael Kinsey</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="docs">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">06 · Questions</span><h2 class="display">FAQ</h2></div>
+        <p>Full setup lives in the docs: quick start, settings reference, troubleshooting and licence. <a href="docs/">Read the docs →</a></p>
+      </div>
+      <div class="faq">
+        <details open><summary>Does it support Nanite?</summary><p><b>No.</b> SSDM+ does not support Nanite meshes or Nanite landscapes. Use it on regular, non-Nanite geometry.</p></details>
+        <details><summary>Do I need a source build of the engine?</summary><p>Draft: confirm before launch. The plugin makes no engine source changes.</p></details>
+        <details><summary>Does it work on RVT landscapes?</summary><p>Yes. Contact shadows read height written into the RVT, where stock contact shadows lose pixel depth offset.</p></details>
+        <details><summary>Which engine versions are supported?</summary><p>UE 5.8 on Windows at launch.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="buy">
+    <div class="wrap cta">
+      <div class="cta-text">
+      <span class="label">Available on Fab</span>
+      <h2 class="display">Get MK SSDM<span style="color:var(--accent)">+</span></h2>
+      <div class="ctas">
+        <a class="btn primary" href="#buy">Get it on Fab →</a>
+        <a class="btn" href="docs/">Read the docs</a>
+      </div>
+      <form class="news" id="newsForm">
+        <label for="newsEmail" class="label" style="flex-basis:100%">New tools and updates, by email</label>
+        <input type="email" id="newsEmail" placeholder="you@studio.com" required>
+        <button class="btn" type="submit" id="newsBtn">Subscribe</button>
+        <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once the site is live.</span>
+      </form>
+      </div>
+      <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo">
+    </div>
+  </section>
+</main>
+
+<footer class="gut"><div class="wrap"><span>© 2026 Michael Kinsey</span><span>Fab · Patreon · YouTube · Photography</span></div></footer>
+
+<script>
+/* ---------- strengths (draft list from the plan) ---------- */
+const FEATS=[
+ ["Displacement","One node, real depth","Wire your height in centimetres into the MK_SSDM_Height node. The surface displaces in screen space on regular meshes and landscapes, with no tessellation. An optional direction pin overrides the vertex normal.","Material graph with MK_SSDM_Height, then the displaced surface in the viewport. 8 s."],
+ ["Temporal","Stable under TAA and TSR","Displaced depth and velocity are written back, including camera parallax on moving and skinned objects, so temporal anti-aliasing reprojects the displaced surface instead of smearing it.","Camera dolly with TSR on, displaced surface staying sharp. 8 s."],
+ ["Clean edges","No tearing, no seams","Silhouette fade, crease smoothing on hard edges and an occlusion ramp around buried meshes keep displaced surfaces attached where they meet other geometry.","Character walking over a displaced floor, edges staying clean. 8 s."],
+ ["Decals","Decals with height","Deferred decal materials with the node write their height too, replacing the surface height inside the decal.","Footprint or crack decal placed on a displaced floor, shadows updating. 6 s."],
+ ["Scalable","Low to Epic in one setting","One quality preset sets resolution, filtering, smoothing and shadow steps together, and follows your project's scalability levels.","Switching r.MKSSDMPlus.Quality 0 to 3 with stat gpu visible. 10 s."]
+];
+document.getElementById('feats').innerHTML=FEATS.map(f=>`
+ <div class="feat">
+  <div class="media"><b>CAPTURE</b><span>${f[3]}</span></div>
+  <div><span class="label">${f[0]}</span><h3 class="display">${f[1]}</h3><p>${f[2]}</p></div>
+ </div>`).join('');
+
+/* before / after */
+const ba=document.getElementById('ba'),range=document.getElementById('baRange');
+range.addEventListener('input',()=>ba.style.setProperty('--split',range.value+'%'));
+
+/* newsletter (draft) */
+document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('newsMsg').hidden=false});
+</script>
+</body>
+</html>

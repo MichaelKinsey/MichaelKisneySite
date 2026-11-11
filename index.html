@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Michael Kinsey, technical artist. Unreal Engine 5 tools, plugins and tutorials.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Michael Kinsey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: three full-screen columns (Portfolio / Fab / Tutorials) that expand 50/25/25 on hover,
+   each with its own accent and themed cursor effect; calm sections below. Deliberately single dark
+   theme: the Michael Kinsey brand is white on black. Flat colours stand in for images. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0c0e; --panel:#16181c; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
+  --c-port:#16181c; --a-port:#5b84ff;
+  --c-fab:#1f2228;  --a-fab:#5b84ff;
+  --c-tut:#16181c; --a-tut:#5b84ff;
+  --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:-4px}
+.display{font-family:var(--f-display);font-stretch:68%;font-weight:850;text-transform:uppercase;line-height:.9}
+.label{font:500 11.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1160px;margin:0 auto}
+
+/* ---------- hero columns ---------- */
+.hero{position:relative;height:100svh;min-height:560px;display:flex;overflow:hidden;background:#000}
+.col{position:relative;flex:1 1 0;min-width:0;overflow:hidden;text-decoration:none;display:block;
+  transition:flex-grow .6s cubic-bezier(.2,.7,.2,1);background:var(--c);isolation:isolate;container-type:inline-size}
+.col + .col{border-left:1px solid rgba(255,255,255,.07)}
+.hero.has-active .col.active{flex-grow:2}
+.col .pan{position:absolute;inset:-20%;z-index:0;
+  background:
+    radial-gradient(40% 35% at 30% 30%, color-mix(in srgb,var(--a) 22%,transparent), transparent 70%),
+    radial-gradient(35% 45% at 75% 70%, color-mix(in srgb,var(--a) 14%,transparent), transparent 70%),
+    linear-gradient(160deg, color-mix(in srgb,var(--c) 70%,#fff 6%), var(--c) 60%, color-mix(in srgb,var(--c) 70%,#000));
+  animation:pan 18s ease-in-out infinite alternate;animation-play-state:paused;transform-origin:center}
+.col.active .pan{animation-play-state:running}
+@keyframes pan{0%{transform:translate(-4%,-3%) scale(1.04)}50%{transform:translate(3%,2%) scale(1.1)}100%{transform:translate(-2%,4%) scale(1.06)}}
+.col .shade{position:absolute;inset:0;z-index:2;background:#000;opacity:0;transition:opacity .5s}
+.hero.has-active .col:not(.active) .shade{opacity:.35}
+.col .fx{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .5s}
+.col.active .fx{opacity:1}
+
+.col .head{position:absolute;z-index:3;top:clamp(84px,14vh,140px);left:clamp(18px,3vw,40px);right:18px;
+  opacity:.6;transition:opacity .5s, transform .6s cubic-bezier(.2,.7,.2,1)}
+.hero.has-active .col:not(.active) .head{opacity:.4}
+.col.active .head{opacity:1}
+.col .num{font:500 12px var(--f-mono);letter-spacing:.14em;color:var(--a)}
+.col h2{font-size:clamp(34px,14cqi,110px);margin:10px 0 0;white-space:nowrap;transition:font-size .6s cubic-bezier(.2,.7,.2,1),text-shadow .5s}
+.col.active h2{text-shadow:0 0 28px color-mix(in srgb,var(--a) 45%,transparent)}
+.col .sub{max-height:0;overflow:hidden;opacity:0;transition:max-height .6s, opacity .4s .1s}
+.col.active .sub{max-height:160px;opacity:1}
+.col .sub p{margin:14px 0 14px;max-width:34ch;color:var(--ink);font-size:17px}
+.col .enter{display:inline-flex;gap:8px;align-items:center;font:600 14px var(--f-body);padding:9px 14px;border:1px solid var(--a);color:var(--a)}
+.col .slot{position:absolute;z-index:3;left:clamp(18px,3vw,40px);bottom:22px;opacity:.55}
+
+.col.port{--c:var(--c-port);--a:var(--a-port)}
+.col.fab{--c:var(--c-fab);--a:var(--a-fab)}
+.col.tut{--c:var(--c-tut);--a:var(--a-tut)}
+/* Fab: 3D tilt layer */
+.tilt{position:absolute;inset:0;z-index:1;perspective:900px;display:grid;place-items:center;pointer-events:none}
+.tilt svg{width:min(62%,420px);opacity:.18;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out, opacity .5s}
+.col.fab.active .tilt svg{opacity:.38}
+/* Tutorials: node graph canvas */
+.col.tut canvas.fx{width:100%;height:100%}
+/* Portfolio: buffer lens canvas */
+.col.port canvas.fx{width:100%;height:100%}
+
+/* brand floating over hero */
+.wordmark{position:absolute;z-index:6;top:22px;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+.wordmark div{display:flex;align-items:center;gap:12px;padding:8px 14px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+.wordmark svg{height:26px;width:auto}
+.wordmark b{font:800 18px var(--f-display);font-stretch:78%;letter-spacing:.06em;text-transform:uppercase}
+.wordmark span{color:var(--muted);font:500 11px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;border-left:1px solid var(--line);padding-left:12px}
+.cue{position:absolute;z-index:6;bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none}
+.cue i{display:block;width:1px;height:26px;background:var(--ink);opacity:.6;animation:cue 2s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:scaleY(.4);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+
+/* ---------- sticky bar ---------- */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.bar{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(11,12,14,.9);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);transform:translateY(-110%);transition:transform .35s}
+.bar.show{transform:none}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:11px;flex-wrap:wrap}
+.bar .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 15px var(--f-display);font-stretch:80%;text-transform:uppercase;letter-spacing:.05em}
+.bar .brand svg{height:22px;width:auto}
+.bar nav{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.bar nav a{text-decoration:none;font-size:14px;color:var(--muted)}
+.bar nav a:hover{color:var(--ink)}
+.bar nav a.p{color:var(--a-port)}.bar nav a.f{color:var(--a-fab)}.bar nav a.ph{color:var(--a-tut)}
+.bar nav .sep{width:1px;height:16px;background:var(--line)}
+
+/* ---------- sections ---------- */
+section.block{padding-block:88px;border-top:1px solid var(--line)}
+.about{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:start}
+.about h2{font-size:clamp(44px,5.4vw,80px);margin:10px 0 0;text-wrap:balance}
+.about p{margin:0 0 16px;font-size:18px;max-width:58ch}
+.about p.muted{color:var(--muted);font-size:16px}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0}
+.stack span{font:500 12.5px var(--f-mono);padding:7px 11px;border:1px solid var(--line)}
+.hl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px}
+.hl div{background:var(--bg);padding:18px;min-width:0}
+.hl b{display:block;font:800 26px var(--f-display);font-stretch:72%;text-transform:uppercase;line-height:1}
+.hl small{color:var(--muted);font-size:13.5px}
+.hl small a{color:var(--ink)}
+.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px}
+.links a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
+.links a:hover{color:var(--ink)}
+
+.svc{display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap;background:var(--c-fab);padding:clamp(28px,5vw,56px);
+  border-left:4px solid var(--a-fab)}
+.svc h2{font-size:clamp(40px,5.4vw,72px);margin:8px 0 10px}
+.svc p{margin:0;max-width:52ch;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;font:600 15px var(--f-body);text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.btn.fab{background:var(--a-fab);border-color:var(--a-fab);color:#060a1a}
+
+.news{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end}
+.news h2{font-size:clamp(44px,6vw,80px);margin:8px 0 0}
+.news form{display:flex;gap:10px;flex-wrap:wrap}
+.news input{flex:1 1 220px;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:13px 14px;font:15px var(--f-body)}
+.news .msg{flex-basis:100%;color:var(--muted);font-size:14px}
+.news p{color:var(--muted);margin:0 0 16px}
+
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer a{text-decoration:none}footer a:hover{color:var(--ink)}
+.toast{position:fixed;z-index:40;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;transition:.3s;
+  background:var(--ink);color:#000;padding:10px 16px;font-weight:600;font-size:14px;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- phone: stacked rows ---------- */
+@media (max-width:720px){
+  .hero{flex-direction:column}
+  .col + .col{border-left:0;border-top:1px solid rgba(255,255,255,.07)}
+  .col .head{top:auto;bottom:18px;left:18px}
+  .col h2{font-size:clamp(40px,12vw,64px);white-space:normal}
+  .col .slot,.col .fx,.tilt{display:none}
+  .wordmark span{display:none}
+  .cue{display:none}
+  .about,.news{grid-template-columns:1fr;gap:28px}
+  .hl{grid-template-columns:1fr}
+  .bar nav .sec{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .col .pan{animation:none}
+  .cue i{animation:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol>
+  </defs>
+</svg>
+
+<header class="bar gut" id="bar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg>Michael Kinsey</a>
+    <nav>
+      <a class="p" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">Portfolio</a>
+      <a class="f soon" href="#fab">Fab</a>
+      <a class="ph soon" href="#tutorials">Tutorials</a>
+      <span class="sep sec"></span>
+      <a class="sec" href="#about">About</a>
+      <a class="sec" href="#services">Services</a>
+      <a class="sec" href="#newsletter">Newsletter</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero" id="hero">
+    <div class="wordmark"><div>
+      <svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg>
+      <b>Michael Kinsey</b><span>Technical Artist · Unreal Engine 5</span>
+    </div></div>
+
+    <a class="col port" id="c-port" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener" data-name="Portfolio">
+      <div class="pan"></div>
+      <canvas class="fx" id="lens"></canvas>
+      <div class="shade"></div>
+      <div class="head">
+        <span class="num">01 · ArtStation</span>
+        <h2 class="display">Portfolio</h2>
+        <div class="sub"><p>Shaders, terrain, water and rendering work in Unreal Engine 5.</p><span class="enter">Enter →</span></div>
+      </div>
+      <span class="slot label">Image slot · 3–5 images</span>
+    </a>
+
+    <a class="col fab soon" id="c-fab" href="#fab" data-name="Fab store">
+      <div class="pan"></div>
+      <div class="tilt fx"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg></div>
+      <div class="shade"></div>
+      <div class="head">
+        <span class="num">02 · Fab</span>
+        <h2 class="display">Tools</h2>
+        <div class="sub"><p>Plugins for UE5 terrain, displacement and surfaces. No Nanite, no engine changes.</p><span class="enter">Enter →</span></div>
+      </div>
+      <span class="slot label">Image slot · 3–5 images</span>
+    </a>
+
+    <a class="col tut soon" id="c-tut" href="#tutorials" data-name="Tutorials">
+      <div class="pan"></div>
+      <canvas class="fx" id="nodes"></canvas>
+      <div class="shade"></div>
+      <div class="head">
+        <span class="num">03 · YouTube · Patreon</span>
+        <h2 class="display">Tutorials</h2>
+        <div class="sub"><p>Shader breakdowns on YouTube and free tools and material functions on Patreon.</p><span class="enter">Enter →</span></div>
+      </div>
+      <span class="slot label">Image slot · 3–5 images</span>
+    </a>
+
+    <a class="cue label" href="#about" aria-label="Scroll to About"><span>Scroll</span><i></i></a>
+  </div>
+
+  <section class="block gut" id="about">
+    <div class="wrap about">
+      <div>
+        <span class="label">About</span>
+        <h2 class="display">Tools I needed, built properly</h2>
+      </div>
+      <div>
+        <p>I'm Michael Kinsey, a technical artist working across the Unreal Engine 5 rendering stack. I build terrain, water and surface systems that hold up up close and cast real shadows, without relying on Nanite.</p>
+        <p class="muted">I prefer building systems myself to understand them, then turning what works into tools other teams can use. Many of them are free. Away from the engine I shoot wildlife, street and travel photography.</p>
+        <div class="stack"><span>C++</span><span>HLSL / USF</span><span>RVT</span><span>Niagara</span><span>Materials</span><span>Blueprint</span></div>
+        <div class="hl">
+          <div><b>On Fab</b><small><a href="/erosion-brush/">MK Fast Landscape Erosion Brush</a> and <a href="/ssdm-plus/">MK SSDM+</a></small></div>
+          <div><b>Free</b><small>MK Tessellation Patch and shader functions on Patreon</small></div>
+          <div><b>Tutorials</b><small>Shader breakdowns on YouTube</small></div>
+        </div>
+        <div class="links"><a href="#patreon" class="soon">Patreon</a><a href="#youtube" class="soon">YouTube</a><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a><a href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">Photography</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="services">
+    <div class="wrap">
+      <div class="svc">
+        <div>
+          <span class="label" style="color:var(--a-fab)">Services</span>
+          <h2 class="display">Need it in your project?</h2>
+          <p>Premium integration and support for my tools, technical consulting on rendering and terrain, and custom tool development.</p>
+        </div>
+        <a class="btn fab soon" href="#services-page">See services →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut" id="newsletter">
+    <div class="wrap news">
+      <div>
+        <span class="label">Newsletter</span>
+        <h2 class="display">New tools, first</h2>
+      </div>
+      <div>
+        <p>Releases, free Patreon drops and tutorials. A few emails a year.</p>
+        <form id="newsForm">
+          <label for="newsEmail" class="label" style="position:absolute;left:-9999px">Email</label>
+          <input type="email" id="newsEmail" placeholder="you@studio.com" required>
+          <button class="btn" type="submit">Subscribe</button>
+          <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once the site is live.</span>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="gut"><div class="wrap">
+  <span>© 2026 Michael Kinsey</span>
+  <span><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a> · <a href="#fab" class="soon">Fab</a> · <a href="#tutorials" class="soon">Tutorials</a> · <a href="#patreon" class="soon">Patreon</a> · <a href="#youtube" class="soon">YouTube</a> · <a href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">Photography</a></span>
+</div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const hero=document.getElementById('hero');
+const cols=[...hero.querySelectorAll('.col')];
+const touchMode=matchMedia('(hover: none)').matches;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function activate(c){cols.forEach(x=>x.classList.toggle('active',x===c));hero.classList.toggle('has-active',!!c)}
+cols.forEach(c=>{
+  c.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')activate(c)});
+  c.addEventListener('focus',()=>activate(c));
+  c.addEventListener('click',e=>{
+    // phones: first tap expands, second tap enters
+    if(touchMode&&!c.classList.contains('active')){e.preventDefault();activate(c);return}
+  });
+});
+hero.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch')activate(null)});
+hero.addEventListener('focusout',e=>{if(!hero.contains(e.relatedTarget))activate(null)});
+
+/* pages not built yet */
+const toast=document.getElementById('toast');let tt;
+function say(t){toast.textContent=t;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),1800)}
+document.querySelectorAll('.soon').forEach(a=>a.addEventListener('click',e=>{
+  if(touchMode&&a.classList.contains('col')&&!a.classList.contains('active'))return;
+  e.preventDefault();say((a.dataset.name||a.textContent.trim())+' page is in progress')
+}));
+
+/* Fab: tilt toward cursor */
+const fab=document.getElementById('c-fab'),tiltSvg=fab.querySelector('.tilt svg');
+fab.addEventListener('pointermove',e=>{const r=fab.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+  tiltSvg.style.setProperty('--ry',(x*28).toFixed(2)+'deg');tiltSvg.style.setProperty('--rx',(-y*28).toFixed(2)+'deg')});
+fab.addEventListener('pointerleave',()=>{tiltSvg.style.setProperty('--ry','0deg');tiltSvg.style.setProperty('--rx','0deg')});
+
+/* Tutorials: material nodes wire themselves to the cursor */
+const tut=document.getElementById('c-tut'),nc=document.getElementById('nodes'),nctx=nc.getContext('2d');
+const NODES=[[.08,.50,'TextureSample'],[.60,.48,'WorldPosition'],[.14,.66,'Multiply'],[.68,.64,'Lerp'],[.06,.82,'Normalize'],[.58,.82,'SphereMask']];
+let nx=-999,ny=-999,nRaf=0,nT0=performance.now();
+function drawNodes(now){
+  nRaf=0;const r=tut.getBoundingClientRect();
+  if(nc.width!==Math.round(r.width)||nc.height!==Math.round(r.height)){nc.width=Math.round(r.width);nc.height=Math.round(r.height)}
+  nctx.clearRect(0,0,nc.width,nc.height);if(nx<-900)return;
+  const t=((now||performance.now())-nT0)/1000;
+  nctx.font='500 11px "JetBrains Mono", monospace';
+  // output node at cursor
+  const ow=118,oh=40;
+  NODES.forEach(([fx,fy,name],i)=>{
+    const x=fx*nc.width+Math.sin(t*.6+i)*6,y=fy*nc.height+Math.cos(t*.5+i*1.7)*6;
+    const w=nctx.measureText(name).width+28,h=30;
+    const px=x+w,py=y+h/2,d=Math.hypot(nx-px,ny-py),near=Math.max(0,1-d/(nc.width*.75));
+    const tx=nx-ow/2,ty=ny;
+    const cx=Math.max(40,Math.abs(tx-px)*.5);
+    nctx.strokeStyle=`rgba(91,132,255,${.15+near*.75})`;nctx.lineWidth=1.5;
+    nctx.beginPath();nctx.moveTo(px,py);nctx.bezierCurveTo(px+cx,py,tx-cx,ty,tx,ty);nctx.stroke();
+    nctx.fillStyle=`rgba(11,12,14,${.6+near*.3})`;nctx.fillRect(x,y,w,h);
+    nctx.strokeStyle=`rgba(91,132,255,${.25+near*.6})`;nctx.lineWidth=1;nctx.strokeRect(x+.5,y+.5,w,h);
+    nctx.fillStyle=`rgba(91,132,255,${.25+near*.6})`;nctx.fillRect(x,y,w,4);
+    nctx.fillStyle=`rgba(243,241,236,${.45+near*.55})`;nctx.fillText(name,x+10,y+20);
+    nctx.beginPath();nctx.arc(px,py,3.5,0,7);nctx.fillStyle='#5b84ff';nctx.fill();
+  });
+  nctx.fillStyle='rgba(11,12,14,.92)';nctx.fillRect(nx-ow/2,ny-oh/2,ow,oh);
+  nctx.strokeStyle='#5b84ff';nctx.lineWidth=1.5;nctx.strokeRect(nx-ow/2+.5,ny-oh/2+.5,ow,oh);
+  nctx.fillStyle='#edeef0';nctx.fillText('Material Output',nx-ow/2+12,ny+4);
+  nctx.beginPath();nctx.arc(nx-ow/2,ny,4,0,7);nctx.fillStyle='#5b84ff';nctx.fill();
+  if(tut.classList.contains('active')&&!reduce)nRaf=requestAnimationFrame(drawNodes);
+}
+tut.addEventListener('pointermove',e=>{const r=tut.getBoundingClientRect();nx=e.clientX-r.left;ny=e.clientY-r.top;if(!nRaf)nRaf=requestAnimationFrame(drawNodes)});
+tut.addEventListener('pointerleave',()=>{nx=-999;cancelAnimationFrame(nRaf);nRaf=0;drawNodes()});
+
+/* Portfolio: buffer lens showing height contours under the cursor */
+const port=document.getElementById('c-port'),lens=document.getElementById('lens'),lctx=lens.getContext('2d');
+const P=new Uint8Array(512);{let s=7;const p=[...Array(256).keys()];for(let i=255;i>0;i--){s=(s*16807)%2147483647;const j=s%(i+1);[p[i],p[j]]=[p[j],p[i]]}for(let i=0;i<512;i++)P[i]=p[i&255]}
+const fade=t=>t*t*(3-2*t);
+function vn(x,y){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,h=(a,b)=>P[(P[a&255]+b)&255]/255,u=fade(xf),v=fade(yf),a=h(xi,yi),b=h(xi+1,yi),c=h(xi,yi+1),d=h(xi+1,yi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v}
+function fbm(x,y){let s=0,a=.5,f=1;for(let i=0;i<5;i++){s+=a*vn(x*f,y*f);f*=2.03;a*=.5}return s}
+let contour=null,cw=0,ch=0;
+function buildContour(){ // contour map sized to the widest the column gets (half the screen)
+  cw=Math.ceil(innerWidth*.5);ch=Math.ceil(hero.clientHeight);
+  const W=Math.ceil(cw/3),H=Math.ceil(ch/3),f=new Float32Array(W*H);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)f[y*W+x]=fbm(x/90,y/90);
+  const off=document.createElement('canvas');off.width=cw;off.height=ch;const o=off.getContext('2d');
+  o.fillStyle='rgba(11,12,14,.85)';o.fillRect(0,0,cw,ch);
+  o.strokeStyle='#5b84ff';o.lineWidth=1;o.beginPath();
+  for(let lv=1;lv<16;lv++){const L=lv/16;
+    for(let y=0;y<H-1;y++)for(let x=0;x<W-1;x++){
+      const a=f[y*W+x],b=f[y*W+x+1],c=f[(y+1)*W+x+1],d=f[(y+1)*W+x];
+      const k=(a>L)|(b>L)<<1|(c>L)<<2|(d>L)<<3;if(k===0||k===15)continue;
+      const e=[[x+(L-a)/(b-a),y],[x+1,y+(L-b)/(c-b)],[x+(L-d)/(c-d),y+1],[x,y+(L-a)/(d-a)]];
+      const sg={1:[0,3],2:[0,1],3:[1,3],4:[1,2],5:[0,1,2,3],6:[0,2],7:[2,3],8:[2,3],9:[0,2],10:[0,3,1,2],11:[1,2],12:[1,3],13:[0,1],14:[0,3]}[k];
+      for(let s=0;s<sg.length;s+=2){o.moveTo(e[sg[s]][0]*3,e[sg[s]][1]*3);o.lineTo(e[sg[s+1]][0]*3,e[sg[s+1]][1]*3)}}}
+  o.stroke();
+  // faint grid, like a debug view
+  o.strokeStyle='rgba(91,132,255,.18)';o.beginPath();for(let x=0;x<cw;x+=48){o.moveTo(x,0);o.lineTo(x,ch)}for(let y=0;y<ch;y+=48){o.moveTo(0,y);o.lineTo(cw,y)}o.stroke();
+  contour=off;
+}
+let lx=-999,ly=-999,raf=0;
+function drawLens(){raf=0;
+  const r=port.getBoundingClientRect();
+  if(lens.width!==Math.round(r.width)||lens.height!==Math.round(r.height)){lens.width=Math.round(r.width);lens.height=Math.round(r.height)}
+  lctx.clearRect(0,0,lens.width,lens.height);if(!contour||lx<-900)return;
+  const R=Math.min(150,r.width*.28);
+  lctx.save();lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.clip();lctx.drawImage(contour,0,0);lctx.restore();
+  lctx.strokeStyle='#5b84ff';lctx.lineWidth=1.5;lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.stroke();
+  lctx.fillStyle='#5b84ff';lctx.font='500 11px "JetBrains Mono", monospace';lctx.fillText('BUFFER VIS · HEIGHT',lx-R+6,ly+R+18);
+}
+port.addEventListener('pointermove',e=>{const r=port.getBoundingClientRect();lx=e.clientX-r.left;ly=e.clientY-r.top;if(!raf)raf=requestAnimationFrame(drawLens)});
+port.addEventListener('pointerleave',()=>{lx=-999;drawLens()});
+port.addEventListener('transitionend',()=>drawLens());
+if(!touchMode){buildContour();let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{buildContour();drawLens()},200)})}
+
+/* sticky bar after the columns */
+const bar=document.getElementById('bar');
+new IntersectionObserver(([e])=>bar.classList.toggle('show',!e.isIntersecting),{threshold:.05}).observe(hero);
+
+/* newsletter (draft) */
+document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('newsMsg').hidden=false});
+</script>
+</body>
+</html>
