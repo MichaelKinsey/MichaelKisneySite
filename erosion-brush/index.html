@@ -20,8 +20,8 @@ img{max-width:100%}
    placeholders double as the capture shot list. Deliberately single dark theme. */
 :root{
   color-scheme:dark;
-  --bg:#000000; --panel:#1c1c1c; --panel-2:#262626; --ink:#fafafa; --muted:#8f8f8f; --line:#2e2e2e;
-  --accent:#ffffff; --accent-ink:#000000; --ph:#444444;
+  --bg:#000000; --panel:#333333; --panel-2:#3d3d3d; --ink:#f9f9f9; --muted:#a7a7a7; --line:#333333;
+  --accent:#f3701e; --accent-ink:#000000; --ph:#646464;
   --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -151,11 +151,11 @@ body{font-family:var(--f-body);-webkit-font-smoothing:antialiased}
 .label{text-transform:none;letter-spacing:.01em;font-size:13px}
 .btn{border-radius:999px}
 .t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink);border-top:0!important}
-.t-black{--bg:#000000;--panel:#1c1c1c;--panel-2:#262626;--ink:#fafafa;--muted:#8f8f8f;--line:#2e2e2e;--accent:#ffffff;--accent-ink:#000000;--ph:#444444}
-.t-dark{--bg:#1c1c1c;--panel:#262626;--panel-2:#2e2e2e;--ink:#fafafa;--muted:#a3a3a3;--line:#3a3a3a;--accent:#ffffff;--accent-ink:#000000;--ph:#4d4d4d}
-.t-light{--bg:#dcdcdc;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#4a4a4a;--line:#bdbdbd;--accent:#000000;--accent-ink:#ffffff;--ph:#9e9e9e}
-.t-white{--bg:#fafafa;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#5a5a5a;--line:#dcdcdc;--accent:#000000;--accent-ink:#ffffff;--ph:#bdbdbd}
-.t-light .no,.t-white .no{color:#9a5200!important;border-color:#9a5200!important}
+.t-black{--bg:#000000;--panel:#333333;--panel-2:#3d3d3d;--ink:#f9f9f9;--muted:#a7a7a7;--line:#333333;--accent:#f3701e;--accent-ink:#000000;--ph:#646464}
+.t-dark{--bg:#333333;--panel:#3d3d3d;--panel-2:#333333;--ink:#f9f9f9;--muted:#a7a7a7;--line:#4d4d4d;--accent:#f3701e;--accent-ink:#000000;--ph:#4d4d4d}
+.t-light{--bg:#a7a7a7;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#333333;--line:#8a8a8a;--accent:#f3701e;--accent-ink:#000000;--ph:#9e9e9e}
+.t-white{--bg:#f9f9f9;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#646464;--line:#a7a7a7;--accent:#f3701e;--accent-ink:#000000;--ph:#8a8a8a}
+.t-light .no,.t-white .no{color:#b3261e!important;border-color:#b3261e!important}
 section.block{padding-block:clamp(72px,10vw,128px)}
 .media,.ba,.banner img,.cta-logo,.card,.diagram,.mode,.rcol,.step{border-radius:14px}
 .banner img,.cta-logo,.ba{overflow:hidden}
@@ -163,12 +163,38 @@ section.block{padding-block:clamp(72px,10vw,128px)}
 .head h2{font-size:clamp(40px,5.4vw,68px)}
 /* dark cards, no outlines */
 .modes,.steps{background:none!important;border:0!important;gap:16px!important;border-radius:0!important;overflow:visible!important}
-.mode,.step{background:#1c1c1c!important;color:#fafafa;border:0!important}
+.mode,.step{background:#333333!important;color:#f9f9f9;border:0!important}
 .mode p,.step p{color:#b3b3b3!important}
-.mode .sw i{background:#444!important}.mode .sw i.on{background:#fafafa!important}
-.step::before{color:#fafafa!important}
+.mode .sw i{background:#444!important}.mode .sw i.on{background:#f9f9f9!important}
+.step::before{color:#f9f9f9!important}
 table{color:inherit;font:inherit}
 .hl b{font-family:var(--f-display);font-stretch:normal;text-transform:none;font-weight:600;letter-spacing:-.02em;font-size:20px}
+.t-grad{background:linear-gradient(120deg,#000000 0%,#000000 40%,#c10801 74%,#f16001 92%,#d9c3ab 125%)!important;color:#f9f9f9;
+  --bg:transparent;--ink:#f9f9f9;--muted:#d9c3ab;--line:rgba(255,255,255,.2);--panel:rgba(0,0,0,.35);--panel-2:rgba(0,0,0,.25);--accent:#f9f9f9;--accent-ink:#000000;border-top:0!important}
+/* --- retro palette: near-black, cream, slate blue, orange --- */
+:root{--bg:#161616;--panel:#222222;--panel-2:#2a2a2a;--ink:#e8d8c9;--muted:#a89a8c;--line:#2e2b28;--accent:#f3701e;--accent-ink:#161616;--ph:#4a443e;
+  --c-port:#161616;--c-fab:#4b607f;--c-tut:#1f1f1f;--a-port:#f3701e;--a-fab:#f3701e;--a-tut:#f3701e}
+body{background:#161616;color:#e8d8c9}
+.t-black{--bg:#161616;--panel:#222222;--panel-2:#2a2a2a;--ink:#e8d8c9;--muted:#a89a8c;--line:#2e2b28;--accent:#f3701e;--accent-ink:#161616;--ph:#4a443e}
+.t-dark{--bg:#4b607f;--panel:#3f516c;--panel-2:#45587a;--ink:#f4ece4;--muted:#cdd5e0;--line:#5d7293;--accent:#f3701e;--accent-ink:#161616;--ph:#6a7fa0}
+.t-light{--bg:#d9c8b7;--panel:#e8d8c9;--panel-2:#e1cfbf;--ink:#161616;--muted:#4b4038;--line:#bfae9d;--accent:#f3701e;--accent-ink:#161616;--ph:#b09e8c}
+.t-white{--bg:#e8d8c9;--panel:#f2e8de;--panel-2:#eadccf;--ink:#161616;--muted:#5a4e44;--line:#cdbcab;--accent:#f3701e;--accent-ink:#161616;--ph:#bfae9d}
+.t-grad{background:linear-gradient(120deg,#161616 0%,#161616 38%,#4b607f 78%,#f3701e 118%)!important;--muted:#cdd5e0}
+.top{background:rgba(22,22,22,.9)!important;border-bottom-color:#2a2a2a!important}
+body::before{background:#161616!important}
+.mode,.step{background:#161616!important;color:#e8d8c9!important}
+.mode p,.step p{color:#a89a8c!important}
+.mode .sw i{background:#3a3530!important}.mode .sw i.on{background:#f3701e!important}
+.step::before{color:#f3701e!important}
+.principles div{background:#4b607f!important;color:#f4ece4!important}.principles span{color:#cdd5e0!important}
+.side{background:#f2e8de!important}
+.side a{color:#4b4038!important}.side a:hover{background:#e8d8c9!important;color:#161616!important}
+.layout article>section:nth-of-type(odd){--sbg:#e8d8c9}
+.layout article>section:nth-of-type(even){--sbg:#dccbbb;--panel:#eadccf;--panel-2:#e3d3c4;--line:#c4b3a2;--muted:#4b4038}
+.t-white dl.ref dd,.t-white .cv p,.t-white .pin span{color:#3a322c}
+.tile{background:#1f1f1f!important}
+.tile .pill.free{background:#e8d8c9!important;color:#161616!important;border-color:#e8d8c9!important}
+.docs-hero{background:#161616}
 </style>
 </head>
 <body>
@@ -178,7 +204,7 @@ table{color:inherit;font:inherit}
 
 <header class="top gut">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Michael Kinsey"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#fafafa"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <a class="brand" href="/" aria-label="Michael Kinsey"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
     <nav>
       <a href="#workflow" class="hide-sm">Workflow</a>
       <a href="#specs" class="hide-sm">Specs</a>
@@ -329,7 +355,7 @@ table{color:inherit;font:inherit}
     </div>
   </section>
 
-  <section class="block gut t-black" id="buy">
+  <section class="block gut t-grad" id="buy">
     <div class="wrap cta">
       <span class="label">Available on Fab</span>
       <h2 class="display">Erode your landscape<span style="color:var(--accent)">.</span></h2>
