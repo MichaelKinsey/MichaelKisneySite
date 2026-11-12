@@ -277,6 +277,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
 .col.active .sub{max-height:240px}
 .col.tut .sub p{max-width:44ch}
+
+/* hero fills the screen exactly under the bar; smaller column titles */
+.hero{height:calc(100svh - var(--barh,48px))!important;min-height:480px}
+@media (max-width:720px){.hero{height:calc(100svh - var(--barh,86px))!important}}
+.col h2{font-size:clamp(28px,11.5cqi,92px)}
+.col:not(.active) h2{font-size:clamp(26px,10.5cqi,84px)}
+.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(30px,7.4cqi,82px)}
+@media (max-width:720px){.col h2,.col:not(.active) h2,.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(32px,9.5vw,52px)}}
 </style>
 </head>
 <body>
@@ -490,6 +498,10 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
 {const box=document.getElementById('slides'),im=[...box.querySelectorAll('img')];let i=0;
  addEventListener('load',()=>im.forEach(x=>{if(!x.getAttribute('src'))x.src=x.dataset.src+window.SLIDE_SUF}));
  setInterval(()=>{if(document.hidden)return;const n=(i+1)%im.length;if(!im[n].complete||!im[n].naturalWidth)return;im[i].classList.remove('on');im[n].classList.add('on');i=n},4500)}
+
+/* keep the hero exactly one screen tall under the top bar */
+{const bar=document.getElementById('bar'),set=()=>document.documentElement.style.setProperty('--barh',bar.offsetHeight+'px');set();
+ if('ResizeObserver' in window)new ResizeObserver(set).observe(bar);addEventListener('resize',set)}
 </script>
 </body>
 </html>
