@@ -13,15 +13,15 @@ img{max-width:100%}
 </style>
 <title>MK SSDM+</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
 <style>
 /* Layout: product promo template. Black-and-white Michael Kinsey brand (heavy condensed caps, logo mark),
    one amber accent for SSDM+. Product thumbnail in the hero; placeholders double as the capture shot list.
    Deliberately single dark theme: the brand is white on black. */
 :root{
   color-scheme:dark;
-  --bg:#0b0c0e; --panel:#16181c; --panel-2:#1f2228; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
-  --accent:#5b84ff; --accent-ink:#060a1a; --ph:#3a3e46;
+  --bg:#000000; --panel:#1c1c1c; --panel-2:#262626; --ink:#fafafa; --muted:#8f8f8f; --line:#2e2e2e;
+  --accent:#ffffff; --accent-ink:#000000; --ph:#444444;
   --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -42,7 +42,7 @@ a{color:inherit}
 
 /* top bar */
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(0,0,0,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .brand svg{height:26px;width:auto}
@@ -64,7 +64,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .banner{margin:0 0 32px}
 .banner img{display:block;width:100%;height:auto;max-width:100%;border:1px solid var(--line)}
 .hero-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
-.hero-row .label{display:block;margin-bottom:12px}
+.hero-row .mini{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.mini-logo{width:56px;height:56px;border-radius:12px;flex:0 0 auto}
 .hero-row .badges{margin-bottom:16px}
 .hero-row .compat{margin:0}
 .pitch{font-size:clamp(20px,2.2vw,26px);line-height:1.35;max-width:30ch;margin:0 0 22px;text-wrap:balance}
@@ -88,7 +89,7 @@ section.block{padding-block:72px;border-top:1px solid var(--line)}
 .ba .shot-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .ba .shot{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:22px 24px;
   background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--panel-2) 14px 28px)}
-.ba .shot.on{align-items:flex-end;text-align:right;background:repeating-linear-gradient(135deg,#141a2a 0 14px,#18203a 14px 28px)}
+.ba .shot.on{align-items:flex-end;text-align:right;background:repeating-linear-gradient(135deg,#1c1c1c 0 14px,#262626 14px 28px)}
 .ba .shot b{font:500 11.5px var(--f-mono);letter-spacing:.12em;color:var(--accent)}
 .ba .shot span{font-size:14px;max-width:34ch}
 .ba #baOn{clip-path:inset(0 0 0 var(--split,50%))}
@@ -173,6 +174,32 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
   .ba{aspect-ratio:4/3}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* --- clean modern layer: colour-block sections, Geist type, softer details --- */
+:root{--f-display:"Geist","Segoe UI",system-ui,sans-serif;--f-body:"Geist","Segoe UI",system-ui,sans-serif;--f-mono:"Geist Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+.display{font-family:var(--f-display)!important;font-stretch:normal!important;font-weight:600!important;text-transform:none!important;letter-spacing:-.035em!important;line-height:1.02!important}
+.label{text-transform:none;letter-spacing:.01em;font-size:13px}
+.btn{border-radius:999px}
+.t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink);border-top:0!important}
+.t-black{--bg:#000000;--panel:#1c1c1c;--panel-2:#262626;--ink:#fafafa;--muted:#8f8f8f;--line:#2e2e2e;--accent:#ffffff;--accent-ink:#000000;--ph:#444444}
+.t-dark{--bg:#1c1c1c;--panel:#262626;--panel-2:#2e2e2e;--ink:#fafafa;--muted:#a3a3a3;--line:#3a3a3a;--accent:#ffffff;--accent-ink:#000000;--ph:#4d4d4d}
+.t-light{--bg:#dcdcdc;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#4a4a4a;--line:#bdbdbd;--accent:#000000;--accent-ink:#ffffff;--ph:#9e9e9e}
+.t-white{--bg:#fafafa;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#5a5a5a;--line:#dcdcdc;--accent:#000000;--accent-ink:#ffffff;--ph:#bdbdbd}
+.t-light .no,.t-white .no{color:#9a5200!important;border-color:#9a5200!important}
+section.block{padding-block:clamp(72px,10vw,128px)}
+.media,.ba,.banner img,.cta-logo,.card,.diagram,.mode,.rcol,.step{border-radius:14px}
+.banner img,.cta-logo,.ba{overflow:hidden}
+.modes,.steps{border-radius:14px;overflow:hidden}
+.head h2{font-size:clamp(40px,5.4vw,68px)}
+/* dark cards, no outlines */
+.modes,.steps{background:none!important;border:0!important;gap:16px!important;border-radius:0!important;overflow:visible!important}
+.mode,.step{background:#1c1c1c!important;color:#fafafa;border:0!important}
+.mode p,.step p{color:#b3b3b3!important}
+.mode .sw i{background:#444!important}.mode .sw i.on{background:#fafafa!important}
+.step::before{color:#fafafa!important}
+table{color:inherit;font:inherit}
+.hl b{font-family:var(--f-display);font-stretch:normal;text-transform:none;font-weight:600;letter-spacing:-.02em;font-size:20px}
 </style>
 </head>
 <body>
@@ -180,7 +207,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 <header class="top gut">
   <div class="wrap">
     <a class="brand" href="/" aria-label="Michael Kinsey">
-      <svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg>
+      <svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#fafafa"><use href="#mk"/></svg>
       <span>Michael Kinsey</span>
     </a>
     <nav>
@@ -195,13 +222,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 <div class="draft gut"><div class="wrap"><b>DRAFT</b><span>Dashed boxes are placeholders. Each one names the capture it needs. Price, versions and numbers are TBD.</span></div></div>
 
 <main id="top">
-  <section class="hero gut">
+  <section class="hero gut t-black">
     <div class="wrap">
       <h1 class="sr">MK SSDM+</h1>
       <figure class="banner"><img src="banner.webp" width="2000" height="627" alt="MK SSDM+ spelled out in displaced stone letters on a desert landscape"></figure>
       <div class="hero-row">
         <div>
-          <span class="label">Unreal Engine plugin · Screen space</span>
+          <div class="mini"><img class="mini-logo" src="logo.webp" width="56" height="56" alt="MK SSDM+ logo"><span class="label">Unreal Engine plugin · Screen space</span></div>
           <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
           <div class="ctas">
             <a class="btn primary" href="#buy">Get it on Fab →</a>
@@ -221,7 +248,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="compare">
+  <section class="block gut t-white" id="compare">
     <div class="wrap">
       <div class="head">
         <div><span class="label">01 · Before / after</span><h2 class="display">Drag to compare</h2></div>
@@ -239,7 +266,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="strengths">
+  <section class="block gut t-dark" id="strengths">
     <div class="wrap">
       <div class="head">
         <div><span class="label">02 · What it does</span><h2 class="display">Lots of depth, little cost</h2></div>
@@ -249,7 +276,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="modes">
+  <section class="block gut t-light" id="modes">
     <div class="wrap">
       <div class="head">
         <div><span class="label">03 · Modes</span><h2 class="display">Use one or both</h2></div>
@@ -263,7 +290,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="how">
+  <section class="block gut t-black" id="how">
     <div class="wrap">
       <div class="head">
         <div><span class="label">04 · How it works</span><h2 class="display">One height buffer</h2></div>
@@ -271,8 +298,8 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
       </div>
       <div class="diagram">
         <svg viewBox="0 0 980 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
-          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8b9099"/></marker>
-          <marker id="ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b84ff"/></marker></defs>
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8f8f8f"/></marker>
+          <marker id="ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffffff"/></marker></defs>
           <rect class="box" x="10" y="40" width="200" height="86"/>
           <text class="t" x="28" y="76">Materials</text><text class="s" x="28" y="100">custom height output</text>
           <rect class="box" x="10" y="170" width="200" height="86"/>
@@ -296,7 +323,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="specs">
+  <section class="block gut t-white" id="specs">
     <div class="wrap">
       <div class="head">
         <div><span class="label">05 · Proof &amp; specs</span><h2 class="display">The numbers</h2></div>
@@ -338,7 +365,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="docs">
+  <section class="block gut t-light" id="docs">
     <div class="wrap">
       <div class="head">
         <div><span class="label">06 · Questions</span><h2 class="display">FAQ</h2></div>
@@ -353,7 +380,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="buy">
+  <section class="block gut t-black" id="buy">
     <div class="wrap cta">
       <div class="cta-text">
       <span class="label">Available on Fab</span>

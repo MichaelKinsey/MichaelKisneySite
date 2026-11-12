@@ -13,15 +13,15 @@ img{max-width:100%}
 </style>
 <title>MK Fast Landscape Erosion Brush</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
 <style>
 /* Layout: product promo template (shared with MK SSDM+). Black-and-white Michael Kinsey brand,
    one accent per product: a cold "runoff" blue for erosion. Live eroded terrain inside the mark;
    placeholders double as the capture shot list. Deliberately single dark theme. */
 :root{
   color-scheme:dark;
-  --bg:#0b0c0e; --panel:#16181c; --panel-2:#1f2228; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
-  --accent:#5b84ff; --accent-ink:#060a1a; --ph:#3a3e46;
+  --bg:#000000; --panel:#1c1c1c; --panel-2:#262626; --ink:#fafafa; --muted:#8f8f8f; --line:#2e2e2e;
+  --accent:#ffffff; --accent-ink:#000000; --ph:#444444;
   --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -41,7 +41,7 @@ a{color:inherit}
 .btn.primary:hover{filter:brightness(1.08)}
 
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(0,0,0,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .brand svg{height:26px;width:auto}
@@ -143,6 +143,32 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 }
 @media (max-width:480px){.steps{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* --- clean modern layer: colour-block sections, Geist type, softer details --- */
+:root{--f-display:"Geist","Segoe UI",system-ui,sans-serif;--f-body:"Geist","Segoe UI",system-ui,sans-serif;--f-mono:"Geist Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+.display{font-family:var(--f-display)!important;font-stretch:normal!important;font-weight:600!important;text-transform:none!important;letter-spacing:-.035em!important;line-height:1.02!important}
+.label{text-transform:none;letter-spacing:.01em;font-size:13px}
+.btn{border-radius:999px}
+.t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink);border-top:0!important}
+.t-black{--bg:#000000;--panel:#1c1c1c;--panel-2:#262626;--ink:#fafafa;--muted:#8f8f8f;--line:#2e2e2e;--accent:#ffffff;--accent-ink:#000000;--ph:#444444}
+.t-dark{--bg:#1c1c1c;--panel:#262626;--panel-2:#2e2e2e;--ink:#fafafa;--muted:#a3a3a3;--line:#3a3a3a;--accent:#ffffff;--accent-ink:#000000;--ph:#4d4d4d}
+.t-light{--bg:#dcdcdc;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#4a4a4a;--line:#bdbdbd;--accent:#000000;--accent-ink:#ffffff;--ph:#9e9e9e}
+.t-white{--bg:#fafafa;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#5a5a5a;--line:#dcdcdc;--accent:#000000;--accent-ink:#ffffff;--ph:#bdbdbd}
+.t-light .no,.t-white .no{color:#9a5200!important;border-color:#9a5200!important}
+section.block{padding-block:clamp(72px,10vw,128px)}
+.media,.ba,.banner img,.cta-logo,.card,.diagram,.mode,.rcol,.step{border-radius:14px}
+.banner img,.cta-logo,.ba{overflow:hidden}
+.modes,.steps{border-radius:14px;overflow:hidden}
+.head h2{font-size:clamp(40px,5.4vw,68px)}
+/* dark cards, no outlines */
+.modes,.steps{background:none!important;border:0!important;gap:16px!important;border-radius:0!important;overflow:visible!important}
+.mode,.step{background:#1c1c1c!important;color:#fafafa;border:0!important}
+.mode p,.step p{color:#b3b3b3!important}
+.mode .sw i{background:#444!important}.mode .sw i.on{background:#fafafa!important}
+.step::before{color:#fafafa!important}
+table{color:inherit;font:inherit}
+.hl b{font-family:var(--f-display);font-stretch:normal;text-transform:none;font-weight:600;letter-spacing:-.02em;font-size:20px}
 </style>
 </head>
 <body>
@@ -152,7 +178,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 
 <header class="top gut">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Michael Kinsey"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <a class="brand" href="/" aria-label="Michael Kinsey"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#fafafa"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
     <nav>
       <a href="#workflow" class="hide-sm">Workflow</a>
       <a href="#specs" class="hide-sm">Specs</a>
@@ -166,7 +192,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
 <div class="draft gut"><div class="wrap"><b>DRAFT</b><span>Dashed boxes are placeholders. Each one names the capture it needs. The Fab link and price are still to add. <a href="docs/">Docs page →</a></span></div></div>
 
 <main id="top">
-  <section class="hero gut">
+  <section class="hero gut t-black">
     <div class="wrap">
       <div>
         <span class="label">Unreal Engine plugin · Landmass brush</span>
@@ -190,7 +216,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="compare">
+  <section class="block gut t-white" id="compare">
     <div class="wrap">
       <div class="head">
         <div><span class="label">01 · Before / after</span><h2 class="display">Drag to compare</h2></div>
@@ -214,7 +240,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="strengths">
+  <section class="block gut t-dark" id="strengths">
     <div class="wrap">
       <div class="head">
         <div><span class="label">02 · What it does</span><h2 class="display">Erosion in seconds</h2></div>
@@ -224,7 +250,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="workflow">
+  <section class="block gut t-light" id="workflow">
     <div class="wrap">
       <div class="head">
         <div><span class="label">03 · Workflow</span><h2 class="display">Four steps</h2></div>
@@ -239,7 +265,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="specs">
+  <section class="block gut t-white" id="specs">
     <div class="wrap">
       <div class="head">
         <div><span class="label">04 · Specs</span><h2 class="display">What you get</h2></div>
@@ -273,7 +299,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="roadmap">
+  <section class="block gut t-dark" id="roadmap">
     <div class="wrap">
       <div class="head">
         <div><span class="label">05 · Roadmap</span><h2 class="display">Actively developed</h2></div>
@@ -287,7 +313,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="docs">
+  <section class="block gut t-light" id="docs">
     <div class="wrap">
       <div class="head">
         <div><span class="label">06 · Questions</span><h2 class="display">FAQ</h2></div>
@@ -303,7 +329,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
     </div>
   </section>
 
-  <section class="block gut" id="buy">
+  <section class="block gut t-black" id="buy">
     <div class="wrap cta">
       <span class="label">Available on Fab</span>
       <h2 class="display">Erode your landscape<span style="color:var(--accent)">.</span></h2>

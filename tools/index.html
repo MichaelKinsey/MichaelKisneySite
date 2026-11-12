@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Unreal Engine 5 plugins by Michael Kinsey: MK SSDM+, MK Fast Landscape Erosion Brush, MK Tessellation Patch and more.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Michael Kinsey Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
+<style>
+/* Layout: tools landing page. A grid of 2:1 product tiles (logo top-left, image hidden until hover,
+   descriptor bottom-right), then colour-block sections for mission, services and newsletter.
+   Greyscale palette shared with the rest of the site; single dark theme by design. */
+:root{
+  color-scheme:dark;
+  --bg:#000000; --panel:#1c1c1c; --panel-2:#262626; --ink:#fafafa; --muted:#8f8f8f; --line:#2e2e2e;
+  --accent:#ffffff; --accent-ink:#000000;
+  --f-display:"Geist","Segoe UI",system-ui,sans-serif;
+  --f-body:"Geist","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1280px;margin:0 auto}
+.display{font-family:var(--f-display);font-weight:600;letter-spacing:-.035em;line-height:1.02}
+.label{font:500 13px/1.3 var(--f-mono);letter-spacing:.01em;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font:600 15px var(--f-body);text-decoration:none;border:1px solid var(--line);color:var(--ink);background:transparent;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* colour-block sections */
+.t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink)}
+.t-black{--bg:#000000;--panel:#1c1c1c;--ink:#fafafa;--muted:#8f8f8f;--line:#2e2e2e;--accent:#ffffff;--accent-ink:#000000}
+.t-dark{--bg:#1c1c1c;--panel:#262626;--ink:#fafafa;--muted:#a3a3a3;--line:#3a3a3a;--accent:#ffffff;--accent-ink:#000000}
+.t-light{--bg:#dcdcdc;--panel:#ececec;--ink:#000000;--muted:#4a4a4a;--line:#bdbdbd;--accent:#000000;--accent-ink:#ffffff}
+.t-white{--bg:#fafafa;--panel:#f0f0f0;--ink:#000000;--muted:#5a5a5a;--line:#dcdcdc;--accent:#000000;--accent-ink:#ffffff}
+section.block{padding-block:clamp(72px,10vw,128px)}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#000}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(0,0,0,.86);backdrop-filter:blur(10px);border-bottom:1px solid #1c1c1c}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{height:22px;width:auto}
+.brand span{font:700 15px var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.top nav{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.top nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.top nav a:hover{color:var(--ink)}
+.top .btn{padding:8px 16px;font-size:13px}
+
+/* intro */
+.intro{padding-block:clamp(56px,8vw,96px) 40px}
+.intro h1{font-size:clamp(44px,7vw,92px);margin:10px 0 16px;max-width:14ch}
+.intro p{color:var(--muted);font-size:clamp(17px,1.6vw,20px);max-width:52ch;margin:0}
+
+/* product grid */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding-bottom:clamp(72px,10vw,120px)}
+.tile{position:relative;display:block;aspect-ratio:2/1;max-width:100%;border-radius:14px;overflow:hidden;background:#0d0d0d;text-decoration:none;isolation:isolate}
+.tile .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .5s ease,transform .9s cubic-bezier(.2,.7,.2,1);z-index:0}
+.tile::after{content:"";position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .5s;
+  background:linear-gradient(to top left,rgba(0,0,0,.78) 0%,rgba(0,0,0,.25) 38%,transparent 60%)}
+.tile .logo{position:absolute;z-index:2;top:16px;left:16px;width:clamp(52px,10%,80px);height:auto;border-radius:10px}
+.tile .mark{position:absolute;z-index:2;top:18px;left:20px;font:600 clamp(15px,1.4vw,18px)/1.15 var(--f-display);letter-spacing:-.01em;max-width:45%}
+.tile .mark small{display:block;font:500 12px var(--f-mono);color:var(--muted);letter-spacing:.01em;margin-bottom:6px}
+.tile .pill{position:absolute;z-index:2;top:18px;right:18px;font:500 12px var(--f-mono);padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--ink);border:1px solid rgba(255,255,255,.14)}
+.tile .pill.free{background:#fafafa;color:#000;border-color:#fafafa}
+.tile .desc{position:absolute;z-index:2;right:20px;bottom:18px;max-width:min(60%,380px);text-align:right;opacity:0;transform:translateY(8px);transition:opacity .4s ease .05s,transform .5s ease}
+.tile .desc b{display:block;font:600 18px var(--f-display);letter-spacing:-.01em}
+.tile .desc span{display:block;color:#dcdcdc;font-size:14px;line-height:1.45;margin-top:2px}
+.tile .desc em{font-style:normal;display:inline-block;margin-top:8px;font:500 13px var(--f-mono);border-bottom:1px solid currentColor}
+.tile:hover .bg,.tile:focus-visible .bg,.tile.on .bg{opacity:1;transform:scale(1)}
+.tile:hover::after,.tile:focus-visible::after,.tile.on::after{opacity:1}
+.tile:hover .desc,.tile:focus-visible .desc,.tile.on .desc{opacity:1;transform:none}
+.tile.soon .bg{background:repeating-linear-gradient(135deg,#141414 0 16px,#1a1a1a 16px 32px)}
+.tile.soon:hover .desc em,.tile.soon .desc em{border:0;color:var(--muted)}
+.tile .ph{position:absolute;inset:0;display:grid;place-items:center;z-index:0;font:500 12px var(--f-mono);color:#555;opacity:0;transition:opacity .5s}
+.tile:hover .ph{opacity:1}
+
+/* mission */
+.mission{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:start}
+.mission h2{font-size:clamp(40px,5.4vw,68px);margin:10px 0 0}
+.mission p{font-size:18px;margin:0 0 16px;max-width:58ch}
+.mission p.muted{color:var(--muted);font-size:16px}
+.principles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:28px}
+.principles div{background:#1c1c1c;color:#fafafa;border-radius:14px;padding:18px 20px;min-width:0}
+.principles b{display:block;font:600 18px var(--f-display);letter-spacing:-.01em}
+.principles span{color:#b3b3b3;font-size:14.5px}
+
+/* services */
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:36px}
+.head h2{font-size:clamp(40px,5.4vw,68px);margin:8px 0 0}
+.head p{margin:0;color:var(--muted);max-width:52ch}
+.svc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.svc div{background:var(--panel);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.svc h3{font:600 22px/1.15 var(--f-display);letter-spacing:-.02em;margin:0}
+.svc p{margin:0;color:var(--muted);font-size:15px}
+.contact{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:32px}
+.contact code{font:500 16px var(--f-mono);background:var(--panel);padding:11px 16px;border-radius:999px;user-select:all;overflow-wrap:anywhere}
+
+/* newsletter */
+.news{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end}
+.news h2{font-size:clamp(40px,5.4vw,68px);margin:8px 0 0}
+.news form{display:flex;gap:10px;flex-wrap:wrap}
+.news input{flex:1 1 220px;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:13px 18px;border-radius:999px;font:15px var(--f-body)}
+.news .msg{flex-basis:100%;color:var(--muted);font-size:14px}
+.news p{color:var(--muted);margin:0 0 16px}
+
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:28px 40px;color:var(--muted);font-size:13px}
+footer a{text-decoration:none}footer a:hover{color:var(--ink)}
+.toast{position:fixed;z-index:40;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;transition:.3s;background:#fafafa;color:#000;padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  .grid,.mission,.head,.news{grid-template-columns:1fr}
+  .svc{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .top nav .hide-sm{display:none}
+}
+@media (max-width:520px){.svc,.principles{grid-template-columns:1fr}.tile .desc span{display:none}}
+@media (hover:none){
+  .tile .bg{opacity:.55;transform:none}.tile::after{opacity:1}.tile .desc{opacity:1;transform:none}
+}
+@media (prefers-reduced-motion:reduce){.tile .bg,.tile .desc{transition:opacity .2s}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol></defs></svg>
+
+<header class="top gut">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Michael Kinsey home"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#fafafa"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <nav>
+      <a href="#products" class="hide-sm">Products</a>
+      <a href="#mission" class="hide-sm">Mission</a>
+      <a href="#services">Services</a>
+      <a href="#patreon" class="soon">Patreon</a>
+      <a class="btn primary soon" href="#fab">Fab store</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="gut t-black" id="products">
+    <div class="wrap">
+      <div class="intro">
+        <span class="label">Tools · Unreal Engine 5</span>
+        <h1 class="display">Tools for Unreal Engine</h1>
+        <p>Plugins for terrain, displacement and surfaces. Plugin only, no engine changes, built without Nanite.</p>
+      </div>
+
+      <div class="grid">
+        <a class="tile" href="/ssdm-plus/">
+          <img class="bg" src="ssdm-bg.webp" alt="" loading="lazy">
+          <img class="logo" src="ssdm-logo.webp" width="256" height="256" alt="MK SSDM+">
+          <span class="pill">Fab · New</span>
+          <div class="desc"><b>MK SSDM+</b><span>Screen space displacement and contact shadows that agree with each other.</span><em>View product →</em></div>
+        </a>
+
+        <a class="tile" href="/erosion-brush/">
+          <img class="bg" src="erosion-bg.webp" alt="" loading="lazy">
+          <img class="logo" src="erosion-logo.webp" width="256" height="256" alt="MK Fast Landscape Erosion Brush">
+          <span class="pill">Fab</span>
+          <div class="desc"><b>MK Fast Landscape Erosion Brush</b><span>Instant procedural erosion with painted landscape layers.</span><em>View product →</em></div>
+        </a>
+
+        <a class="tile soon" href="#patreon" data-name="Patreon link">
+          <div class="bg"></div><span class="ph">Image slot</span>
+          <img class="logo" src="tess-logo.webp" width="256" height="256" alt="MK Tessellation Patch">
+          <span class="pill free">Free</span>
+          <div class="desc"><b>MK Tessellation Patch</b><span>A dense, shadow-casting mesh that follows the player. UE 5.6–5.8.</span><em>Download on Patreon →</em></div>
+        </a>
+
+        <a class="tile soon" href="#newsletter">
+          <div class="bg"></div><span class="ph">Image slot</span>
+          <div class="mark"><small>MK</small>Scalable Interaction System</div>
+          <span class="pill">Coming soon</span>
+          <div class="desc"><b>Two-way world interaction</b><span>Trails, ripples and foliage push, plus snow, wetness and mud on characters.</span><em>Get notified →</em></div>
+        </a>
+
+        <a class="tile soon" href="#newsletter">
+          <div class="bg"></div><span class="ph">Image slot</span>
+          <div class="mark"><small>MK</small>World Capture</div>
+          <span class="pill">Coming soon</span>
+          <div class="desc"><b>World height capture</b><span>Height for rain occlusion, water and height-driven effects. Free and full versions.</span><em>Get notified →</em></div>
+        </a>
+
+        <a class="tile soon" href="#newsletter">
+          <div class="bg"></div><span class="ph">Image slot</span>
+          <div class="mark"><small>MK</small>Fast Weather System</div>
+          <span class="pill">Coming soon</span>
+          <div class="desc"><b>Weather and cloudscapes</b><span>Rain, ripples and volumetric clouds that stay fast.</span><em>Get notified →</em></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-white" id="mission">
+    <div class="wrap mission">
+      <div>
+        <span class="label">Mission</span>
+        <h2 class="display">Tools I needed, built to ship</h2>
+      </div>
+      <div>
+        <p>I build these plugins to solve problems I hit in my own projects: terrain that holds up up close, surfaces with real depth, and effects that stay fast on hardware people actually own.</p>
+        <p class="muted">Each tool does one job well, plugs into a normal Unreal project without engine changes, and comes with docs that list every setting. Many start as free releases on Patreon.</p>
+        <div class="principles">
+          <div><b>Plugin only</b><span>No engine source changes, ever.</span></div>
+          <div><b>No Nanite needed</b><span>Works with regular meshes and landscapes.</span></div>
+          <div><b>Performance first</b><span>Measured costs and quality presets.</span></div>
+          <div><b>Documented</b><span>Every setting explained, with defaults.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-dark" id="services">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">Services</span><h2 class="display">Need it in your project?</h2></div>
+        <p>I work with studios to integrate these tools, solve rendering problems and build custom tech. Tell me what you're making.</p>
+      </div>
+      <div class="svc">
+        <div><h3>Integration and support</h3><p>Set up my tools in your project, tuned to your content, with priority support.</p></div>
+        <div><h3>Technical consulting</h3><p>Rendering, terrain and performance reviews for your Unreal project.</p></div>
+        <div><h3>Custom tools</h3><p>Plugins, shaders and material functions built for your pipeline.</p></div>
+        <div><h3>Training</h3><p>Workshops on materials, RVTs and shader workflows for your team.</p></div>
+      </div>
+      <div class="contact">
+        <code id="email">michaelkinsey3d@gmail.com</code>
+        <button class="btn primary" type="button" id="copyBtn">Copy email</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-light" id="newsletter">
+    <div class="wrap news">
+      <div><span class="label">Newsletter</span><h2 class="display">Hear about new tools first</h2></div>
+      <div>
+        <p>Releases, free Patreon drops and tutorials. A few emails a year.</p>
+        <form id="newsForm">
+          <label for="newsEmail" class="label" style="position:absolute;left:-9999px">Email</label>
+          <input type="email" id="newsEmail" placeholder="you@studio.com" required>
+          <button class="btn primary" type="submit">Subscribe</button>
+          <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once a provider is set up.</span>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="gut t-black"><div class="wrap">
+  <span>© 2026 Michael Kinsey</span>
+  <span><a href="/">Home</a> · <a href="/ssdm-plus/">MK SSDM+</a> · <a href="/erosion-brush/">Erosion Brush</a> · <a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a></span>
+</div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const toast=document.getElementById('toast');let tt;
+function say(t){toast.textContent=t;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),1800)}
+document.querySelectorAll('a.soon[href^="#"]:not([href="#newsletter"])').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();say((a.dataset.name||a.textContent.trim())+' coming soon')}));
+/* touch: first tap reveals a tile, second tap opens it */
+const touch=matchMedia('(hover: none)').matches;
+document.querySelectorAll('.tile').forEach(t=>{
+  t.addEventListener('click',e=>{if(touch&&!t.classList.contains('on')){e.preventDefault();document.querySelectorAll('.tile.on').forEach(x=>x.classList.remove('on'));t.classList.add('on')}});
+  const v=t.querySelector('video.bg');if(v&&!touch){t.addEventListener('mouseenter',()=>v.play().catch(()=>{}));t.addEventListener('mouseleave',()=>{v.pause()})}
+});
+document.getElementById('copyBtn').addEventListener('click',async e=>{const t=document.getElementById('email').textContent;
+  try{await navigator.clipboard.writeText(t);e.target.textContent='Copied'}catch{const r=document.createRange();r.selectNodeContents(document.getElementById('email'));const s=getSelection();s.removeAllRanges();s.addRange(r);e.target.textContent='Selected'}
+  setTimeout(()=>e.target.textContent='Copy email',1800)});
+document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('newsMsg').hidden=false});
+</script>
+</body>
+</html>

@@ -6,14 +6,14 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <title>MK SSDM+ Docs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
 <style>
 /* Docs layout shared with the erosion docs: brand header, left page nav, reading column,
    filterable console-variable reference. Amber accent for SSDM+. Single dark theme. */
 :root{
   color-scheme:dark;
-  --bg:#0b0c0e; --panel:#16181c; --ink:#edeef0; --muted:#8b9099; --line:#2a2d33;
-  --accent:#5b84ff; --accent-ink:#060a1a; --warn:#e8a23a;
+  --bg:#000000; --panel:#1c1c1c; --ink:#fafafa; --muted:#8f8f8f; --line:#2e2e2e;
+  --accent:#ffffff; --accent-ink:#000000; --warn:#e8a23a;
   --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -29,7 +29,7 @@ a{color:var(--accent)}
 .label{font:500 11.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(11,12,14,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
 .brand svg{height:22px;width:auto}
@@ -88,7 +88,7 @@ tr:last-child td{border-bottom:0}
 .cv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:14px 0;border-bottom:1px solid var(--line)}
 .cv code{background:none;border:0;padding:0;color:var(--ink);font-size:13.5px}
 .cv .def{font:500 12.5px var(--f-mono);color:var(--accent);white-space:nowrap}
-.cv p{grid-column:1/-1;margin:0;color:#c4c8cf;font-size:15px}
+.cv p{grid-column:1/-1;margin:0;color:#dcdcdc;font-size:15px}
 .empty{color:var(--muted);padding:14px 0}
 
 footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:24px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
@@ -102,6 +102,51 @@ footer a{color:var(--muted)}
   .top nav .hide-sm{display:none}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* --- clean modern layer: colour-block sections, Geist type, softer details --- */
+:root{--f-display:"Geist","Segoe UI",system-ui,sans-serif;--f-body:"Geist","Segoe UI",system-ui,sans-serif;--f-mono:"Geist Mono",ui-monospace,Consolas,monospace}
+body{font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+.display{font-family:var(--f-display)!important;font-stretch:normal!important;font-weight:600!important;text-transform:none!important;letter-spacing:-.035em!important;line-height:1.02!important}
+.label{text-transform:none;letter-spacing:.01em;font-size:13px}
+.btn{border-radius:999px}
+.t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink);border-top:0!important}
+.t-black{--bg:#000000;--panel:#1c1c1c;--panel-2:#262626;--ink:#fafafa;--muted:#8f8f8f;--line:#2e2e2e;--accent:#ffffff;--accent-ink:#000000;--ph:#444444}
+.t-dark{--bg:#1c1c1c;--panel:#262626;--panel-2:#2e2e2e;--ink:#fafafa;--muted:#a3a3a3;--line:#3a3a3a;--accent:#ffffff;--accent-ink:#000000;--ph:#4d4d4d}
+.t-light{--bg:#dcdcdc;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#4a4a4a;--line:#bdbdbd;--accent:#000000;--accent-ink:#ffffff;--ph:#9e9e9e}
+.t-white{--bg:#fafafa;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#5a5a5a;--line:#dcdcdc;--accent:#000000;--accent-ink:#ffffff;--ph:#bdbdbd}
+.t-light .no,.t-white .no{color:#9a5200!important;border-color:#9a5200!important}
+section.block{padding-block:clamp(72px,10vw,128px)}
+.media,.ba,.banner img,.cta-logo,.card,.diagram,.mode,.rcol,.step{border-radius:14px}
+.banner img,.cta-logo,.ba{overflow:hidden}
+.modes,.steps{border-radius:14px;overflow:hidden}
+.head h2{font-size:clamp(40px,5.4vw,68px)}
+table{color:inherit;font:inherit}
+.hl b{font-family:var(--f-display);font-stretch:normal;text-transform:none;font-weight:600;letter-spacing:-.02em;font-size:20px}
+/* docs: black header band + off-white reading band */
+.docs-hero{padding-block:clamp(48px,7vw,88px)}
+.docs-hero .wrap{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.docs-hero .intro h1{margin:8px 0 12px}
+.docs-hero .intro p{color:var(--muted)}
+.docs-logo{width:96px;height:96px;border-radius:16px;flex:0 0 auto}
+.layout section h2{border-top-color:var(--line)}
+.t-white .note{background:var(--panel)}
+.t-white .note.warn{border-left-color:#9a5200}.t-white .note.warn b{color:#9a5200}
+.t-white ul.check li.no::before{border-color:#9a5200;background:linear-gradient(45deg,transparent 45%,#9a5200 45% 55%,transparent 55%)}
+.t-white dl.ref dd,.t-white .cv p,.t-white .pin span{color:#3a3a3a}
+.t-white .side a.on{border-left-color:var(--ink)}
+.t-white .video{background:repeating-linear-gradient(135deg,var(--panel) 0 14px,var(--panel-2) 14px 28px);color:var(--muted)}
+.t-white table,.t-white .scroll{border-radius:12px}
+.t-white ul.check li{border-radius:10px}
+.t-white .note{border-radius:0 10px 10px 0}
+/* docs: alternate section bands, full width behind the sidebar */
+.layout{padding-block:0!important}
+.side{z-index:1;padding-top:40px}
+@media (max-width:900px){.side{position:relative;margin-top:24px;padding-top:12px}}
+.layout article>section{position:relative;padding-block:56px!important;background:var(--sbg);box-shadow:0 0 0 100vmax var(--sbg);clip-path:inset(0 -100vmax)}
+.layout article>section:nth-of-type(odd){--sbg:#fafafa}
+.layout article>section:nth-of-type(even){--sbg:#e4e4e4;--panel:#f2f2f2;--panel-2:#ebebeb;--line:#c8c8c8;--muted:#4a4a4a}
+.layout article>section h2{border-top:0!important;padding-top:0!important}
+.layout article>section:last-child{padding-bottom:88px!important}
 </style>
 </head>
 <body>
@@ -109,7 +154,7 @@ footer a{color:var(--muted)}
 
 <header class="top gut">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Back to the product page"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#edeef0"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <a class="brand" href="/" aria-label="Back to the product page"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#fafafa"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
     <nav>
       <a href="../">← Product</a>
       <a href="./" aria-current="page">Docs</a>
@@ -118,7 +163,17 @@ footer a{color:var(--muted)}
   </div>
 </header>
 
-<div class="gut"><div class="wrap layout">
+<section class="docs-hero gut t-black" id="overview"><div class="wrap">
+      <img class="docs-logo" src="../logo.webp" width="96" height="96" alt="MK SSDM+ logo">
+      <div class="intro">
+      <span class="label">MK SSDM+ · Documentation</span>
+      <h1 class="display">SSDM+ docs</h1>
+      <p>Screen space displacement and height-aware contact shadows for Unreal Engine. Materials write a height through the <code>MK_SSDM_Height</code> node, a custom mesh pass collects it into one height buffer, and both effects read from that buffer.</p>
+      <div class="meta"><span>v0.1</span><span>UE 5.8</span><span>Win64</span><span class="no">Nanite not supported</span></div>
+    </div>
+</div></section>
+
+<div class="gut t-white"><div class="wrap layout">
   <aside class="side" aria-label="On this page">
     <span class="label">Docs</span>
     <ol id="toc">
@@ -136,13 +191,6 @@ footer a{color:var(--muted)}
   </aside>
 
   <article>
-    <div class="intro" id="overview">
-      <span class="label">MK SSDM+ · Documentation</span>
-      <h1 class="display">SSDM+ docs</h1>
-      <p>Screen space displacement and height-aware contact shadows for Unreal Engine. Materials write a height through the <code>MK_SSDM_Height</code> node, a custom mesh pass collects it into one height buffer, and both effects read from that buffer.</p>
-      <div class="meta"><span>v0.1</span><span>UE 5.8</span><span>Win64</span><span class="no">Nanite not supported</span></div>
-    </div>
-
     <section id="requirements">
       <h2 class="display">Requirements</h2>
       <ul class="check">
