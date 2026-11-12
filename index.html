@@ -21,9 +21,9 @@ img{max-width:100%}
 :root{
   color-scheme:dark;
   --bg:#000000; --panel:#333333; --ink:#f9f9f9; --muted:#a7a7a7; --line:#333333;
-  --c-port:#333333; --a-port:#f3701e;
-  --c-fab:#3d3d3d;  --a-fab:#f3701e;
-  --c-tut:#333333; --a-tut:#f3701e;
+  --c-port:#333333; --a-port:#e85002;
+  --c-fab:#3d3d3d;  --a-fab:#e85002;
+  --c-tut:#333333; --a-tut:#e85002;
   --f-display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --f-body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
@@ -169,10 +169,10 @@ body{font-family:var(--f-body);-webkit-font-smoothing:antialiased}
 .label{text-transform:none;letter-spacing:.01em;font-size:13px}
 .btn{border-radius:999px}
 .t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink);border-top:0!important}
-.t-black{--bg:#000000;--panel:#333333;--panel-2:#3d3d3d;--ink:#f9f9f9;--muted:#a7a7a7;--line:#333333;--accent:#f3701e;--accent-ink:#000000;--ph:#646464}
-.t-dark{--bg:#333333;--panel:#3d3d3d;--panel-2:#333333;--ink:#f9f9f9;--muted:#a7a7a7;--line:#4d4d4d;--accent:#f3701e;--accent-ink:#000000;--ph:#4d4d4d}
-.t-light{--bg:#a7a7a7;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#333333;--line:#8a8a8a;--accent:#f3701e;--accent-ink:#000000;--ph:#9e9e9e}
-.t-white{--bg:#f9f9f9;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#646464;--line:#a7a7a7;--accent:#f3701e;--accent-ink:#000000;--ph:#8a8a8a}
+.t-black{--bg:#000000;--panel:#333333;--panel-2:#3d3d3d;--ink:#f9f9f9;--muted:#a7a7a7;--line:#333333;--accent:#e85002;--accent-ink:#000000;--ph:#646464}
+.t-dark{--bg:#333333;--panel:#3d3d3d;--panel-2:#333333;--ink:#f9f9f9;--muted:#a7a7a7;--line:#4d4d4d;--accent:#e85002;--accent-ink:#000000;--ph:#4d4d4d}
+.t-light{--bg:#a7a7a7;--panel:#ececec;--panel-2:#e2e2e2;--ink:#000000;--muted:#333333;--line:#8a8a8a;--accent:#e85002;--accent-ink:#000000;--ph:#9e9e9e}
+.t-white{--bg:#f9f9f9;--panel:#f0f0f0;--panel-2:#e8e8e8;--ink:#000000;--muted:#646464;--line:#a7a7a7;--accent:#e85002;--accent-ink:#000000;--ph:#8a8a8a}
 .t-light .no,.t-white .no{color:#b3261e!important;border-color:#b3261e!important}
 section.block{padding-block:clamp(72px,10vw,128px)}
 .media,.ba,.banner img,.cta-logo,.card,.diagram,.mode,.rcol,.step{border-radius:14px}
@@ -186,30 +186,6 @@ table{color:inherit;font:inherit}
 .t-grad .svc{background:rgba(0,0,0,.45);border-left-color:#f9f9f9}
 .t-grad .btn.fab{background:#f9f9f9;border-color:#f9f9f9;color:#000}
 .t-grad .svc .label{color:#d9c3ab!important}
-/* --- retro palette: near-black, cream, slate blue, orange --- */
-:root{--bg:#161616;--panel:#222222;--panel-2:#2a2a2a;--ink:#e8d8c9;--muted:#a89a8c;--line:#2e2b28;--accent:#f3701e;--accent-ink:#161616;--ph:#4a443e;
-  --c-port:#161616;--c-fab:#4b607f;--c-tut:#1f1f1f;--a-port:#f3701e;--a-fab:#f3701e;--a-tut:#f3701e}
-body{background:#161616;color:#e8d8c9}
-.t-black{--bg:#161616;--panel:#222222;--panel-2:#2a2a2a;--ink:#e8d8c9;--muted:#a89a8c;--line:#2e2b28;--accent:#f3701e;--accent-ink:#161616;--ph:#4a443e}
-.t-dark{--bg:#4b607f;--panel:#3f516c;--panel-2:#45587a;--ink:#f4ece4;--muted:#cdd5e0;--line:#5d7293;--accent:#f3701e;--accent-ink:#161616;--ph:#6a7fa0}
-.t-light{--bg:#d9c8b7;--panel:#e8d8c9;--panel-2:#e1cfbf;--ink:#161616;--muted:#4b4038;--line:#bfae9d;--accent:#f3701e;--accent-ink:#161616;--ph:#b09e8c}
-.t-white{--bg:#e8d8c9;--panel:#f2e8de;--panel-2:#eadccf;--ink:#161616;--muted:#5a4e44;--line:#cdbcab;--accent:#f3701e;--accent-ink:#161616;--ph:#bfae9d}
-.t-grad{background:linear-gradient(120deg,#161616 0%,#161616 38%,#4b607f 78%,#f3701e 118%)!important;--muted:#cdd5e0}
-.top{background:rgba(22,22,22,.9)!important;border-bottom-color:#2a2a2a!important}
-body::before{background:#161616!important}
-.mode,.step{background:#161616!important;color:#e8d8c9!important}
-.mode p,.step p{color:#a89a8c!important}
-.mode .sw i{background:#3a3530!important}.mode .sw i.on{background:#f3701e!important}
-.step::before{color:#f3701e!important}
-.principles div{background:#4b607f!important;color:#f4ece4!important}.principles span{color:#cdd5e0!important}
-.side{background:#f2e8de!important}
-.side a{color:#4b4038!important}.side a:hover{background:#e8d8c9!important;color:#161616!important}
-.layout article>section:nth-of-type(odd){--sbg:#e8d8c9}
-.layout article>section:nth-of-type(even){--sbg:#dccbbb;--panel:#eadccf;--panel-2:#e3d3c4;--line:#c4b3a2;--muted:#4b4038}
-.t-white dl.ref dd,.t-white .cv p,.t-white .pin span{color:#3a322c}
-.tile{background:#1f1f1f!important}
-.tile .pill.free{background:#e8d8c9!important;color:#161616!important;border-color:#e8d8c9!important}
-.docs-hero{background:#161616}
 </style>
 </head>
 <body>
@@ -388,18 +364,18 @@ function drawNodes(now){
     const px=x+w,py=y+h/2,d=Math.hypot(nx-px,ny-py),near=Math.max(0,1-d/(nc.width*.75));
     const tx=nx-ow/2,ty=ny;
     const cx=Math.max(40,Math.abs(tx-px)*.5);
-    nctx.strokeStyle=`rgba(243,112,30,${.15+near*.75})`;nctx.lineWidth=1.5;
+    nctx.strokeStyle=`rgba(232,80,2,${.15+near*.75})`;nctx.lineWidth=1.5;
     nctx.beginPath();nctx.moveTo(px,py);nctx.bezierCurveTo(px+cx,py,tx-cx,ty,tx,ty);nctx.stroke();
     nctx.fillStyle=`rgba(0,0,0,${.6+near*.3})`;nctx.fillRect(x,y,w,h);
-    nctx.strokeStyle=`rgba(243,112,30,${.25+near*.6})`;nctx.lineWidth=1;nctx.strokeRect(x+.5,y+.5,w,h);
-    nctx.fillStyle=`rgba(243,112,30,${.25+near*.6})`;nctx.fillRect(x,y,w,4);
+    nctx.strokeStyle=`rgba(232,80,2,${.25+near*.6})`;nctx.lineWidth=1;nctx.strokeRect(x+.5,y+.5,w,h);
+    nctx.fillStyle=`rgba(232,80,2,${.25+near*.6})`;nctx.fillRect(x,y,w,4);
     nctx.fillStyle=`rgba(243,241,236,${.45+near*.55})`;nctx.fillText(name,x+10,y+20);
-    nctx.beginPath();nctx.arc(px,py,3.5,0,7);nctx.fillStyle='#f3701e';nctx.fill();
+    nctx.beginPath();nctx.arc(px,py,3.5,0,7);nctx.fillStyle='#e85002';nctx.fill();
   });
   nctx.fillStyle='rgba(0,0,0,.92)';nctx.fillRect(nx-ow/2,ny-oh/2,ow,oh);
-  nctx.strokeStyle='#f3701e';nctx.lineWidth=1.5;nctx.strokeRect(nx-ow/2+.5,ny-oh/2+.5,ow,oh);
+  nctx.strokeStyle='#e85002';nctx.lineWidth=1.5;nctx.strokeRect(nx-ow/2+.5,ny-oh/2+.5,ow,oh);
   nctx.fillStyle='#f9f9f9';nctx.fillText('Material Output',nx-ow/2+12,ny+4);
-  nctx.beginPath();nctx.arc(nx-ow/2,ny,4,0,7);nctx.fillStyle='#f3701e';nctx.fill();
+  nctx.beginPath();nctx.arc(nx-ow/2,ny,4,0,7);nctx.fillStyle='#e85002';nctx.fill();
   if(tut.classList.contains('active')&&!reduce)nRaf=requestAnimationFrame(drawNodes);
 }
 tut.addEventListener('pointermove',e=>{const r=tut.getBoundingClientRect();nx=e.clientX-r.left;ny=e.clientY-r.top;if(!nRaf)nRaf=requestAnimationFrame(drawNodes)});
@@ -418,7 +394,7 @@ function buildContour(){ // contour map sized to the widest the column gets (hal
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)f[y*W+x]=fbm(x/90,y/90);
   const off=document.createElement('canvas');off.width=cw;off.height=ch;const o=off.getContext('2d');
   o.fillStyle='rgba(0,0,0,.85)';o.fillRect(0,0,cw,ch);
-  o.strokeStyle='#f3701e';o.lineWidth=1;o.beginPath();
+  o.strokeStyle='#e85002';o.lineWidth=1;o.beginPath();
   for(let lv=1;lv<16;lv++){const L=lv/16;
     for(let y=0;y<H-1;y++)for(let x=0;x<W-1;x++){
       const a=f[y*W+x],b=f[y*W+x+1],c=f[(y+1)*W+x+1],d=f[(y+1)*W+x];
@@ -428,7 +404,7 @@ function buildContour(){ // contour map sized to the widest the column gets (hal
       for(let s=0;s<sg.length;s+=2){o.moveTo(e[sg[s]][0]*3,e[sg[s]][1]*3);o.lineTo(e[sg[s+1]][0]*3,e[sg[s+1]][1]*3)}}}
   o.stroke();
   // faint grid, like a debug view
-  o.strokeStyle='rgba(243,112,30,.18)';o.beginPath();for(let x=0;x<cw;x+=48){o.moveTo(x,0);o.lineTo(x,ch)}for(let y=0;y<ch;y+=48){o.moveTo(0,y);o.lineTo(cw,y)}o.stroke();
+  o.strokeStyle='rgba(232,80,2,.18)';o.beginPath();for(let x=0;x<cw;x+=48){o.moveTo(x,0);o.lineTo(x,ch)}for(let y=0;y<ch;y+=48){o.moveTo(0,y);o.lineTo(cw,y)}o.stroke();
   contour=off;
 }
 let lx=-999,ly=-999,raf=0;
@@ -438,8 +414,8 @@ function drawLens(){raf=0;
   lctx.clearRect(0,0,lens.width,lens.height);if(!contour||lx<-900)return;
   const R=Math.min(150,r.width*.28);
   lctx.save();lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.clip();lctx.drawImage(contour,0,0);lctx.restore();
-  lctx.strokeStyle='#f3701e';lctx.lineWidth=1.5;lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.stroke();
-  lctx.fillStyle='#f3701e';lctx.font='500 11px "JetBrains Mono", monospace';lctx.fillText('BUFFER VIS · HEIGHT',lx-R+6,ly+R+18);
+  lctx.strokeStyle='#e85002';lctx.lineWidth=1.5;lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.stroke();
+  lctx.fillStyle='#e85002';lctx.font='500 11px "JetBrains Mono", monospace';lctx.fillText('BUFFER VIS · HEIGHT',lx-R+6,ly+R+18);
 }
 port.addEventListener('pointermove',e=>{const r=port.getBoundingClientRect();lx=e.clientX-r.left;ly=e.clientY-r.top;if(!raf)raf=requestAnimationFrame(drawLens)});
 port.addEventListener('pointerleave',()=>{lx=-999;drawLens()});
