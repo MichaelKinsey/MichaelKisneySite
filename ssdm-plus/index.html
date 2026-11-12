@@ -443,7 +443,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 const FEATS=[
  ["Displacement","One node, real depth","Wire your height in centimetres into the MK_SSDM_Height node. The surface displaces in screen space on regular meshes and landscapes, with no tessellation. An optional direction pin overrides the vertex normal.","Material graph with MK_SSDM_Height, then the displaced surface in the viewport. 8 s.","one-node"],
  ["Temporal","Stable under TAA and TSR","Displaced depth and velocity are written back, including camera parallax on moving and skinned objects, so temporal anti-aliasing reprojects the displaced surface instead of smearing it.","Camera dolly with TSR on, displaced surface staying sharp. 8 s.","temporal"],
- ["Clean edges","No tearing, no seams","Silhouette fade, crease smoothing on hard edges and an occlusion ramp around buried meshes keep displaced surfaces attached where they meet other geometry.","Character walking over a displaced floor, edges staying clean. 8 s."],
+ ["Clean edges","No tearing, no seams","Silhouette fade, crease smoothing on hard edges and an occlusion ramp around buried meshes keep displaced surfaces attached where they meet other geometry.","Character walking over a displaced floor, edges staying clean. 8 s.","edges"],
  ["Decals","Decals with height","Deferred and mesh decals with the node write their height too, replacing the surface height inside the decal.","Footprint or crack decal placed on a displaced floor, shadows updating. 6 s.","decals"],
  ["Scalable","Low to Epic in one setting","One quality preset sets resolution, filtering, smoothing and shadow steps together, and follows your project's scalability levels.","Switching r.MKSSDMPlus.Quality 0 to 3 with stat gpu visible. 10 s."]
 ];
