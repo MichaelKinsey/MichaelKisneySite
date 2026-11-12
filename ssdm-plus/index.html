@@ -235,6 +235,11 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
 .media.vid{padding:0;border:0;background:#000;overflow:hidden}
 .media.vid video{width:100%;height:100%;object-fit:cover;display:block}
+
+.btn.pending{cursor:default}
+.btn.pending::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.75;animation:pend 1.6s ease-in-out infinite}
+@keyframes pend{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.btn.pending::before{animation:none}}
 </style>
 </head>
 <body>
@@ -249,7 +254,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <a href="#how" class="hide-sm">How it works</a>
       <a href="#specs" class="hide-sm">Specs</a>
       <a href="docs/">Docs</a>
-      <a class="btn primary" href="#buy">Get it on Fab</a>
+      <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
     </nav>
   </div>
 </header>
@@ -265,7 +270,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           <div class="mini"><img class="mini-logo" src="logo.webp" width="56" height="56" alt="MK SSDM+ logo"><span class="label">Unreal Engine plugin · Screen space</span></div>
           <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
           <div class="ctas">
-            <a class="btn primary" href="#buy">Get it on Fab →</a>
+            <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
             <a class="btn" href="#compare">See it on / off</a>
           </div>
         </div>
@@ -414,14 +419,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   <section class="block gut t-grad" id="buy">
     <div class="wrap cta">
       <div class="cta-text">
-      <span class="label">Available on Fab</span>
+      <span class="label">Coming to Fab</span>
       <h2 class="display">Get MK SSDM<span style="color:var(--accent)">+</span></h2>
       <div class="prices">
         <div><span class="label">Personal</span><b>$25.99</b><small>USD · Fab Personal licence</small></div>
         <div><span class="label">Professional</span><b>$99.99</b><small>USD · Fab Professional licence</small></div>
       </div>
       <div class="ctas">
-        <a class="btn primary" href="#buy">Get it on Fab →</a>
+        <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
         <a class="btn" href="docs/">Read the docs</a>
       </div>
       <form class="news" id="newsForm">
