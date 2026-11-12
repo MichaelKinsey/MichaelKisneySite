@@ -314,6 +314,13 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   .col h2,.col:not(.active) h2,.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(26px,7.8vw,42px);white-space:normal}
   .col .head{right:18px}
 }
+
+/* Tutorials column: looping background clip */
+.tvid{position:absolute;inset:0;z-index:0;background:#000}
+.tvid video{width:100%;height:100%;object-fit:cover;display:block}
+.tvid::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.3) 40%,rgba(0,0,0,.35) 65%,rgba(0,0,0,.85) 100%)}
+.col.tut .num,.col.tut .sub p{text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.col.tut .enter{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
 </style>
 </head>
 <body>
@@ -365,7 +372,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
     </a>
 
     <a class="col tut" id="c-tut" href="/tutorials/">
-      <div class="pan"></div>
+      <div class="tvid" aria-hidden="true"><video id="tutVid" src="assets/tut-clips/tutorials.mp4" poster="assets/tut-clips/tutorials.webp" muted loop playsinline preload="none"></video></div>
       <canvas class="fx" id="nodes"></canvas>
       <div class="shade"></div>
       <div class="head">
@@ -545,6 +552,11 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
   addEventListener('load',()=>{vs[1].preload='auto';play(vs[0])});
   document.addEventListener('visibilitychange',()=>{document.hidden?vs[i].pause():play(vs[i])});
  }}
+
+/* Tutorials column clip: start after the page loads, pause when hidden */
+{const v=document.getElementById('tutVid');if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  addEventListener('load',()=>{v.preload='auto';v.play().catch(()=>{})});
+  document.addEventListener('visibilitychange',()=>{document.hidden?v.pause():v.play().catch(()=>{})})}}
 </script>
 </body>
 </html>
