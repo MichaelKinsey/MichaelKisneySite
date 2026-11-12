@@ -245,6 +245,12 @@ table{color:inherit;font:inherit}
 .col.fab.active .tilt img{opacity:.38}
 footer .fl{display:inline-flex;align-items:center;gap:12px}
 footer .fmk{height:22px;width:auto;display:block;opacity:.9}
+
+/* Personal Portfolio: stacked when collapsed, one line when expanded */
+.col.port h2 span{display:block}
+.col.port.active h2{font-size:clamp(34px,8.6cqi,96px)}
+.col.port.active h2 span{display:inline}
+@media (max-width:720px){.col.port h2 span{display:inline}.col.port.active h2{font-size:clamp(40px,12vw,64px)}}
 </style>
 </head>
 <body>
@@ -278,7 +284,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <div class="shade"></div>
       <div class="head">
         <span class="num">01 · ArtStation</span>
-        <h2 class="display">Portfolio</h2>
+        <h2 class="display"><span>Personal</span> <span>Portfolio</span></h2>
         <div class="sub"><p>Expertise in real time Technical and Art pipelines, Optimization and Tool Creation.</p><span class="enter">Enter →</span></div>
       </div>
       <div class="studios"><span class="label">Studios I've worked with</span><div><img src="assets/studios/bluedot.webp" alt="Blue Dot Games" title="Blue Dot Games" width="30" height="30" loading="lazy"><img src="assets/studios/thatsnomoon.webp" alt="That's No Moon" title="That's No Moon" width="30" height="30" loading="lazy"><img src="assets/studios/counterplay.webp" alt="Counterplay Games" title="Counterplay Games" width="24" height="30" loading="lazy"><img src="assets/studios/sierra.webp" alt="Sierra Division" title="Sierra Division" width="26" height="30" loading="lazy"><img src="assets/studios/sentient.webp" alt="Sentient Arts" title="Sentient Arts" width="32" height="30" loading="lazy"><img src="assets/studios/blackmatter.webp" alt="Black Matter" title="Black Matter" width="30" height="30" loading="lazy"><img src="assets/studios/nextgen.webp" alt="Next-Gen Dreams" title="Next-Gen Dreams" width="53" height="30" loading="lazy"><img src="assets/studios/darewise.webp" alt="Darewise Entertainment" title="Darewise Entertainment" class="wide" width="118" height="16" loading="lazy"><img src="assets/studios/artstation.webp" alt="ArtStation" title="ArtStation" width="34" height="30" loading="lazy"><img src="assets/studios/dekogon.webp" alt="Dekogon Studios" title="Dekogon Studios" class="wide" width="59" height="16" loading="lazy"></div></div>
