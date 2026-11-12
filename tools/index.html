@@ -194,7 +194,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         </a>
 
         <a class="tile" href="/erosion-brush/">
-          <img class="bg" src="erosion-bg.webp" alt="" loading="lazy">
+          <video class="bg" src="erosion-clip.mp4" poster="erosion-clip.webp" muted loop playsinline preload="metadata" aria-hidden="true"></video>
           <img class="logo" src="erosion-logo.webp" width="256" height="256" alt="MK Fast Landscape Erosion Brush">
           <div class="tags"><span class="plat" title="Unreal Engine"><img src="/assets/platforms/unreal-icon.webp" alt="Unreal Engine" width="24" height="24"></span><span class="pill">Fab</span></div>
           <div class="desc"><b>MK Fast Landscape Erosion Brush</b><span>Instant procedural erosion with painted landscape layers.</span><em>View product →</em></div>
@@ -300,6 +300,10 @@ document.getElementById('copyBtn').addEventListener('click',async e=>{const t=do
   try{await navigator.clipboard.writeText(t);e.target.textContent='Copied'}catch{const r=document.createRange();r.selectNodeContents(document.getElementById('email'));const s=getSelection();s.removeAllRanges();s.addRange(r);e.target.textContent='Selected'}
   setTimeout(()=>e.target.textContent='Copy email',1800)});
 document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('newsMsg').hidden=false});
+
+/* touch: play a tile's clip once it has been revealed */
+document.querySelectorAll('.tile').forEach(t=>{const v=t.querySelector('video.bg');if(!v||!touch)return;
+  new MutationObserver(()=>{t.classList.contains('on')?v.play().catch(()=>{}):v.pause()}).observe(t,{attributes:true,attributeFilter:['class']})});
 </script>
 </body>
 </html>
