@@ -118,7 +118,6 @@ section.block{padding-block:88px;border-top:1px solid var(--line)}
 .hl div{background:var(--bg);padding:18px;min-width:0}
 .hl b{display:block;font:800 26px var(--f-display);font-stretch:72%;text-transform:uppercase;line-height:1}
 .hl small{color:var(--muted);font-size:13.5px}
-.hl small a{color:var(--ink)}
 .links{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px}
 .links a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
 .links a:hover{color:var(--ink)}
@@ -212,6 +211,17 @@ table{color:inherit;font:inherit}
 .col.port .num{text-shadow:0 1px 8px rgba(0,0,0,.8)}
 .col.port .enter{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
 .col.port .sub p{text-shadow:0 1px 10px rgba(0,0,0,.7)}
+
+/* about: linked grid + photo line */
+.about .lede{margin:18px 0 0;font-size:19px;color:var(--muted);max-width:28ch}
+.hl a{display:flex;flex-direction:column;gap:6px;background:var(--bg);padding:18px 18px 16px;min-width:0;text-decoration:none;color:var(--ink);position:relative;transition:background .25s}
+.hl a small{color:var(--muted);font-size:13.5px;line-height:1.45}
+.hl a i{font-style:normal;color:var(--accent);margin-top:auto;padding-top:6px;transition:transform .25s}
+.hl a:hover{background:var(--panel)}
+.hl a:hover i{transform:translateX(4px)}
+.photo-line{display:inline-flex;gap:8px;margin-top:24px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px;font-size:16px}
+.photo-line i{font-style:normal;color:var(--accent);transition:transform .25s}
+.photo-line:hover{border-color:var(--accent)}.photo-line:hover i{transform:translateX(4px)}
 </style>
 </head>
 <body>
@@ -286,18 +296,19 @@ table{color:inherit;font:inherit}
     <div class="wrap about">
       <div>
         <span class="label">About</span>
-        <h2 class="display">Tools I needed, built properly</h2>
+        <h2 class="display">Tech Art Tools and Services</h2>
+        <p class="lede">Built off years of experience, on many productions.</p>
       </div>
       <div>
-        <p>I'm Michael Kinsey, a technical artist working across the Unreal Engine 5 rendering stack. I build terrain, water and surface systems that hold up up close and cast real shadows, without relying on Nanite.</p>
-        <p class="muted">I prefer building systems myself to understand them, then turning what works into tools other teams can use. Many of them are free. Away from the engine I shoot wildlife, street and travel photography.</p>
+        <p>I'm a 31 year old self taught artist / tech artist / programmer, with a passion for bringing 3D worlds to life.</p>
+        <p class="muted">In my 12+ years in the games industry I have worn many hats. Building off this experience I build tools and pipelines for productions focusing on tech art and rendering.</p>
         <div class="stack"><span>C++</span><span>HLSL / USF</span><span>RVT</span><span>Niagara</span><span>Materials</span><span>Blueprint</span></div>
         <div class="hl">
-          <div><b>On Fab</b><small><a href="/erosion-brush/">MK Fast Landscape Erosion Brush</a> and <a href="/ssdm-plus/">MK SSDM+</a></small></div>
-          <div><b>Free</b><small>MK Tessellation Patch and shader functions on Patreon</small></div>
-          <div><b>Tutorials</b><small>Shader breakdowns on YouTube</small></div>
+          <a href="/tools/"><b>On Fab</b><small>Tools and systems for your games.</small><i>→</i></a>
+          <a href="#patreon" class="soon"><b>Free</b><small>Breakdowns, free tools and my growing material function library.</small><i>→</i></a>
+          <a href="#tutorials" class="soon"><b>Tutorials</b><small>Shader tutorials, Unreal tips and more.</small><i>→</i></a>
         </div>
-        <div class="links"><a href="#patreon" class="soon">Patreon</a><a href="#youtube" class="soon">YouTube</a><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a><a href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">Photography</a></div>
+        <a class="photo-line" href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">I also do photography to get out and see the world. <i>→</i></a>
       </div>
     </div>
   </section>
