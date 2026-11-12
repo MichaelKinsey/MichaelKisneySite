@@ -316,7 +316,8 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 }
 
 /* Tutorials column: looping background clip */
-.tvid{position:absolute;inset:0;z-index:0;background:#000}
+.tvid{position:absolute;inset:-7%;z-index:0;background:#000;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.col.tut{background:#000}
 .tvid video{width:100%;height:100%;object-fit:cover;display:block}
 .tvid::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.3) 40%,rgba(0,0,0,.35) 65%,rgba(0,0,0,.85) 100%)}
 .col.tut .num,.col.tut .sub p{text-shadow:0 1px 10px rgba(0,0,0,.8)}
@@ -373,7 +374,6 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
     <a class="col tut" id="c-tut" href="/tutorials/">
       <div class="tvid" aria-hidden="true"><video id="tutVid" src="assets/tut-clips/tutorials.mp4" poster="assets/tut-clips/tutorials.webp" muted loop playsinline preload="none"></video></div>
-      <canvas class="fx" id="nodes"></canvas>
       <div class="shade"></div>
       <div class="head">
         <span class="num">03 · YouTube · Patreon</span>
@@ -481,40 +481,13 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
   fab.addEventListener('pointerleave',()=>{vids.style.setProperty('--ry','0deg');vids.style.setProperty('--rx','0deg')});
 }
 
-/* Tutorials: material nodes wire themselves to the cursor */
-const tut=document.getElementById('c-tut'),nc=document.getElementById('nodes'),nctx=nc.getContext('2d');
-const NODES=[[.08,.50,'TextureSample'],[.60,.48,'WorldPosition'],[.14,.66,'Multiply'],[.68,.64,'Lerp'],[.06,.82,'Normalize'],[.58,.82,'SphereMask']];
-let nx=-999,ny=-999,nRaf=0,nT0=performance.now();
-function drawNodes(now){
-  nRaf=0;const r=tut.getBoundingClientRect();
-  if(nc.width!==Math.round(r.width)||nc.height!==Math.round(r.height)){nc.width=Math.round(r.width);nc.height=Math.round(r.height)}
-  nctx.clearRect(0,0,nc.width,nc.height);if(nx<-900)return;
-  const t=((now||performance.now())-nT0)/1000;
-  nctx.font='500 11px "JetBrains Mono", monospace';
-  // output node at cursor
-  const ow=118,oh=40;
-  NODES.forEach(([fx,fy,name],i)=>{
-    const x=fx*nc.width+Math.sin(t*.6+i)*6,y=fy*nc.height+Math.cos(t*.5+i*1.7)*6;
-    const w=nctx.measureText(name).width+28,h=30;
-    const px=x+w,py=y+h/2,d=Math.hypot(nx-px,ny-py),near=Math.max(0,1-d/(nc.width*.75));
-    const tx=nx-ow/2,ty=ny;
-    const cx=Math.max(40,Math.abs(tx-px)*.5);
-    nctx.strokeStyle=`rgba(232,80,2,${.15+near*.75})`;nctx.lineWidth=1.5;
-    nctx.beginPath();nctx.moveTo(px,py);nctx.bezierCurveTo(px+cx,py,tx-cx,ty,tx,ty);nctx.stroke();
-    nctx.fillStyle=`rgba(0,0,0,${.6+near*.3})`;nctx.fillRect(x,y,w,h);
-    nctx.strokeStyle=`rgba(232,80,2,${.25+near*.6})`;nctx.lineWidth=1;nctx.strokeRect(x+.5,y+.5,w,h);
-    nctx.fillStyle=`rgba(232,80,2,${.25+near*.6})`;nctx.fillRect(x,y,w,4);
-    nctx.fillStyle=`rgba(243,241,236,${.45+near*.55})`;nctx.fillText(name,x+10,y+20);
-    nctx.beginPath();nctx.arc(px,py,3.5,0,7);nctx.fillStyle='#e85002';nctx.fill();
-  });
-  nctx.fillStyle='rgba(0,0,0,.92)';nctx.fillRect(nx-ow/2,ny-oh/2,ow,oh);
-  nctx.strokeStyle='#e85002';nctx.lineWidth=1.5;nctx.strokeRect(nx-ow/2+.5,ny-oh/2+.5,ow,oh);
-  nctx.fillStyle='#f9f9f9';nctx.fillText('Material Output',nx-ow/2+12,ny+4);
-  nctx.beginPath();nctx.arc(nx-ow/2,ny,4,0,7);nctx.fillStyle='#e85002';nctx.fill();
-  if(tut.classList.contains('active')&&!reduce)nRaf=requestAnimationFrame(drawNodes);
+/* Tutorials column: clip tilts toward the cursor, like the other two columns */
+const tut=document.getElementById('c-tut'),tvid=tut.querySelector('.tvid');
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  tut.addEventListener('pointermove',e=>{const r=tut.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    tvid.style.setProperty('--ry',(x*10).toFixed(2)+'deg');tvid.style.setProperty('--rx',(-y*8).toFixed(2)+'deg')});
+  tut.addEventListener('pointerleave',()=>{tvid.style.setProperty('--ry','0deg');tvid.style.setProperty('--rx','0deg')});
 }
-tut.addEventListener('pointermove',e=>{const r=tut.getBoundingClientRect();nx=e.clientX-r.left;ny=e.clientY-r.top;if(!nRaf)nRaf=requestAnimationFrame(drawNodes)});
-tut.addEventListener('pointerleave',()=>{nx=-999;cancelAnimationFrame(nRaf);nRaf=0;drawNodes()});
 
 /* Portfolio: slideshow tilts toward the cursor */
 {const port=document.getElementById('c-port'),sl=document.getElementById('slides');

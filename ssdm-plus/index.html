@@ -222,6 +222,14 @@ table{color:inherit;font:inherit}
 .col.fab.active .tilt img{opacity:.38}
 footer .fl{display:inline-flex;align-items:center;gap:12px}
 footer .fmk{height:22px;width:auto;display:block;opacity:.9}
+
+/* pricing */
+.prices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:520px;margin:0 0 24px}
+.prices div{background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.prices b{font:600 30px/1.1 var(--f-display);letter-spacing:-.02em}
+.prices small{color:var(--muted);font-size:13px}
+.tbl td b{font-weight:600}
+@media (max-width:420px){.prices{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -241,7 +249,6 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   </div>
 </header>
 
-<div class="draft gut"><div class="wrap"><b>DRAFT</b><span>Dashed boxes are placeholders. Each one names the capture it needs. Price, versions and numbers are TBD.</span></div></div>
 
 <main id="top">
   <section class="hero gut t-black">
@@ -259,10 +266,10 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         </div>
         <div>
           <div class="badges">
-            <span>UE 5.8 · Win64</span>
+            <span>UE 5.8 · 5.9 · Win64</span>
             <span>Plugin only · no engine changes</span>
             <span class="no">Nanite not supported</span>
-            <span class="tbd">Price TBD</span>
+            <span>v1.0</span><span>From $25.99</span>
           </div>
           <p class="compat"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
         </div>
@@ -292,7 +299,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
     <div class="wrap">
       <div class="head">
         <div><span class="label">02 · What it does</span><h2 class="display">Lots of depth, little cost</h2></div>
-        <p>Add one node to a material and it displaces. Everything below ships in v0.1.</p>
+        <p>Add one node to a material and it displaces. Everything below ships in v1.0.</p>
       </div>
       <div id="feats"></div>
     </div>
@@ -349,28 +356,24 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
     <div class="wrap">
       <div class="head">
         <div><span class="label">05 · Proof &amp; specs</span><h2 class="display">The numbers</h2></div>
-        <p>Measured with <code>stat gpu</code>; each pass shows under its own MKSSDM label. Dashed values are placeholders.</p>
+        <p>GPU time per quality preset, median of 12 <code>ProfileGPU</code> captures. Cost scales with resolution and with how much of the screen is displaced. Check your own scene with <code>stat MKSSDM</code>.</p>
       </div>
       <div class="two">
         <div class="card">
-          <h3 class="display">GPU cost</h3><span class="label">Medium preset · test scene TBD</span>
+          <h3 class="display">GPU cost</h3><span class="label">RTX 5090 Laptop · 2560×1440 · dense test view</span>
           <div class="scroll"><table class="tbl">
-            <thead><tr><th>Pass</th><th>1080p</th><th>1440p</th><th>4K</th></tr></thead>
-            <tbody>
-              <tr><td>MKSSDM Height</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
-              <tr><td>MKSSDM Smooth + Scatter</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
-              <tr><td>MKSSDM Resolve</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
-              <tr><td>Contact shadows</td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td><td class="num"><span class="tbd">— ms</span></td></tr>
-            </tbody>
+            <thead><tr><th>Preset</th><th>Displacement</th><th>Contact shadows</th><th>Total</th></tr></thead>
+            <tbody><tr><td>Low</td><td class="num">1.53 ms</td><td class="num">0.27 ms</td><td class="num"><b>1.80 ms</b></td></tr><tr><td>Medium (default)</td><td class="num">1.96 ms</td><td class="num">0.32 ms</td><td class="num"><b>2.28 ms</b></td></tr><tr><td>High</td><td class="num">2.02 ms</td><td class="num">0.29 ms</td><td class="num"><b>2.31 ms</b></td></tr><tr><td>Epic</td><td class="num">2.39 ms</td><td class="num">0.34 ms</td><td class="num"><b>2.73 ms</b></td></tr></tbody>
           </table></div>
         </div>
         <div class="card">
           <h3 class="display">Specs</h3><span class="label">What you get</span>
           <div class="scroll"><table class="tbl">
             <tbody>
-              <tr><th>Engine</th><td>UE 5.8</td></tr>
+              <tr><th>Engine</th><td>UE 5.8 and 5.9</td></tr>
               <tr><th>Platform</th><td>Windows (Win64)</td></tr>
-              <tr><th>Version</th><td>0.1</td></tr>
+              <tr><th>Version</th><td>1.0</td></tr>
+              <tr><th>Price</th><td>$25.99 Personal · $99.99 Professional</td></tr>
               <tr><th>Type</th><td>C++ code plugin</td></tr>
               <tr><th>Modules</th><td>MKSSDMPlus, MKSSDMPlusMeshPass, MKSSDMPlusEditor</td></tr>
               <tr><th>Engine changes</th><td class="yes">None</td></tr>
@@ -397,7 +400,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         <details open><summary>Does it support Nanite?</summary><p><b>No.</b> SSDM+ does not support Nanite meshes or Nanite landscapes. Use it on regular, non-Nanite geometry.</p></details>
         <details><summary>Do I need a source build of the engine?</summary><p>Draft: confirm before launch. The plugin makes no engine source changes.</p></details>
         <details><summary>Does it work on RVT landscapes?</summary><p>Yes. Contact shadows read height written into the RVT, where stock contact shadows lose pixel depth offset.</p></details>
-        <details><summary>Which engine versions are supported?</summary><p>UE 5.8 on Windows at launch.</p></details>
+        <details><summary>Which engine versions are supported?</summary><p>Unreal Engine 5.8 and 5.9, on Windows (Win64).</p></details>
       </div>
     </div>
   </section>
@@ -407,6 +410,10 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <div class="cta-text">
       <span class="label">Available on Fab</span>
       <h2 class="display">Get MK SSDM<span style="color:var(--accent)">+</span></h2>
+      <div class="prices">
+        <div><span class="label">Personal</span><b>$25.99</b><small>USD · Fab Personal licence</small></div>
+        <div><span class="label">Professional</span><b>$99.99</b><small>USD · Fab Professional licence</small></div>
+      </div>
       <div class="ctas">
         <a class="btn primary" href="#buy">Get it on Fab →</a>
         <a class="btn" href="docs/">Read the docs</a>
