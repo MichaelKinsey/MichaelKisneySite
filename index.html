@@ -186,6 +186,26 @@ table{color:inherit;font:inherit}
 .t-grad .svc{background:rgba(0,0,0,.45);border-left-color:#f9f9f9}
 .t-grad .btn.fab{background:#f9f9f9;border-color:#f9f9f9;color:#000}
 .t-grad .svc .label{color:#d9c3ab!important}
+
+/* portfolio slideshow + studio logos */
+.slides{position:absolute;inset:0;z-index:0;background:#000}
+.slides img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;opacity:0;transform:scale(1.06);
+  transition:opacity 1.4s ease, transform 7s linear}
+.slides img.on{opacity:1;transform:scale(1)}
+.slides::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 35%,rgba(0,0,0,.2) 60%,rgba(0,0,0,.85) 100%)}
+.studios{position:absolute;z-index:3;left:clamp(18px,3vw,40px);right:18px;bottom:22px;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.studios .label{opacity:.7;font-size:12px}
+.studios div{display:flex;flex-wrap:wrap;gap:8px}
+.studios img{width:40px;height:40px;border-radius:8px;filter:grayscale(1);opacity:.75;transition:filter .4s,opacity .4s}
+.col.port.active .studios img{filter:none;opacity:1}
+@media (prefers-reduced-motion:reduce){.slides img{transition:opacity .6s;transform:none}}
+@media (max-width:720px){
+  .col.port .head{bottom:66px}
+  .studios{left:18px;bottom:16px}
+  .studios .label{display:none}
+  .studios div{gap:6px;flex-wrap:nowrap;overflow:hidden}
+  .studios img{width:30px;height:30px;border-radius:6px}
+}
 </style>
 </head>
 <body>
@@ -218,7 +238,7 @@ table{color:inherit;font:inherit}
     </div></div>
 
     <a class="col port" id="c-port" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener" data-name="Portfolio">
-      <div class="pan"></div>
+      <div class="slides" id="slides" aria-hidden="true"><img src="assets/portfolio/01.webp" alt="" class=on decoding="async"><img data-src="assets/portfolio/02.webp" alt="" decoding="async"><img data-src="assets/portfolio/03.webp" alt="" decoding="async"><img data-src="assets/portfolio/04.webp" alt="" decoding="async"><img data-src="assets/portfolio/05.webp" alt="" decoding="async"><img data-src="assets/portfolio/06.webp" alt="" decoding="async"><img data-src="assets/portfolio/07.webp" alt="" decoding="async"><img data-src="assets/portfolio/08.webp" alt="" decoding="async"><img data-src="assets/portfolio/09.webp" alt="" decoding="async"><img data-src="assets/portfolio/10.webp" alt="" decoding="async"><img data-src="assets/portfolio/11.webp" alt="" decoding="async"><img data-src="assets/portfolio/12.webp" alt="" decoding="async"><img data-src="assets/portfolio/13.webp" alt="" decoding="async"><img data-src="assets/portfolio/14.webp" alt="" decoding="async"><img data-src="assets/portfolio/15.webp" alt="" decoding="async"><img data-src="assets/portfolio/16.webp" alt="" decoding="async"><img data-src="assets/portfolio/17.webp" alt="" decoding="async"></div>
       <canvas class="fx" id="lens"></canvas>
       <div class="shade"></div>
       <div class="head">
@@ -226,7 +246,7 @@ table{color:inherit;font:inherit}
         <h2 class="display">Portfolio</h2>
         <div class="sub"><p>Shaders, terrain, water and rendering work in Unreal Engine 5.</p><span class="enter">Enter →</span></div>
       </div>
-      <span class="slot label">Image slot · 3–5 images</span>
+      <div class="studios"><span class="label">Studios I've worked with</span><div><img src="assets/studios/bluedot.webp" alt="Blue Dot Games" title="Blue Dot Games" width="40" height="40" loading="lazy"><img src="assets/studios/thatsnomoon.webp" alt="That's No Moon" title="That's No Moon" width="40" height="40" loading="lazy"><img src="assets/studios/counterplay.webp" alt="Counterplay Games" title="Counterplay Games" width="40" height="40" loading="lazy"><img src="assets/studios/sierra.webp" alt="Sierra Division" title="Sierra Division" width="40" height="40" loading="lazy"><img src="assets/studios/sentient.webp" alt="Sentient Arts" title="Sentient Arts" width="40" height="40" loading="lazy"><img src="assets/studios/blackmatter.webp" alt="Black Matter" title="Black Matter" width="40" height="40" loading="lazy"><img src="assets/studios/nextgen.webp" alt="Next-Gen Dreams" title="Next-Gen Dreams" width="40" height="40" loading="lazy"><img src="assets/studios/darewise.webp" alt="Darewise Entertainment" title="Darewise Entertainment" width="40" height="40" loading="lazy"><img src="assets/studios/dekogon.webp" alt="Dekogon Studios" title="Dekogon Studios" width="40" height="40" loading="lazy"></div></div>
     </a>
 
     <a class="col fab" id="c-fab" href="/tools/">
@@ -428,6 +448,11 @@ new IntersectionObserver(([e])=>bar.classList.toggle('show',!e.isIntersecting),{
 
 /* newsletter (draft) */
 document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefault();document.getElementById('newsMsg').hidden=false});
+
+/* portfolio slideshow: crossfade, lazy-load the rest after first paint */
+{const box=document.getElementById('slides'),im=[...box.querySelectorAll('img')];let i=0;
+ addEventListener('load',()=>im.forEach(x=>{if(x.dataset.src){x.src=x.dataset.src}}));
+ setInterval(()=>{if(document.hidden)return;const n=(i+1)%im.length;if(!im[n].complete||!im[n].naturalWidth)return;im[i].classList.remove('on');im[n].classList.add('on');i=n},4500)}
 </script>
 </body>
 </html>
