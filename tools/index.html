@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Unreal Engine 5 plugins by Michael Kinsey: MK SSDM+, MK Fast Landscape Erosion Brush, MK Tessellation Patch and more.">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"><link rel="icon" href="/favicon.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/favicon.png">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -145,6 +145,13 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 .brand .br{height:10px;width:auto;display:block;max-width:none;opacity:.8}
 @media (max-width:560px){.brand .bd,.brand .br{display:none}}
 .top{position:sticky!important;top:0!important;background:#000!important;backdrop-filter:none!important;border-bottom:1px solid #1f1f1f!important}
+
+/* MK mark image */
+.brand .mk{height:24px;width:auto;display:block;max-width:none}
+.tilt img{width:min(52%,380px);height:auto;max-width:none;opacity:.18;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out, opacity .5s}
+.col.fab.active .tilt img{opacity:.38}
+footer .fl{display:inline-flex;align-items:center;gap:12px}
+footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 </style>
 </head>
 <body>
@@ -152,7 +159,7 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 
 <header class="top gut">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Michael Kinsey home"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><img class="bn" src="/assets/brand/name.webp" alt="Michael Kinsey" width="155" height="16"><i class="bd" aria-hidden="true"></i><img class="br" src="/assets/brand/role.webp" alt="Technical Artist" width="122" height="10"></a>
+    <a class="brand" href="/" aria-label="Michael Kinsey home"><img class="mk" src="/assets/brand/mk.webp" alt="" width="29" height="24"><img class="bn" src="/assets/brand/name.webp" alt="Michael Kinsey" width="155" height="16"><i class="bd" aria-hidden="true"></i><img class="br" src="/assets/brand/role.webp" alt="Technical Artist" width="122" height="10"></a>
     <nav>
       <a href="#products" class="hide-sm">Products</a>
       <a href="#mission" class="hide-sm">Mission</a>
@@ -274,7 +281,7 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 </main>
 
 <footer class="gut t-black"><div class="wrap">
-  <span>© 2026 Michael Kinsey</span>
+  <span class="fl"><img class="fmk" src="/assets/brand/mk.webp" alt="MK" width="26" height="22">© 2026 Michael Kinsey</span>
   <span><a href="/">Home</a> · <a href="/ssdm-plus/">MK SSDM+</a> · <a href="/erosion-brush/">Erosion Brush</a> · <a href="/services/">Services</a> · <a href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab</a> · <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> · <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a> · <a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a></span>
 </div></footer>
 <div class="toast" id="toast" role="status"></div>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Michael Kinsey, technical artist. Unreal Engine 5 tools, plugins and tutorials.">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"><link rel="icon" href="/favicon.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/favicon.png">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -238,6 +238,13 @@ table{color:inherit;font:inherit}
 .hero{height:calc(100svh - 55px)!important}
 .col .head{top:clamp(40px,8vh,96px)!important}
 @media (max-width:720px){.col .head{top:auto!important}.hero{height:calc(100svh - 92px)!important}}
+
+/* MK mark image */
+.brand .mk{height:24px;width:auto;display:block;max-width:none}
+.tilt img{width:min(52%,380px);height:auto;max-width:none;opacity:.18;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out, opacity .5s}
+.col.fab.active .tilt img{opacity:.38}
+footer .fl{display:inline-flex;align-items:center;gap:12px}
+footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 </style>
 </head>
 <body>
@@ -249,7 +256,7 @@ table{color:inherit;font:inherit}
 
 <header class="bar gut" id="bar" aria-label="Site">
   <div class="wrap">
-    <a class="brand" href="#top"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><img class="bn" src="/assets/brand/name.webp" alt="Michael Kinsey" width="155" height="16"><i class="bd" aria-hidden="true"></i><img class="br" src="/assets/brand/role.webp" alt="Technical Artist" width="122" height="10"></a>
+    <a class="brand" href="#top"><img class="mk" src="/assets/brand/mk.webp" alt="" width="29" height="24"><img class="bn" src="/assets/brand/name.webp" alt="Michael Kinsey" width="155" height="16"><i class="bd" aria-hidden="true"></i><img class="br" src="/assets/brand/role.webp" alt="Technical Artist" width="122" height="10"></a>
     <nav>
       <a class="p" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">Portfolio</a>
       <a class="f" href="/tools/">Tools</a>
@@ -279,7 +286,7 @@ table{color:inherit;font:inherit}
 
     <a class="col fab" id="c-fab" href="/tools/">
       <div class="pan"></div>
-      <div class="tilt fx"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg></div>
+      <div class="tilt fx"><img class="tm" src="/assets/brand/mk.webp" alt="" data-w="478" height="400"></div>
       <div class="shade"></div>
       <div class="head">
         <span class="num">02 · Fab</span>
@@ -358,7 +365,7 @@ table{color:inherit;font:inherit}
 </main>
 
 <footer class="gut"><div class="wrap">
-  <span>© 2026 Michael Kinsey</span>
+  <span class="fl"><img class="fmk" src="/assets/brand/mk.webp" alt="MK" width="26" height="22">© 2026 Michael Kinsey</span>
   <span><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a> · <a href="/tools/">Tools</a> · <a href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab</a> · <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> · <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a> · <a href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">Photography</a></span>
 </div></footer>
 <div class="toast" id="toast" role="status"></div>
@@ -390,7 +397,7 @@ document.querySelectorAll('.soon').forEach(a=>a.addEventListener('click',e=>{
 }));
 
 /* Fab: tilt toward cursor */
-const fab=document.getElementById('c-fab'),tiltSvg=fab.querySelector('.tilt svg');
+const fab=document.getElementById('c-fab'),tiltSvg=fab.querySelector('.tilt img');
 fab.addEventListener('pointermove',e=>{const r=fab.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
   tiltSvg.style.setProperty('--ry',(x*28).toFixed(2)+'deg');tiltSvg.style.setProperty('--rx',(-y*28).toFixed(2)+'deg')});
 fab.addEventListener('pointerleave',()=>{tiltSvg.style.setProperty('--ry','0deg');tiltSvg.style.setProperty('--rx','0deg')});
