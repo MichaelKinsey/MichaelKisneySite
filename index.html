@@ -244,7 +244,8 @@ table{color:inherit;font:inherit}
     </div></div>
 
     <a class="col port" id="c-port" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener" data-name="Portfolio">
-      <div class="slides" id="slides" aria-hidden="true"><img src="assets/portfolio/01.webp" alt="" class=on decoding="async"><img data-src="assets/portfolio/02.webp" alt="" decoding="async"><img data-src="assets/portfolio/03.webp" alt="" decoding="async"><img data-src="assets/portfolio/04.webp" alt="" decoding="async"><img data-src="assets/portfolio/05.webp" alt="" decoding="async"><img data-src="assets/portfolio/06.webp" alt="" decoding="async"><img data-src="assets/portfolio/07.webp" alt="" decoding="async"><img data-src="assets/portfolio/08.webp" alt="" decoding="async"><img data-src="assets/portfolio/09.webp" alt="" decoding="async"><img data-src="assets/portfolio/10.webp" alt="" decoding="async"><img data-src="assets/portfolio/11.webp" alt="" decoding="async"></div>
+      <div class="slides" id="slides" aria-hidden="true"><img data-src="assets/portfolio/01" alt="" class=on decoding="async"><img data-src="assets/portfolio/02" alt="" decoding="async"><img data-src="assets/portfolio/03" alt="" decoding="async"><img data-src="assets/portfolio/04" alt="" decoding="async"><img data-src="assets/portfolio/05" alt="" decoding="async"><img data-src="assets/portfolio/06" alt="" decoding="async"><img data-src="assets/portfolio/07" alt="" decoding="async"><img data-src="assets/portfolio/08" alt="" decoding="async"><img data-src="assets/portfolio/09" alt="" decoding="async"><img data-src="assets/portfolio/10" alt="" decoding="async"><img data-src="assets/portfolio/11" alt="" decoding="async"></div>
+      <script>/* HD slides on tall or high-DPI screens */window.SLIDE_SUF=(innerHeight*(devicePixelRatio||1)>1150)?'-hd.webp':'.webp';{const f=document.querySelector('#slides img');f.src=f.dataset.src+SLIDE_SUF}</script>
       <div class="shade"></div>
       <div class="head">
         <span class="num">01 · ArtStation</span>
@@ -424,7 +425,7 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
 
 /* portfolio slideshow: crossfade, lazy-load the rest after first paint */
 {const box=document.getElementById('slides'),im=[...box.querySelectorAll('img')];let i=0;
- addEventListener('load',()=>im.forEach(x=>{if(x.dataset.src){x.src=x.dataset.src}}));
+ addEventListener('load',()=>im.forEach(x=>{if(!x.getAttribute('src'))x.src=x.dataset.src+window.SLIDE_SUF}));
  setInterval(()=>{if(document.hidden)return;const n=(i+1)%im.length;if(!im[n].complete||!im[n].naturalWidth)return;im[i].classList.remove('on');im[n].classList.add('on');i=n},4500)}
 </script>
 </body>
