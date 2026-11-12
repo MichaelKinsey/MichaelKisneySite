@@ -173,6 +173,11 @@ table{color:inherit;font:inherit}
 .col.fab.active .tilt img{opacity:.38}
 footer .fl{display:inline-flex;align-items:center;gap:12px}
 footer .fmk{height:22px;width:auto;display:block;opacity:.9}
+
+.contact-list{list-style:none;margin:0 0 24px;padding:0;display:grid;gap:8px}
+.contact-list li{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.contact-list b{min-width:70px;font-weight:600}
+.contact-list a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -325,7 +330,11 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
     <section id="support">
       <h2 class="display">Support</h2>
-      <p>Found a bug or need help? Contact Michael Kinsey through the Fab listing's support link.</p>
+      <p>Found a bug or need help? Get in touch:</p>
+      <ul class="contact-list">
+        <li><b>Discord</b><a href="https://discord.gg/RDX7mExGZH" target="_blank" rel="noopener">Join the support Discord →</a></li>
+        <li><b>Email</b><a href="mailto:contact@michaelkinsey.xyz?subject=MK%20SSDM%2B%20support">contact@michaelkinsey.xyz</a></li>
+      </ul>
       <div class="scroll"><table>
         <thead><tr><th>Version</th><th>Changes</th></tr></thead>
         <tbody><tr><td class="num">1.0</td><td>First release on Fab. UE 5.8 and 5.9, Win64.</td></tr></tbody>
