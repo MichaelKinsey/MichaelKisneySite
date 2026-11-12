@@ -157,6 +157,13 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .tile .chan{position:absolute;z-index:2;inset:0 50% 0 0;display:grid;place-items:center;transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .4s;transform-origin:0 0}
 .tile .chan img{width:auto;max-width:80%;filter:drop-shadow(0 2px 14px rgba(0,0,0,.6))}
 .tile:hover .chan,.tile:focus-visible .chan,.tile.on .chan{transform:translate(16px,16px) scale(.45);inset:0 auto auto 0;place-items:start}
+
+/* tiles with a busy backdrop (blog screenshot): give text its own dark plate */
+.tile.busy .bg{filter:brightness(.3)}
+.tile.busy:hover .bg,.tile.busy.on .bg{filter:brightness(.75)}
+.tile.busy .mark{background:rgba(0,0,0,.72);padding:10px 14px;border-radius:10px;backdrop-filter:blur(3px)}
+.tile.busy .pill{background:rgba(0,0,0,.72)}
+.tile.busy .desc{background:rgba(0,0,0,.72);padding:12px 14px;border-radius:10px;backdrop-filter:blur(3px)}
 </style>
 </head>
 <body>
@@ -199,11 +206,11 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           <div class="desc"><b>Patreon</b><span>Project source files, free tools and early access to new releases.</span><em>Join on Patreon →</em></div>
         </a>
 
-        <a class="tile soon" href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">
+        <a class="tile soon" href="#newsletter">
           <div class="bg"></div><span class="ph">Image slot</span>
           <div class="mark"><small>MK</small>Shader Function Library</div>
-          <span class="pill">Patreon</span>
-          <div class="desc"><b>A growing material function library</b><span>Hex tiling, height blending, wind and more, ready to drop into your materials.</span><em>Get it on Patreon →</em></div>
+          <span class="pill">Coming soon</span>
+          <div class="desc"><b>A growing material function library</b><span>Hex tiling, height blending, wind and more, ready to drop into your materials.</span><em>Get notified →</em></div>
         </a>
 
         <a class="tile" href="https://www.patreon.com/ArtOfMichaelKinsey/posts/mk-tessellation-173473553" target="_blank" rel="noopener">
@@ -213,18 +220,11 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           <div class="desc"><b>MK Tessellation Patch</b><span>A dense, shadow-casting mesh that follows the player. UE 5.6–5.8.</span><em>Download on Patreon →</em></div>
         </a>
 
-        <a class="tile soon" href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">
-          <div class="bg"></div><span class="ph">Image slot</span>
-          <div class="mark"><small>Series</small>Shader Breakdowns</div>
-          <span class="pill">YouTube</span>
-          <div class="desc"><b>How the effects work</b><span>Step-by-step breakdowns of the shaders behind my tools and scenes.</span><em>Watch on YouTube →</em></div>
-        </a>
-
-        <a class="tile soon" href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">
-          <div class="bg"></div><span class="ph">Image slot</span>
-          <div class="mark"><small>Series</small>Unreal Tips</div>
-          <span class="pill">YouTube</span>
-          <div class="desc"><b>Short and practical</b><span>Quick wins for materials, performance and workflow in Unreal Engine.</span><em>Watch on YouTube →</em></div>
+        <a class="tile busy" href="https://www.artstation.com/michaelkinsey/blog" target="_blank" rel="noopener">
+          <img class="bg" src="blog-bg.webp" alt="" loading="lazy">
+          <div class="mark"><small>ArtStation</small>Blog</div>
+          <span class="pill">Articles</span>
+          <div class="desc"><b>Dev logs and articles</b><span>Work-in-progress dev logs, breakdowns, tutorials and performance comparisons.</span><em>Read the blog →</em></div>
         </a>
       </div>
     </div>
