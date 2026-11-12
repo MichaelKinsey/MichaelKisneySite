@@ -287,7 +287,8 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 @media (max-width:720px){.col h2,.col:not(.active) h2,.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(32px,9.5vw,52px)}}
 
 /* Tools column: crossfading clips */
-.vids{position:absolute;inset:0;z-index:0;background:#000}
+.vids{position:absolute;inset:-7%;z-index:0;background:#000;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.col.fab{background:#000}
 .vids video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
 .vids video.on{opacity:1}
 .vids::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.25) 35%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.85) 100%)}
@@ -336,7 +337,6 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
     <a class="col fab" id="c-fab" href="/tools/">
       <div class="vids" id="vids" aria-hidden="true"><video muted playsinline preload="auto" poster="assets/tools-clips/erosion-1.webp" class=on src="assets/tools-clips/erosion-1.mp4"></video><video muted playsinline preload="none" poster="assets/tools-clips/tess-1.webp" src="assets/tools-clips/tess-1.mp4"></video><video muted playsinline preload="none" poster="assets/tools-clips/erosion-2.webp" src="assets/tools-clips/erosion-2.mp4"></video><video muted playsinline preload="none" poster="assets/tools-clips/tess-2.webp" src="assets/tools-clips/tess-2.mp4"></video></div>
-      <div class="tilt fx"><img class="tm" src="/assets/brand/mk.webp" alt="" data-w="478" height="400"></div>
       <div class="shade"></div>
       <div class="head">
         <span class="num">02 · Fab</span>
@@ -447,11 +447,14 @@ document.querySelectorAll('.soon').forEach(a=>a.addEventListener('click',e=>{
   e.preventDefault();say((a.dataset.name||a.textContent.trim())+' page is in progress')
 }));
 
-/* Fab: tilt toward cursor */
-const fab=document.getElementById('c-fab'),tiltSvg=fab.querySelector('.tilt img');
-fab.addEventListener('pointermove',e=>{const r=fab.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
-  tiltSvg.style.setProperty('--ry',(x*28).toFixed(2)+'deg');tiltSvg.style.setProperty('--rx',(-y*28).toFixed(2)+'deg')});
-fab.addEventListener('pointerleave',()=>{tiltSvg.style.setProperty('--ry','0deg');tiltSvg.style.setProperty('--rx','0deg')});
+
+/* Tools column: clips tilt toward the cursor, like the portfolio slideshow */
+const fab=document.getElementById('c-fab'),vids=document.getElementById('vids');
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  fab.addEventListener('pointermove',e=>{const r=fab.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    vids.style.setProperty('--ry',(x*10).toFixed(2)+'deg');vids.style.setProperty('--rx',(-y*8).toFixed(2)+'deg')});
+  fab.addEventListener('pointerleave',()=>{vids.style.setProperty('--ry','0deg');vids.style.setProperty('--rx','0deg')});
+}
 
 /* Tutorials: material nodes wire themselves to the cursor */
 const tut=document.getElementById('c-tut'),nc=document.getElementById('nodes'),nctx=nc.getContext('2d');
