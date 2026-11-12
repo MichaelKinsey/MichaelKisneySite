@@ -136,6 +136,15 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 /* newsletter: coming soon */
 .soon-badge{display:inline-block;margin-left:10px;font:600 11px var(--f-mono);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:#000;background:#e85002;padding:3px 8px;border-radius:999px;vertical-align:1px}
 #newsForm input:disabled,#newsForm button:disabled{opacity:.5;cursor:not-allowed}
+
+/* top bar: full-width black, wordmark images */
+.brand{display:flex!important;align-items:center;gap:12px;text-decoration:none}
+.brand svg{height:24px!important;width:auto}
+.brand .bn{height:16px;width:auto;display:block;max-width:none}
+.brand .bd{width:1px;height:18px;background:rgba(255,255,255,.28)}
+.brand .br{height:10px;width:auto;display:block;max-width:none;opacity:.8}
+@media (max-width:560px){.brand .bd,.brand .br{display:none}}
+.top{position:sticky!important;top:0!important;background:#000!important;backdrop-filter:none!important;border-bottom:1px solid #1f1f1f!important}
 </style>
 </head>
 <body>
@@ -143,7 +152,7 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 
 <header class="top gut">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Michael Kinsey home"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <a class="brand" href="/" aria-label="Michael Kinsey home"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><img class="bn" src="/assets/brand/name.webp" alt="Michael Kinsey" width="155" height="16"><i class="bd" aria-hidden="true"></i><img class="br" src="/assets/brand/role.webp" alt="Technical Artist" width="122" height="10"></a>
     <nav>
       <a href="#products" class="hide-sm">Products</a>
       <a href="#mission" class="hide-sm">Mission</a>

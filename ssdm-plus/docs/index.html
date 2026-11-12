@@ -157,6 +157,15 @@ table{color:inherit;font:inherit}
 @media (max-width:900px){.side{margin-top:24px;box-shadow:0 1px 2px rgba(0,0,0,.06);border:0}}
 .t-grad{background:linear-gradient(120deg,#000000 0%,#000000 40%,#c10801 74%,#f16001 92%,#d9c3ab 125%)!important;color:#f9f9f9;
   --bg:transparent;--ink:#f9f9f9;--muted:#d9c3ab;--line:rgba(255,255,255,.2);--panel:rgba(0,0,0,.35);--panel-2:rgba(0,0,0,.25);--accent:#f9f9f9;--accent-ink:#000000;border-top:0!important}
+
+/* top bar: full-width black, wordmark images */
+.brand{display:flex!important;align-items:center;gap:12px;text-decoration:none}
+.brand svg{height:24px!important;width:auto}
+.brand .bn{height:16px;width:auto;display:block;max-width:none}
+.brand .bd{width:1px;height:18px;background:rgba(255,255,255,.28)}
+.brand .br{height:10px;width:auto;display:block;max-width:none;opacity:.8}
+@media (max-width:560px){.brand .bd,.brand .br{display:none}}
+.top{position:sticky!important;top:0!important;background:#000!important;backdrop-filter:none!important;border-bottom:1px solid #1f1f1f!important}
 </style>
 </head>
 <body>
@@ -164,7 +173,7 @@ table{color:inherit;font:inherit}
 
 <header class="top gut">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Back to the product page"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <a class="brand" href="/" aria-label="Back to the product page"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><img class="bn" src="/assets/brand/name.webp" alt="Michael Kinsey" width="155" height="16"><i class="bd" aria-hidden="true"></i><img class="br" src="/assets/brand/role.webp" alt="Technical Artist" width="122" height="10"></a>
     <nav>
       <a href="../">← Product</a>
       <a href="./" aria-current="page">Docs</a>
