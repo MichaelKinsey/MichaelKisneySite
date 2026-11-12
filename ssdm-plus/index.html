@@ -230,6 +230,8 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .prices small{color:var(--muted);font-size:13px}
 .tbl td b{font-weight:600}
 @media (max-width:420px){.prices{grid-template-columns:1fr}}
+
+.card .note{margin:16px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -356,15 +358,16 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
     <div class="wrap">
       <div class="head">
         <div><span class="label">05 · Proof &amp; specs</span><h2 class="display">The numbers</h2></div>
-        <p>GPU time per quality preset, median of 12 <code>ProfileGPU</code> captures. Cost scales with resolution and with how much of the screen is displaced. Check your own scene with <code>stat MKSSDM</code>.</p>
+        <p>Worst-case GPU time per quality preset: 100% screen size with displacement covering the whole screen. Median of 12 <code>ProfileGPU</code> captures.</p>
       </div>
       <div class="two">
         <div class="card">
-          <h3 class="display">GPU cost</h3><span class="label">RTX 5090 Laptop · 2560×1440 · dense test view</span>
+          <h3 class="display">GPU cost</h3><span class="label">Worst case · RTX 5090 Laptop · 2560×1440 · 100% screen size and coverage</span>
           <div class="scroll"><table class="tbl">
             <thead><tr><th>Preset</th><th>Displacement</th><th>Contact shadows</th><th>Total</th></tr></thead>
             <tbody><tr><td>Low</td><td class="num">1.53 ms</td><td class="num">0.27 ms</td><td class="num"><b>1.80 ms</b></td></tr><tr><td>Medium (default)</td><td class="num">1.96 ms</td><td class="num">0.32 ms</td><td class="num"><b>2.28 ms</b></td></tr><tr><td>High</td><td class="num">2.02 ms</td><td class="num">0.29 ms</td><td class="num"><b>2.31 ms</b></td></tr><tr><td>Epic</td><td class="num">2.39 ms</td><td class="num">0.34 ms</td><td class="num"><b>2.73 ms</b></td></tr></tbody>
           </table></div>
+          <p class="note">Cost scales with screen coverage and the settings used, so most scenes cost less than this. Check your own with <code>stat MKSSDM</code>. Version 1.1 will reduce the cost further.</p>
         </div>
         <div class="card">
           <h3 class="display">Specs</h3><span class="label">What you get</span>
