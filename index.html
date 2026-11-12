@@ -222,6 +222,10 @@ table{color:inherit;font:inherit}
 .photo-line{display:inline-flex;gap:8px;margin-top:24px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px;font-size:16px}
 .photo-line i{font-style:normal;color:var(--accent);transition:transform .25s}
 .photo-line:hover{border-color:var(--accent)}.photo-line:hover i{transform:translateX(4px)}
+
+/* newsletter: coming soon */
+.soon-badge{display:inline-block;margin-left:10px;font:600 11px var(--f-mono);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:#000;background:#e85002;padding:3px 8px;border-radius:999px;vertical-align:1px}
+#newsForm input:disabled,#newsForm button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -237,7 +241,7 @@ table{color:inherit;font:inherit}
     <nav>
       <a class="p" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">Portfolio</a>
       <a class="f" href="/tools/">Tools</a>
-      <a class="ph soon" href="#tutorials">Tutorials</a>
+      <a class="ph" href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">Tutorials</a>
       <span class="sep sec"></span>
       <a class="sec" href="#about">About</a>
       <a class="sec" href="#services">Services</a>
@@ -277,7 +281,7 @@ table{color:inherit;font:inherit}
       <span class="slot label">Image slot · 3–5 images</span>
     </a>
 
-    <a class="col tut soon" id="c-tut" href="#tutorials" data-name="Tutorials">
+    <a class="col tut" id="c-tut" href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">
       <div class="pan"></div>
       <canvas class="fx" id="nodes"></canvas>
       <div class="shade"></div>
@@ -305,8 +309,8 @@ table{color:inherit;font:inherit}
         <div class="stack"><span>C++</span><span>HLSL / USF</span><span>RVT</span><span>Niagara</span><span>Materials</span><span>Blueprint</span></div>
         <div class="hl">
           <a href="/tools/"><b>On Fab</b><small>Tools and systems for your games.</small><i>→</i></a>
-          <a href="#patreon" class="soon"><b>Free</b><small>Breakdowns, free tools and my growing material function library.</small><i>→</i></a>
-          <a href="#tutorials" class="soon"><b>Tutorials</b><small>Shader tutorials, Unreal tips and more.</small><i>→</i></a>
+          <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener"><b>Free</b><small>Breakdowns, free tools and my growing material function library.</small><i>→</i></a>
+          <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener"><b>Tutorials</b><small>Shader tutorials, Unreal tips and more.</small><i>→</i></a>
         </div>
         <a class="photo-line" href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">I also do photography to get out and see the world. <i>→</i></a>
       </div>
@@ -321,7 +325,7 @@ table{color:inherit;font:inherit}
           <h2 class="display">Need it in your project?</h2>
           <p>Premium integration and support for my tools, technical consulting on rendering and terrain, and custom tool development.</p>
         </div>
-        <a class="btn fab soon" href="#services-page">See services →</a>
+        <a class="btn fab" href="/services/">See services →</a>
       </div>
     </div>
   </section>
@@ -329,16 +333,16 @@ table{color:inherit;font:inherit}
   <section class="block gut t-light" id="newsletter">
     <div class="wrap news">
       <div>
-        <span class="label">Newsletter</span>
+        <span class="label">Newsletter <em class="soon-badge">Coming soon</em></span>
         <h2 class="display">New tools, first</h2>
       </div>
       <div>
         <p>Releases, free Patreon drops and tutorials. A few emails a year.</p>
         <form id="newsForm">
           <label for="newsEmail" class="label" style="position:absolute;left:-9999px">Email</label>
-          <input type="email" id="newsEmail" placeholder="you@studio.com" required>
-          <button class="btn" type="submit">Subscribe</button>
-          <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once the site is live.</span>
+          <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
+          <button class="btn" type="submit" disabled>Subscribe</button>
+          <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
         </form>
       </div>
     </div>
@@ -347,7 +351,7 @@ table{color:inherit;font:inherit}
 
 <footer class="gut"><div class="wrap">
   <span>© 2026 Michael Kinsey</span>
-  <span><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a> · <a href="/tools/">Tools</a> · <a href="#tutorials" class="soon">Tutorials</a> · <a href="#patreon" class="soon">Patreon</a> · <a href="#youtube" class="soon">YouTube</a> · <a href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">Photography</a></span>
+  <span><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a> · <a href="/tools/">Tools</a> · <a href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab</a> · <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> · <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a> · <a href="https://mkphoto.carrd.co/" target="_blank" rel="noopener">Photography</a></span>
 </div></footer>
 <div class="toast" id="toast" role="status"></div>
 

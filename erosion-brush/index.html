@@ -171,6 +171,10 @@ table{color:inherit;font:inherit}
 .hl b{font-family:var(--f-display);font-stretch:normal;text-transform:none;font-weight:600;letter-spacing:-.02em;font-size:20px}
 .t-grad{background:linear-gradient(120deg,#000000 0%,#000000 40%,#c10801 74%,#f16001 92%,#d9c3ab 125%)!important;color:#f9f9f9;
   --bg:transparent;--ink:#f9f9f9;--muted:#d9c3ab;--line:rgba(255,255,255,.2);--panel:rgba(0,0,0,.35);--panel-2:rgba(0,0,0,.25);--accent:#f9f9f9;--accent-ink:#000000;border-top:0!important}
+
+/* newsletter: coming soon */
+.soon-badge{display:inline-block;margin-left:10px;font:600 11px var(--f-mono);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:#000;background:#e85002;padding:3px 8px;border-radius:999px;vertical-align:1px}
+#newsForm input:disabled,#newsForm button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -340,10 +344,10 @@ table{color:inherit;font:inherit}
         <a class="btn" href="docs/">Read the docs</a>
       </div>
       <form class="news" id="newsForm">
-        <label for="newsEmail" class="label" style="flex-basis:100%">Get told when v1.1 and new brushes land</label>
-        <input type="email" id="newsEmail" placeholder="you@studio.com" required>
-        <button class="btn" type="submit">Subscribe</button>
-        <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once the site is live.</span>
+        <label for="newsEmail" class="label" style="flex-basis:100%">Get told when v1.1 and new brushes land <em class="soon-badge">Coming soon</em></label>
+        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
+        <button class="btn" type="submit" disabled>Subscribe</button>
+        <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
       </form>
     </div>
   </section>

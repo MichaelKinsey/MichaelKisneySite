@@ -132,6 +132,10 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.tile .bg,.tile .desc{transition:opacity .2s}html{scroll-behavior:auto}}
 .t-grad{background:linear-gradient(120deg,#000000 0%,#000000 40%,#c10801 74%,#f16001 92%,#d9c3ab 125%)!important;color:#f9f9f9;
   --bg:transparent;--ink:#f9f9f9;--muted:#d9c3ab;--line:rgba(255,255,255,.2);--panel:rgba(0,0,0,.35);--panel-2:rgba(0,0,0,.25);--accent:#f9f9f9;--accent-ink:#000000;border-top:0!important}
+
+/* newsletter: coming soon */
+.soon-badge{display:inline-block;margin-left:10px;font:600 11px var(--f-mono);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:#000;background:#e85002;padding:3px 8px;border-radius:999px;vertical-align:1px}
+#newsForm input:disabled,#newsForm button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -143,9 +147,9 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
     <nav>
       <a href="#products" class="hide-sm">Products</a>
       <a href="#mission" class="hide-sm">Mission</a>
-      <a href="#services">Services</a>
-      <a href="#patreon" class="soon">Patreon</a>
-      <a class="btn primary soon" href="#fab">Fab store</a>
+      <a href="/services/">Services</a>
+      <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a>
+      <a class="btn primary" href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab store</a>
     </nav>
   </div>
 </header>
@@ -174,7 +178,7 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
           <div class="desc"><b>MK Fast Landscape Erosion Brush</b><span>Instant procedural erosion with painted landscape layers.</span><em>View product →</em></div>
         </a>
 
-        <a class="tile soon" href="#patreon" data-name="Patreon link">
+        <a class="tile soon" href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">
           <div class="bg"></div><span class="ph">Image slot</span>
           <img class="logo" src="tess-logo.webp" width="256" height="256" alt="MK Tessellation Patch">
           <span class="pill free">Free</span>
@@ -239,20 +243,21 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
       <div class="contact">
         <code id="email">michaelkinsey3d@gmail.com</code>
         <button class="btn primary" type="button" id="copyBtn">Copy email</button>
+        <a class="btn" href="/services/">See services →</a>
       </div>
     </div>
   </section>
 
   <section class="block gut t-light" id="newsletter">
     <div class="wrap news">
-      <div><span class="label">Newsletter</span><h2 class="display">Hear about new tools first</h2></div>
+      <div><span class="label">Newsletter <em class="soon-badge">Coming soon</em></span><h2 class="display">Hear about new tools first</h2></div>
       <div>
         <p>Releases, free Patreon drops and tutorials. A few emails a year.</p>
         <form id="newsForm">
           <label for="newsEmail" class="label" style="position:absolute;left:-9999px">Email</label>
-          <input type="email" id="newsEmail" placeholder="you@studio.com" required>
-          <button class="btn primary" type="submit">Subscribe</button>
-          <span class="msg" id="newsMsg" hidden>Draft: the newsletter connects once a provider is set up.</span>
+          <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
+          <button class="btn primary" type="submit" disabled>Subscribe</button>
+          <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
         </form>
       </div>
     </div>
@@ -261,7 +266,7 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 
 <footer class="gut t-black"><div class="wrap">
   <span>© 2026 Michael Kinsey</span>
-  <span><a href="/">Home</a> · <a href="/ssdm-plus/">MK SSDM+</a> · <a href="/erosion-brush/">Erosion Brush</a> · <a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a></span>
+  <span><a href="/">Home</a> · <a href="/ssdm-plus/">MK SSDM+</a> · <a href="/erosion-brush/">Erosion Brush</a> · <a href="/services/">Services</a> · <a href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab</a> · <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> · <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a> · <a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a></span>
 </div></footer>
 <div class="toast" id="toast" role="status"></div>
 

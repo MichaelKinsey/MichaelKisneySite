@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Services from Michael Kinsey: Unreal Engine tool integration and support, technical consulting, custom tools and training.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Services · Michael Kinsey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
+<style>
+/* Layout: tools landing page. A grid of 2:1 product tiles (logo top-left, image hidden until hover,
+   descriptor bottom-right), then colour-block sections for mission, services and newsletter.
+   Greyscale palette shared with the rest of the site; single dark theme by design. */
+:root{
+  color-scheme:dark;
+  --bg:#000000; --panel:#333333; --panel-2:#3d3d3d; --ink:#f9f9f9; --muted:#a7a7a7; --line:#333333;
+  --accent:#e85002; --accent-ink:#000000;
+  --f-display:"Geist","Segoe UI",system-ui,sans-serif;
+  --f-body:"Geist","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1280px;margin:0 auto}
+.display{font-family:var(--f-display);font-weight:600;letter-spacing:-.035em;line-height:1.02}
+.label{font:500 13px/1.3 var(--f-mono);letter-spacing:.01em;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font:600 15px var(--f-body);text-decoration:none;border:1px solid var(--line);color:var(--ink);background:transparent;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* colour-block sections */
+.t-black,.t-dark,.t-light,.t-white{background:var(--bg);color:var(--ink)}
+.t-black{--bg:#000000;--panel:#333333;--ink:#f9f9f9;--muted:#a7a7a7;--line:#333333;--accent:#e85002;--accent-ink:#000000}
+.t-dark{--bg:#333333;--panel:#3d3d3d;--ink:#f9f9f9;--muted:#a7a7a7;--line:#4d4d4d;--accent:#e85002;--accent-ink:#000000}
+.t-light{--bg:#a7a7a7;--panel:#ececec;--ink:#000000;--muted:#333333;--line:#8a8a8a;--accent:#e85002;--accent-ink:#000000}
+.t-white{--bg:#f9f9f9;--panel:#f0f0f0;--ink:#000000;--muted:#646464;--line:#a7a7a7;--accent:#e85002;--accent-ink:#000000}
+section.block{padding-block:clamp(72px,10vw,128px)}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#000}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:rgba(0,0,0,.86);backdrop-filter:blur(10px);border-bottom:1px solid #333333}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{height:22px;width:auto}
+.brand span{font:700 15px var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.top nav{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.top nav a{text-decoration:none;color:var(--muted);font-size:14px}
+.top nav a:hover{color:var(--ink)}
+.top .btn{padding:8px 16px;font-size:13px}
+
+/* intro */
+.intro{padding-block:clamp(56px,8vw,96px) 40px}
+.intro h1{font-size:clamp(44px,7vw,92px);margin:10px 0 16px;max-width:14ch}
+.intro p{color:var(--muted);font-size:clamp(17px,1.6vw,20px);max-width:52ch;margin:0}
+
+/* product grid */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding-bottom:clamp(72px,10vw,120px)}
+.tile{position:relative;display:block;aspect-ratio:2/1;max-width:100%;border-radius:14px;overflow:hidden;background:#0d0d0d;text-decoration:none;isolation:isolate}
+.tile .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.38);transform:scale(1.04);transition:filter .5s ease,transform .9s cubic-bezier(.2,.7,.2,1);z-index:0}
+.tile::after{content:"";position:absolute;inset:0;z-index:1;opacity:0;transition:opacity .5s;
+  background:linear-gradient(to top left,rgba(0,0,0,.78) 0%,rgba(0,0,0,.25) 38%,transparent 60%)}
+.tile .logo{position:absolute;z-index:2;top:0;left:0;width:50%;height:auto;border-radius:0;transform-origin:0 0;transition:transform .6s cubic-bezier(.2,.7,.2,1),border-radius .6s}
+.tile:hover .logo,.tile:focus-visible .logo,.tile.on .logo{transform:translate(16px,16px) scale(.22);border-radius:44px;background:rgba(0,0,0,.55)}
+.tile .logo{filter:drop-shadow(0 2px 12px rgba(0,0,0,.5))}
+.tile .mark{position:absolute;z-index:2;top:18px;left:20px;transform-origin:0 0;transform:translate(8px,22%) scale(2.1);transition:transform .6s cubic-bezier(.2,.7,.2,1);font:600 clamp(15px,1.4vw,18px)/1.15 var(--f-display);letter-spacing:-.01em;max-width:45%}
+.tile .mark small{display:block;font:500 12px var(--f-mono);color:var(--muted);letter-spacing:.01em;margin-bottom:6px}
+.tile .pill{position:absolute;z-index:2;top:18px;right:18px;font:500 12px var(--f-mono);padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--ink);border:1px solid rgba(255,255,255,.14)}
+.tile .pill.free{background:#f9f9f9;color:#000;border-color:#f9f9f9}
+.tile .desc{position:absolute;z-index:2;right:20px;bottom:18px;max-width:min(60%,380px);text-align:right;opacity:0;transform:translateY(8px);transition:opacity .4s ease .05s,transform .5s ease}
+.tile .desc b{display:block;font:600 18px var(--f-display);letter-spacing:-.01em}
+.tile .desc span{display:block;color:#a7a7a7;font-size:14px;line-height:1.45;margin-top:2px}
+.tile .desc em{font-style:normal;display:inline-block;margin-top:8px;font:500 13px var(--f-mono);border-bottom:1px solid currentColor}
+.tile:hover .bg,.tile:focus-visible .bg,.tile.on .bg{filter:brightness(1);transform:scale(1)}
+.tile:hover::after,.tile:focus-visible::after,.tile.on::after{opacity:1}
+.tile:hover .desc,.tile:focus-visible .desc,.tile.on .desc{opacity:1;transform:none}
+.tile:hover .mark,.tile:focus-visible .mark,.tile.on .mark{transform:none}
+.tile.soon .bg{background:repeating-linear-gradient(135deg,#2a2a2a 0 16px,#333 16px 32px)}
+.tile.soon:hover .desc em,.tile.soon .desc em{border:0;color:var(--muted)}
+.tile .ph{position:absolute;inset:0;display:grid;place-items:center;z-index:0;font:500 12px var(--f-mono);color:#555;opacity:0;transition:opacity .5s}
+.tile:hover .ph{opacity:1}
+
+/* mission */
+.mission{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:56px;align-items:start}
+.mission h2{font-size:clamp(40px,5.4vw,68px);margin:10px 0 0}
+.mission p{font-size:18px;margin:0 0 16px;max-width:58ch}
+.mission p.muted{color:var(--muted);font-size:16px}
+.principles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:28px}
+.principles div{background:#333333;color:#f9f9f9;border-radius:14px;padding:18px 20px;min-width:0}
+.principles b{display:block;font:600 18px var(--f-display);letter-spacing:-.01em}
+.principles span{color:#b3b3b3;font-size:14.5px}
+
+/* services */
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:end;margin-bottom:36px}
+.head h2{font-size:clamp(40px,5.4vw,68px);margin:8px 0 0}
+.head p{margin:0;color:var(--muted);max-width:52ch}
+.svc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.svc div{background:var(--panel);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.svc h3{font:600 22px/1.15 var(--f-display);letter-spacing:-.02em;margin:0}
+.svc p{margin:0;color:var(--muted);font-size:15px}
+.contact{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:32px}
+.contact code{font:500 16px var(--f-mono);background:var(--panel);padding:11px 16px;border-radius:999px;user-select:all;overflow-wrap:anywhere}
+
+/* newsletter */
+.news{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end}
+.news h2{font-size:clamp(40px,5.4vw,68px);margin:8px 0 0}
+.news form{display:flex;gap:10px;flex-wrap:wrap}
+.news input{flex:1 1 220px;min-width:0;background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:13px 18px;border-radius:999px;font:15px var(--f-body)}
+.news .msg{flex-basis:100%;color:var(--muted);font-size:14px}
+.news p{color:var(--muted);margin:0 0 16px}
+
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:28px 40px;color:var(--muted);font-size:13px}
+footer a{text-decoration:none}footer a:hover{color:var(--ink)}
+.toast{position:fixed;z-index:40;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;transition:.3s;background:#f9f9f9;color:#000;padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  .grid,.mission,.head,.news{grid-template-columns:1fr}
+  .svc{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .top nav .hide-sm{display:none}
+}
+@media (max-width:520px){.svc,.principles{grid-template-columns:1fr}.tile .desc span{display:none}}
+@media (prefers-reduced-motion:reduce){.tile .bg,.tile .desc{transition:opacity .2s}html{scroll-behavior:auto}}
+.t-grad{background:linear-gradient(120deg,#000000 0%,#000000 40%,#c10801 74%,#f16001 92%,#d9c3ab 125%)!important;color:#f9f9f9;
+  --bg:transparent;--ink:#f9f9f9;--muted:#d9c3ab;--line:rgba(255,255,255,.2);--panel:rgba(0,0,0,.35);--panel-2:rgba(0,0,0,.25);--accent:#f9f9f9;--accent-ink:#000000;border-top:0!important}
+
+/* services page */
+.svc-hero .wrap{padding-block:clamp(72px,12vw,150px) clamp(64px,9vw,110px)}
+.svc-hero h1{font-size:clamp(52px,9vw,120px);margin:14px 0 22px;max-width:14ch}
+.svc-hero .pitch{font-size:clamp(18px,1.8vw,22px);color:var(--muted);max-width:52ch;margin:0 0 30px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.offer{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.offer div{background:#333333;color:#f9f9f9;border-radius:14px;padding:26px 24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.offer .n{font:500 13px var(--f-mono);color:var(--accent)}
+.offer h3{font:600 22px/1.15 var(--f-display);letter-spacing:-.02em;margin:0}
+.offer p{margin:0;color:#b3b3b3;font-size:15px}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:26px 0 34px}
+.roles div{background:var(--panel);border-radius:14px;padding:16px 18px;min-width:0}
+.roles b{display:block;font:600 16px var(--f-display)}
+.roles span{color:var(--muted);font-size:14px}
+.studio-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px}
+.studio-row img{height:26px;width:auto;opacity:.75}
+.studio-row img.wide{height:14px}
+.steps3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:s}
+.steps3 li{background:var(--panel);border-radius:14px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;counter-increment:s;min-width:0}
+.steps3 li::before{content:counter(s,decimal-leading-zero);font:500 13px var(--f-mono);color:var(--accent)}
+.steps3 b{font:600 22px/1.15 var(--f-display);letter-spacing:-.02em}
+.steps3 span{color:var(--muted);font-size:15px}
+#contact h2.big{font-size:clamp(56px,10vw,140px);margin:12px 0 28px}
+#contact .else{display:flex;gap:22px;flex-wrap:wrap;margin-top:36px}
+#contact .else a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
+#contact .else a:hover{color:var(--ink);border-color:var(--accent)}
+@media (max-width:900px){.offer{grid-template-columns:repeat(2,minmax(0,1fr))}.steps3{grid-template-columns:1fr}}
+@media (max-width:560px){.offer,.roles{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol></defs></svg>
+
+<header class="top gut">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Michael Kinsey home"><svg viewBox="11.37 11.37 274.09 228.41" aria-hidden="true" fill="#f9f9f9"><use href="#mk"/></svg><span>Michael Kinsey</span></a>
+    <nav>
+      <a href="/tools/" class="hide-sm">Tools</a>
+      <a href="#offer" class="hide-sm">What I offer</a>
+      <a href="#process" class="hide-sm">Process</a>
+      <a class="btn primary" href="#contact">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="gut t-black svc-hero">
+    <div class="wrap">
+      <span class="label">Services</span>
+      <h1 class="display">Need it in your project?</h1>
+      <p class="pitch">Premium integration and support for my tools, technical consulting on rendering and terrain, and custom tool development. Built off 12+ years across many productions.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#contact">Get in touch →</a>
+        <a class="btn" href="/tools/">See the tools</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-white" id="offer">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">What I offer</span><h2 class="display">Four ways to work together</h2></div>
+        <p>From dropping one of my plugins into your project to building a pipeline for your team. Tell me what you're making and I'll suggest the right fit.</p>
+      </div>
+      <div class="offer">
+        <div><span class="n">01</span><h3>Integration and support</h3><p>Set up my tools in your project, tuned to your content, with priority support when you need it.</p></div>
+        <div><span class="n">02</span><h3>Technical consulting</h3><p>Rendering, terrain and performance reviews for your Unreal project, with profiling and clear fixes.</p></div>
+        <div><span class="n">03</span><h3>Custom tools</h3><p>Plugins, shaders, material functions and Niagara systems built for your pipeline.</p></div>
+        <div><span class="n">04</span><h3>Training</h3><p>Workshops on materials, RVTs and shader workflows for your team.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-dark" id="experience">
+    <div class="wrap mission">
+      <div>
+        <span class="label">Experience</span>
+        <h2 class="display">12+ years, many hats</h2>
+      </div>
+      <div>
+        <p>Self taught artist, tech artist and programmer. I've worked from environment art and materials through technical art to lead and director roles, on PC, console, mobile and VR.</p>
+        <div class="roles">
+          <div><b>Senior Shader Technical Director</b><span>That's No Moon</span></div>
+          <div><b>Technical Artist</b><span>Counterplay Games · Godfall</span></div>
+          <div><b>Technical Artist &amp; Consultant</b><span>Blue Dot Games · Sierra Division</span></div>
+          <div><b>Lead Environment Artist</b><span>Dekogon Studios · outsourcing</span></div>
+        </div>
+        <div class="studio-row"><img src="../assets/studios/bluedot.webp" alt="Blue Dot Games" title="Blue Dot Games" loading="lazy"><img src="../assets/studios/thatsnomoon.webp" alt="That's No Moon" title="That's No Moon" loading="lazy"><img src="../assets/studios/counterplay.webp" alt="Counterplay Games" title="Counterplay Games" loading="lazy"><img src="../assets/studios/sierra.webp" alt="Sierra Division" title="Sierra Division" loading="lazy"><img src="../assets/studios/sentient.webp" alt="Sentient Arts" title="Sentient Arts" loading="lazy"><img src="../assets/studios/blackmatter.webp" alt="Black Matter" title="Black Matter" loading="lazy"><img src="../assets/studios/nextgen.webp" alt="Next-Gen Dreams" title="Next-Gen Dreams" loading="lazy"><img src="../assets/studios/darewise.webp" alt="Darewise Entertainment" title="Darewise Entertainment" class=wide loading="lazy"><img src="../assets/studios/artstation.webp" alt="ArtStation" title="ArtStation" loading="lazy"><img src="../assets/studios/dekogon.webp" alt="Dekogon Studios" title="Dekogon Studios" class=wide loading="lazy"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-light" id="process">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="label">Process</span><h2 class="display">How it works</h2></div>
+        <p>Simple and scoped up front, so you know what you're getting before work starts.</p>
+      </div>
+      <ol class="steps3">
+        <li><b>Tell me about it</b><span>Send a short note on your project, engine version and what you need.</span></li>
+        <li><b>Scope and quote</b><span>I'll reply with an approach, a timeline and a price.</span></li>
+        <li><b>Build and hand over</b><span>Work ships with documentation and a handover, plus support after delivery.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block gut t-black" id="contact">
+    <div class="wrap">
+      <span class="label">Contact</span>
+      <h2 class="display big">Let's talk.</h2>
+      <div class="contact">
+        <a class="btn primary" href="mailto:michaelkinsey3d@gmail.com?subject=Services%20enquiry">Email me →</a>
+        <code id="email">michaelkinsey3d@gmail.com</code>
+        <button class="btn" type="button" id="copyBtn">Copy email</button>
+      </div>
+      <div class="else">
+        <a href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab store</a><a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a><a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a><a href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener">ArtStation</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="gut t-black"><div class="wrap">
+  <span>© 2026 Michael Kinsey</span>
+  <span><a href="/">Home</a> · <a href="/tools/">Tools</a> · <a href="https://www.fab.com/sellers/Michael%20Kinsey%203D" target="_blank" rel="noopener">Fab</a> · <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> · <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a></span>
+</div></footer>
+<div class="toast" id="toast" role="status"></div>
+<script>
+document.getElementById('copyBtn').addEventListener('click',async e=>{const t=document.getElementById('email').textContent;
+  try{await navigator.clipboard.writeText(t);e.target.textContent='Copied'}catch{const r=document.createRange();r.selectNodeContents(document.getElementById('email'));const s=getSelection();s.removeAllRanges();s.addRange(r);e.target.textContent='Selected'}
+  setTimeout(()=>e.target.textContent='Copy email',1800)});
+</script>
+</body>
+</html>
