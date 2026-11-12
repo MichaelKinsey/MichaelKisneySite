@@ -296,6 +296,11 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .col.fab.active .tilt img{opacity:.16!important}
 .col.fab .num,.col.fab .sub p{text-shadow:0 1px 10px rgba(0,0,0,.8)}
 .col.fab .enter{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+
+/* soft top gradient behind column titles, above the backgrounds */
+.col::before{content:"";position:absolute;left:0;right:0;top:0;height:62%;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.62) 22%,rgba(0,0,0,.34) 48%,rgba(0,0,0,.12) 72%,rgba(0,0,0,0) 100%)}
+@media (max-width:720px){.col::before{top:auto;bottom:0;height:75%;background:linear-gradient(0deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.55) 35%,rgba(0,0,0,0) 100%)}}
 </style>
 </head>
 <body>
