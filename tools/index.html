@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Unreal Engine 5 plugins by Michael Kinsey: MK SSDM+, MK Fast Landscape Erosion Brush, MK Tessellation Patch and more.">
+<meta name="description" content="Tools for your project by Michael Kinsey: Unreal Engine plugins and Blender tools, including MK SSDM+, MK Fast Landscape Erosion Brush and MK Tessellation Patch.">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"><link rel="icon" href="/favicon.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/favicon.png">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -11,7 +11,7 @@ body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
 </style>
-<title>Michael Kinsey Tools</title>
+<title>Tools for your project · Michael Kinsey</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
 <style>
@@ -152,6 +152,12 @@ footer a{text-decoration:none}footer a:hover{color:var(--ink)}
 .col.fab.active .tilt img{opacity:.38}
 footer .fl{display:inline-flex;align-items:center;gap:12px}
 footer .fmk{height:22px;width:auto;display:block;opacity:.9}
+
+/* platform badge on tiles */
+.tile .tags{position:absolute;z-index:2;top:16px;right:18px;display:flex;align-items:center;gap:8px}
+.tile .tags .pill{position:static}
+.tile .plat{display:flex;align-items:center;justify-content:center;height:28px;min-width:28px;padding:0 6px;border-radius:999px;background:rgba(0,0,0,.55)}
+.tile .plat img{height:18px;width:auto;max-width:none;display:block}
 </style>
 </head>
 <body>
@@ -174,52 +180,46 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   <section class="gut t-black" id="products">
     <div class="wrap">
       <div class="intro">
-        <span class="label">Tools · Unreal Engine 5</span>
-        <h1 class="display">Tools for Unreal Engine</h1>
-        <p>Plugins for terrain, displacement and surfaces. Plugin only, no engine changes, built without Nanite.</p>
+        <span class="label">Tools · Unreal Engine · Blender</span>
+        <h1 class="display">Tools for your project</h1>
+        <p>Plugins, features and tools for Unreal Engine and Blender. No engine changes, built for real performance targets.</p>
       </div>
 
       <div class="grid">
         <a class="tile" href="/ssdm-plus/">
           <img class="bg" src="ssdm-bg.webp" alt="" loading="lazy">
           <img class="logo" src="ssdm-logo.webp" width="256" height="256" alt="MK SSDM+">
-          <span class="pill">Fab · New</span>
+          <div class="tags"><span class="plat" title="Unreal Engine"><img src="/assets/platforms/unreal-icon.webp" alt="Unreal Engine" width="24" height="24"></span><span class="pill">Fab · New</span></div>
           <div class="desc"><b>MK SSDM+</b><span>Screen space displacement and contact shadows that agree with each other.</span><em>View product →</em></div>
         </a>
 
         <a class="tile" href="/erosion-brush/">
           <img class="bg" src="erosion-bg.webp" alt="" loading="lazy">
           <img class="logo" src="erosion-logo.webp" width="256" height="256" alt="MK Fast Landscape Erosion Brush">
-          <span class="pill">Fab</span>
+          <div class="tags"><span class="plat" title="Unreal Engine"><img src="/assets/platforms/unreal-icon.webp" alt="Unreal Engine" width="24" height="24"></span><span class="pill">Fab</span></div>
           <div class="desc"><b>MK Fast Landscape Erosion Brush</b><span>Instant procedural erosion with painted landscape layers.</span><em>View product →</em></div>
         </a>
 
         <a class="tile soon" href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">
           <div class="bg"></div><span class="ph">Image slot</span>
           <img class="logo" src="tess-logo.webp" width="256" height="256" alt="MK Tessellation Patch">
-          <span class="pill free">Free</span>
+          <div class="tags"><span class="plat" title="Unreal Engine"><img src="/assets/platforms/unreal-icon.webp" alt="Unreal Engine" width="24" height="24"></span><span class="pill free">Free</span></div>
           <div class="desc"><b>MK Tessellation Patch</b><span>A dense, shadow-casting mesh that follows the player. UE 5.6–5.8.</span><em>Download on Patreon →</em></div>
         </a>
 
         <a class="tile soon" href="#newsletter">
           <div class="bg"></div><span class="ph">Image slot</span>
           <div class="mark"><small>MK</small>Scalable Interaction System</div>
-          <span class="pill">Coming soon</span>
+          <div class="tags"><span class="plat" title="Unreal Engine"><img src="/assets/platforms/unreal-icon.webp" alt="Unreal Engine" width="24" height="24"></span><span class="pill">Coming soon</span></div>
           <div class="desc"><b>Two-way world interaction</b><span>Trails, ripples and foliage push, plus snow, wetness and mud on characters.</span><em>Get notified →</em></div>
         </a>
 
-        <a class="tile soon" href="#newsletter">
-          <div class="bg"></div><span class="ph">Image slot</span>
-          <div class="mark"><small>MK</small>World Capture</div>
-          <span class="pill">Coming soon</span>
-          <div class="desc"><b>World height capture</b><span>Height for rain occlusion, water and height-driven effects. Free and full versions.</span><em>Get notified →</em></div>
-        </a>
 
         <a class="tile soon" href="#newsletter">
           <div class="bg"></div><span class="ph">Image slot</span>
-          <div class="mark"><small>MK</small>Fast Weather System</div>
-          <span class="pill">Coming soon</span>
-          <div class="desc"><b>Weather and cloudscapes</b><span>Rain, ripples and volumetric clouds that stay fast.</span><em>Get notified →</em></div>
+          <div class="mark"><small>MK · Blender</small>Foliage Creator</div>
+          <div class="tags"><span class="plat" title="Blender"><img src="/assets/platforms/blender-icon.webp" alt="Blender" width="30" height="24"></span><span class="pill">Coming soon</span></div>
+          <div class="desc"><b>Game-ready foliage in Blender</b><span>Build trees and plants in Blender and export straight to Unreal, with pivot data and wind ready to go.</span><em>Get notified →</em></div>
         </a>
       </div>
     </div>
