@@ -251,6 +251,12 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .col.port.active h2{font-size:clamp(34px,8.6cqi,96px)}
 .col.port.active h2 span{display:inline}
 @media (max-width:720px){.col.port h2 span{display:inline}.col.port.active h2{font-size:clamp(40px,12vw,64px)}}
+
+/* Tools and Features: same stacked / one-line behaviour */
+.col.fab h2 span{display:block}
+.col.fab.active h2{font-size:clamp(34px,8.6cqi,96px)}
+.col.fab.active h2 span{display:inline}
+@media (max-width:720px){.col.fab h2 span{display:inline}.col.fab.active h2{font-size:clamp(40px,12vw,64px)}}
 </style>
 </head>
 <body>
@@ -296,7 +302,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <div class="shade"></div>
       <div class="head">
         <span class="num">02 · Fab</span>
-        <h2 class="display">Tools</h2>
+        <h2 class="display"><span>Tools</span> <span>and</span> <span>Features</span></h2>
         <div class="sub"><p>Plugins for UE5 terrain, displacement and surfaces. No Nanite, no engine changes.</p><span class="enter">Enter →</span></div>
       </div>
       <span class="slot label">Image slot · 3–5 images</span>
