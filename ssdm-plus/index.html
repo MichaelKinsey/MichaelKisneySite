@@ -240,6 +240,17 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .btn.pending::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.75;animation:pend 1.6s ease-in-out infinite}
 @keyframes pend{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.btn.pending::before{animation:none}}
+
+/* hero: full-bleed walkthrough video with a darkened details area */
+.hero.has-vid{position:relative;overflow:hidden;min-height:calc(100svh - 48px);display:flex;align-items:flex-end;isolation:isolate}
+.hero.has-vid .wrap{position:relative;z-index:2;width:100%;padding-block:clamp(120px,30vh,320px) clamp(40px,6vh,64px)}
+.hero-vid{position:absolute;inset:0;z-index:0;background:#000}
+.hero-vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0}
+.hero-vid video.on{opacity:1}
+.hero-vid::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,.1) 30%,rgba(0,0,0,.55) 60%,rgba(0,0,0,.88) 100%)}
+.hero.has-vid .hero-row{background:rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:clamp(20px,3vw,36px)}
+.hero.has-vid .badges span{background:rgba(0,0,0,.35)}
+@media (max-width:860px){.hero.has-vid{min-height:auto}.hero.has-vid .wrap{padding-top:clamp(180px,45vw,320px)}}
 </style>
 </head>
 <body>
@@ -261,10 +272,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
 
 <main id="top">
-  <section class="hero gut t-black">
+  <section class="hero gut t-black has-vid">
+    <div class="hero-vid" aria-hidden="true">
+      <video class="on" src="hero-1.mp4" poster="hero-1.webp" muted playsinline autoplay preload="auto"></video>
+      <video src="hero-2.mp4" muted playsinline preload="none"></video>
+      <video src="hero-3.mp4" muted playsinline preload="none"></video>
+    </div>
     <div class="wrap">
       <h1 class="sr">MK SSDM+</h1>
-      <figure class="banner"><img src="banner.webp" width="2000" height="627" alt="MK SSDM+ spelled out in displaced stone letters on a desert landscape"></figure>
       <div class="hero-row">
         <div>
           <div class="mini"><img class="mini-logo" src="logo.webp" width="56" height="56" alt="MK SSDM+ logo"><span class="label">Unreal Engine plugin · Screen space</span></div>
@@ -471,6 +486,19 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
  if(vs.length&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
   const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.preload='auto';v.play().catch(()=>{})}else v.pause()}),{threshold:.35});
   vs.forEach(v=>io.observe(v))}}
+
+/* hero walkthrough: three 8 s parts played back to back, looping */
+{const vs=[...document.querySelectorAll('.hero-vid video')];let i=0;
+ const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(still){vs[0].removeAttribute('autoplay');vs[0].pause()}
+ else{
+  const play=v=>{const p=v.play();if(p&&p.catch)p.catch(()=>{})};
+  vs[0].addEventListener('playing',()=>{vs[1].preload='auto'},{once:true});
+  vs.forEach((v,k)=>v.addEventListener('ended',()=>{const n=(k+1)%vs.length,nv=vs[n];nv.currentTime=0;play(nv);nv.classList.add('on');v.classList.remove('on');i=n;
+    const nn=vs[(n+1)%vs.length];nn.preload='auto'}));
+  document.addEventListener('visibilitychange',()=>{document.hidden?vs[i].pause():play(vs[i])});
+  play(vs[0]);
+ }}
 </script>
 </body>
 </html>
