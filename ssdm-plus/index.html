@@ -251,6 +251,13 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .hero.has-vid .hero-row{background:rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:clamp(20px,3vw,36px)}
 .hero.has-vid .badges span{background:rgba(0,0,0,.35)}
 @media (max-width:860px){.hero.has-vid{min-height:auto}.hero.has-vid .wrap{padding-top:clamp(180px,45vw,320px)}}
+
+/* quick intro band under the hero */
+.intro-band .wrap{padding-block:clamp(36px,5vw,56px)}
+.why{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,56px)}
+.why .label{color:var(--accent);font-size:13px}
+.why p{margin:8px 0 0;font-size:clamp(17px,1.6vw,20px);line-height:1.45;max-width:46ch}
+@media (max-width:720px){.why{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -298,6 +305,15 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           </div>
           <p class="compat"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gut t-dark intro-band" id="why">
+    <div class="wrap">
+      <div class="why">
+        <div><span class="label">Inspired by Crimson Desert</span><p>Screen space displacement like Crimson Desert's, brought to Unreal Engine 5 as a drop-in plugin.</p></div>
+        <div><span class="label">Built for non-Nanite workflows</span><p>Made for regular meshes and landscapes, aiming for similar quality to Nanite displacement at a reduced cost, through screen space displacement.</p></div>
       </div>
     </div>
   </section>
