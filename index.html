@@ -301,6 +301,10 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .col::before{content:"";position:absolute;left:0;right:0;top:0;height:62%;z-index:2;pointer-events:none;
   background:linear-gradient(180deg,rgba(0,0,0,.39) 0%,rgba(0,0,0,.31) 22%,rgba(0,0,0,.17) 48%,rgba(0,0,0,.06) 72%,rgba(0,0,0,0) 100%)}
 @media (max-width:720px){.col::before{top:auto;bottom:0;height:75%;background:linear-gradient(0deg,rgba(0,0,0,.39) 0%,rgba(0,0,0,.28) 35%,rgba(0,0,0,0) 100%)}}
+
+/* gradient hidden at rest, fades in when a column expands */
+.col::before{opacity:0;transition:opacity .6s cubic-bezier(.2,.7,.2,1)}
+.col.active::before{opacity:1}
 </style>
 </head>
 <body>
