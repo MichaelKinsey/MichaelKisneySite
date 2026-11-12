@@ -188,7 +188,8 @@ table{color:inherit;font:inherit}
 .t-grad .svc .label{color:#d9c3ab!important}
 
 /* portfolio slideshow + studio logos */
-.slides{position:absolute;inset:0;z-index:0;background:#000}
+.slides{position:absolute;inset:-7%;z-index:0;background:#000;transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.col.port{background:#000}
 .slides img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;opacity:0;transform:scale(1.06);
   transition:opacity 1.4s ease, transform 7s linear}
 .slides img.on{opacity:1;transform:scale(1)}
@@ -241,7 +242,6 @@ table{color:inherit;font:inherit}
 
     <a class="col port" id="c-port" href="https://michaelkinsey.artstation.com/" target="_blank" rel="noopener" data-name="Portfolio">
       <div class="slides" id="slides" aria-hidden="true"><img src="assets/portfolio/01.webp" alt="" class=on decoding="async"><img data-src="assets/portfolio/02.webp" alt="" decoding="async"><img data-src="assets/portfolio/03.webp" alt="" decoding="async"><img data-src="assets/portfolio/04.webp" alt="" decoding="async"><img data-src="assets/portfolio/05.webp" alt="" decoding="async"><img data-src="assets/portfolio/06.webp" alt="" decoding="async"><img data-src="assets/portfolio/07.webp" alt="" decoding="async"><img data-src="assets/portfolio/08.webp" alt="" decoding="async"><img data-src="assets/portfolio/09.webp" alt="" decoding="async"><img data-src="assets/portfolio/10.webp" alt="" decoding="async"><img data-src="assets/portfolio/11.webp" alt="" decoding="async"><img data-src="assets/portfolio/12.webp" alt="" decoding="async"><img data-src="assets/portfolio/13.webp" alt="" decoding="async"><img data-src="assets/portfolio/14.webp" alt="" decoding="async"><img data-src="assets/portfolio/15.webp" alt="" decoding="async"><img data-src="assets/portfolio/16.webp" alt="" decoding="async"><img data-src="assets/portfolio/17.webp" alt="" decoding="async"></div>
-      <canvas class="fx" id="lens"></canvas>
       <div class="shade"></div>
       <div class="head">
         <span class="num">01 · ArtStation</span>
@@ -403,46 +403,14 @@ function drawNodes(now){
 tut.addEventListener('pointermove',e=>{const r=tut.getBoundingClientRect();nx=e.clientX-r.left;ny=e.clientY-r.top;if(!nRaf)nRaf=requestAnimationFrame(drawNodes)});
 tut.addEventListener('pointerleave',()=>{nx=-999;cancelAnimationFrame(nRaf);nRaf=0;drawNodes()});
 
-/* Portfolio: buffer lens showing height contours under the cursor */
-const port=document.getElementById('c-port'),lens=document.getElementById('lens'),lctx=lens.getContext('2d');
-const P=new Uint8Array(512);{let s=7;const p=[...Array(256).keys()];for(let i=255;i>0;i--){s=(s*16807)%2147483647;const j=s%(i+1);[p[i],p[j]]=[p[j],p[i]]}for(let i=0;i<512;i++)P[i]=p[i&255]}
-const fade=t=>t*t*(3-2*t);
-function vn(x,y){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,h=(a,b)=>P[(P[a&255]+b)&255]/255,u=fade(xf),v=fade(yf),a=h(xi,yi),b=h(xi+1,yi),c=h(xi,yi+1),d=h(xi+1,yi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v}
-function fbm(x,y){let s=0,a=.5,f=1;for(let i=0;i<5;i++){s+=a*vn(x*f,y*f);f*=2.03;a*=.5}return s}
-let contour=null,cw=0,ch=0;
-function buildContour(){ // contour map sized to the widest the column gets (half the screen)
-  cw=Math.ceil(innerWidth*.5);ch=Math.ceil(hero.clientHeight);
-  const W=Math.ceil(cw/3),H=Math.ceil(ch/3),f=new Float32Array(W*H);
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++)f[y*W+x]=fbm(x/90,y/90);
-  const off=document.createElement('canvas');off.width=cw;off.height=ch;const o=off.getContext('2d');
-  o.fillStyle='rgba(0,0,0,.85)';o.fillRect(0,0,cw,ch);
-  o.strokeStyle='#e85002';o.lineWidth=1;o.beginPath();
-  for(let lv=1;lv<16;lv++){const L=lv/16;
-    for(let y=0;y<H-1;y++)for(let x=0;x<W-1;x++){
-      const a=f[y*W+x],b=f[y*W+x+1],c=f[(y+1)*W+x+1],d=f[(y+1)*W+x];
-      const k=(a>L)|(b>L)<<1|(c>L)<<2|(d>L)<<3;if(k===0||k===15)continue;
-      const e=[[x+(L-a)/(b-a),y],[x+1,y+(L-b)/(c-b)],[x+(L-d)/(c-d),y+1],[x,y+(L-a)/(d-a)]];
-      const sg={1:[0,3],2:[0,1],3:[1,3],4:[1,2],5:[0,1,2,3],6:[0,2],7:[2,3],8:[2,3],9:[0,2],10:[0,3,1,2],11:[1,2],12:[1,3],13:[0,1],14:[0,3]}[k];
-      for(let s=0;s<sg.length;s+=2){o.moveTo(e[sg[s]][0]*3,e[sg[s]][1]*3);o.lineTo(e[sg[s+1]][0]*3,e[sg[s+1]][1]*3)}}}
-  o.stroke();
-  // faint grid, like a debug view
-  o.strokeStyle='rgba(232,80,2,.18)';o.beginPath();for(let x=0;x<cw;x+=48){o.moveTo(x,0);o.lineTo(x,ch)}for(let y=0;y<ch;y+=48){o.moveTo(0,y);o.lineTo(cw,y)}o.stroke();
-  contour=off;
-}
-let lx=-999,ly=-999,raf=0;
-function drawLens(){raf=0;
-  const r=port.getBoundingClientRect();
-  if(lens.width!==Math.round(r.width)||lens.height!==Math.round(r.height)){lens.width=Math.round(r.width);lens.height=Math.round(r.height)}
-  lctx.clearRect(0,0,lens.width,lens.height);if(!contour||lx<-900)return;
-  const R=Math.min(150,r.width*.28);
-  lctx.save();lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.clip();lctx.drawImage(contour,0,0);lctx.restore();
-  lctx.strokeStyle='#e85002';lctx.lineWidth=1.5;lctx.beginPath();lctx.arc(lx,ly,R,0,Math.PI*2);lctx.stroke();
-  lctx.fillStyle='#e85002';lctx.font='500 11px "JetBrains Mono", monospace';lctx.fillText('BUFFER VIS · HEIGHT',lx-R+6,ly+R+18);
-}
-port.addEventListener('pointermove',e=>{const r=port.getBoundingClientRect();lx=e.clientX-r.left;ly=e.clientY-r.top;if(!raf)raf=requestAnimationFrame(drawLens)});
-port.addEventListener('pointerleave',()=>{lx=-999;drawLens()});
-port.addEventListener('transitionend',()=>drawLens());
-if(!touchMode){buildContour();let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{buildContour();drawLens()},200)})}
+/* Portfolio: slideshow tilts toward the cursor */
+{const port=document.getElementById('c-port'),sl=document.getElementById('slides');
+ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  port.addEventListener('pointermove',e=>{const r=port.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    sl.style.setProperty('--ry',(x*10).toFixed(2)+'deg');sl.style.setProperty('--rx',(-y*8).toFixed(2)+'deg')});
+  port.addEventListener('pointerleave',()=>{sl.style.setProperty('--ry','0deg');sl.style.setProperty('--rx','0deg')});
+ }}
 
 /* sticky bar after the columns */
 const bar=document.getElementById('bar');
