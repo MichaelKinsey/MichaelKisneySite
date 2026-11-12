@@ -285,6 +285,16 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .col:not(.active) h2{font-size:clamp(26px,10.5cqi,84px)}
 .col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(30px,7.4cqi,82px)}
 @media (max-width:720px){.col h2,.col:not(.active) h2,.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(32px,9.5vw,52px)}}
+
+/* Tools column: crossfading clips */
+.vids{position:absolute;inset:0;z-index:0;background:#000}
+.vids video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease}
+.vids video.on{opacity:1}
+.vids::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.6) 0%,rgba(0,0,0,.25) 35%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.85) 100%)}
+.col.fab .tilt img{opacity:.10!important}
+.col.fab.active .tilt img{opacity:.16!important}
+.col.fab .num,.col.fab .sub p{text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.col.fab .enter{background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
 </style>
 </head>
 <body>
@@ -325,7 +335,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
     </a>
 
     <a class="col fab" id="c-fab" href="/tools/">
-      <div class="pan"></div>
+      <div class="vids" id="vids" aria-hidden="true"><video muted playsinline preload="auto" poster="assets/tools-clips/erosion-1.webp" class=on src="assets/tools-clips/erosion-1.mp4"></video><video muted playsinline preload="none" poster="assets/tools-clips/tess-1.webp" src="assets/tools-clips/tess-1.mp4"></video><video muted playsinline preload="none" poster="assets/tools-clips/erosion-2.webp" src="assets/tools-clips/erosion-2.mp4"></video><video muted playsinline preload="none" poster="assets/tools-clips/tess-2.webp" src="assets/tools-clips/tess-2.mp4"></video></div>
       <div class="tilt fx"><img class="tm" src="/assets/brand/mk.webp" alt="" data-w="478" height="400"></div>
       <div class="shade"></div>
       <div class="head">
@@ -502,6 +512,18 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
 /* keep the hero exactly one screen tall under the top bar */
 {const bar=document.getElementById('bar'),set=()=>document.documentElement.style.setProperty('--barh',bar.offsetHeight+'px');set();
  if('ResizeObserver' in window)new ResizeObserver(set).observe(bar);addEventListener('resize',set)}
+
+/* Tools column clips: play one at a time, crossfade to the next when it ends */
+{const box=document.getElementById('vids'),vs=[...box.querySelectorAll('video')];let i=0;
+ const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const play=v=>{const p=v.play();if(p&&p.catch)p.catch(()=>{})};
+ if(!still){
+  vs.forEach((v,k)=>v.addEventListener('ended',()=>{if(k!==i)return;const n=(i+1)%vs.length,nv=vs[n];
+    nv.preload='auto';nv.currentTime=0;play(nv);nv.classList.add('on');v.classList.remove('on');i=n;
+    const nn=vs[(n+1)%vs.length];if(nn.preload==='none')nn.preload='auto'}));
+  addEventListener('load',()=>{vs[1].preload='auto';play(vs[0])});
+  document.addEventListener('visibilitychange',()=>{document.hidden?vs[i].pause():play(vs[i])});
+ }}
 </script>
 </body>
 </html>
