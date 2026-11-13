@@ -342,7 +342,28 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         <div><span class="label">02 · What it does</span><h2 class="display">Lots of depth, little cost</h2></div>
         <p>Add one node to a material and it displaces. Everything below ships in v1.0.</p>
       </div>
-      <div id="feats"></div>
+      <div id="feats">
+        <div class="feat">
+          <div class="media vid"><video src="one-node.mp4" poster="one-node.webp" muted loop playsinline preload="none" aria-label="One node, real depth"></video></div>
+          <div><span class="label">Displacement</span><h3 class="display">One node, real depth</h3><p>Wire your height in centimetres into the MK_SSDM_Height node. The surface displaces in screen space on regular meshes and landscapes, with no tessellation. An optional direction pin overrides the vertex normal.</p></div>
+        </div>
+        <div class="feat">
+          <div class="media vid"><video src="temporal.mp4" poster="temporal.webp" muted loop playsinline preload="none" aria-label="Stable under TAA and TSR"></video></div>
+          <div><span class="label">Temporal</span><h3 class="display">Stable under TAA and TSR</h3><p>Displaced depth and velocity are written back, including camera parallax on moving and skinned objects, so temporal anti-aliasing reprojects the displaced surface instead of smearing it.</p></div>
+        </div>
+        <div class="feat">
+          <div class="media vid"><video src="edges.mp4" poster="edges.webp" muted loop playsinline preload="none" aria-label="No tearing, no seams"></video></div>
+          <div><span class="label">Clean edges</span><h3 class="display">No tearing, no seams</h3><p>Silhouette fade, crease smoothing on hard edges and an occlusion ramp around buried meshes keep displaced surfaces attached where they meet other geometry. Triplanar-mapped materials are supported too.</p></div>
+        </div>
+        <div class="feat">
+          <div class="media vid"><video src="decals.mp4" poster="decals.webp" muted loop playsinline preload="none" aria-label="Decals with height"></video></div>
+          <div><span class="label">Decals</span><h3 class="display">Decals with height</h3><p>Deferred and mesh decals with the node write their height too, replacing the surface height inside the decal.</p></div>
+        </div>
+        <div class="feat">
+          <div class="media vid"><video src="quality.mp4" poster="quality.webp" muted loop playsinline preload="none" aria-label="Low to Epic in one setting"></video></div>
+          <div><span class="label">Scalable</span><h3 class="display">Low to Epic in one setting</h3><p>One quality preset sets resolution, filtering, smoothing and shadow steps together, and follows your project&#x27;s scalability levels.</p></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -476,19 +497,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 <footer class="gut"><div class="wrap"><span class="fl"><img class="fmk" src="/assets/brand/mk.webp" alt="MK" width="26" height="22">© 2026 Michael Kinsey</span><span>Fab · Patreon · YouTube · Photography</span></div></footer>
 
 <script>
-/* ---------- strengths (draft list from the plan) ---------- */
-const FEATS=[
- ["Displacement","One node, real depth","Wire your height in centimetres into the MK_SSDM_Height node. The surface displaces in screen space on regular meshes and landscapes, with no tessellation. An optional direction pin overrides the vertex normal.","Material graph with MK_SSDM_Height, then the displaced surface in the viewport. 8 s.","one-node"],
- ["Temporal","Stable under TAA and TSR","Displaced depth and velocity are written back, including camera parallax on moving and skinned objects, so temporal anti-aliasing reprojects the displaced surface instead of smearing it.","Camera dolly with TSR on, displaced surface staying sharp. 8 s.","temporal"],
- ["Clean edges","No tearing, no seams","Silhouette fade, crease smoothing on hard edges and an occlusion ramp around buried meshes keep displaced surfaces attached where they meet other geometry. Triplanar-mapped materials are supported too.","Character walking over a displaced floor, edges staying clean. 8 s.","edges"],
- ["Decals","Decals with height","Deferred and mesh decals with the node write their height too, replacing the surface height inside the decal.","Footprint or crack decal placed on a displaced floor, shadows updating. 6 s.","decals"],
- ["Scalable","Low to Epic in one setting","One quality preset sets resolution, filtering, smoothing and shadow steps together, and follows your project's scalability levels.","Switching r.MKSSDMPlus.Quality 0 to 3 with stat gpu visible. 10 s.","quality"]
-];
-document.getElementById('feats').innerHTML=FEATS.map(f=>`
- <div class="feat">
-  ${f[4]?`<div class="media vid"><video src="${f[4]}.mp4" poster="${f[4]}.webp" muted loop playsinline preload="none" aria-label="${f[1]}"></video></div>`:`<div class="media"><b>CAPTURE</b><span>${f[3]}</span></div>`}
-  <div><span class="label">${f[0]}</span><h3 class="display">${f[1]}</h3><p>${f[2]}</p></div>
- </div>`).join('');
+
 
 /* before / after */
 const ba=document.getElementById('ba'),range=document.getElementById('baRange');
