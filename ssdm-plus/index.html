@@ -285,6 +285,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <video src="hero-2.mp4" muted playsinline preload="none"></video>
       <video src="hero-3.mp4" muted playsinline preload="none"></video>
     </div>
+    <script>/* HD hero on large or high-DPI screens */(function(){if(innerWidth*(devicePixelRatio||1)<2200)return;document.querySelectorAll('.hero-vid video').forEach(function(v){v.src=v.getAttribute('src').replace('.mp4','-hd.mp4')})})()</script>
     <div class="wrap">
       <h1 class="sr">MK SSDM+</h1>
       <div class="hero-row">
