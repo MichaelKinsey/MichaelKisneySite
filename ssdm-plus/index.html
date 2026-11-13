@@ -9,6 +9,13 @@
 body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
+
+/* product facts in the Get SSDM+ section */
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.badges span{font:500 12px var(--f-mono);letter-spacing:.06em;padding:6px 10px;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.75);background:rgba(0,0,0,.35)}
+.badges span.no{border-color:#ff5a3c;color:#ff5a3c}
+.compat{display:flex;gap:10px;align-items:flex-start;max-width:52ch;margin:0 0 26px;padding:10px 12px;border-left:3px solid #ff5a3c;background:rgba(0,0,0,.45);font-size:14.5px;color:#fff}
+.compat b{color:#ff5a3c;font:500 11.5px var(--f-mono);letter-spacing:.12em;white-space:nowrap;padding-top:2px}
 </style>
 <title>MK SSDM+</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -472,6 +479,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <div class="cta-text">
       <span class="label">Coming to Fab</span>
       <h2 class="display">Get MK SSDM<span style="color:var(--accent)">+</span></h2>
+      <div class="badges">
+        <span>UE 5.8 · 5.9 · Win64</span>
+        <span>Plugin only · no engine changes</span>
+        <span class="no">Nanite not supported</span>
+        <span>v1.0</span>
+        <span>From $25.99</span>
+      </div>
+      <p class="compat"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
       <div class="ctas">
         <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
         <a class="btn" href="docs/">Read the docs</a>
