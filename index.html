@@ -330,6 +330,39 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .bar nav a.dc{display:inline-flex;align-items:center;opacity:.8;transition:opacity .2s}
 .bar nav a.dc:hover{opacity:1}
 .bar nav a.dc img{height:16px;width:auto;display:block;max-width:none}
+
+/* Tablet in portrait: stack the three columns as rows, same as phones */
+@media (min-width:721px) and (max-width:1199px) and (orientation:portrait){
+.cue{display:none}
+.hero{flex-direction:column}
+.col + .col{border-left:0;border-top:1px solid rgba(255,255,255,.07)}
+.col .head{top:auto;bottom:18px;left:18px}
+.col h2{font-size:clamp(40px,12vw,64px);white-space:normal}
+.col .slot,.col .fx,.tilt{display:none}
+.col.port .head{bottom:86px}
+.studios{left:18px;bottom:16px}
+.studios .label{display:none}
+.studios div{gap:10px 14px}
+.studios img{height:22px}
+.studios img.wide{height:12px}
+.col .head{top:auto!important}
+.hero{height:calc(100svh - 92px)!important}
+.col.port h2 span{display:inline}
+.col.port.active h2{font-size:clamp(40px,12vw,64px)}
+.col.fab h2 span{display:inline}
+.col.fab.active h2{font-size:clamp(40px,12vw,64px)}
+.col.fab .head,.col.tut .head{bottom:86px}
+.col.tut h2 span,.col.tut h2 span.b{display:inline}
+.col.tut.active h2{font-size:clamp(40px,12vw,64px)}
+.studios.plat img.pl{transform:scale(.8);transform-origin:left center}
+.col:not(.active) h2{font-size:clamp(40px,12vw,64px)}
+.hero{height:calc(100svh - var(--barh,86px))!important}
+.col h2,.col:not(.active) h2,.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(32px,9.5vw,52px)}
+.col::before{top:auto;bottom:0;height:75%;background:linear-gradient(0deg,rgba(0,0,0,.39) 0%,rgba(0,0,0,.28) 35%,rgba(0,0,0,0) 100%)}
+.col h2,.col:not(.active) h2,.col.port.active h2,.col.fab.active h2,.col.tut.active h2{font-size:clamp(26px,7.8vw,42px);white-space:normal}
+.col .head{right:18px}
+.studios img.dw{height:9px}
+}
 </style>
 </head>
 <body>

@@ -650,7 +650,7 @@ function layoutDevice(){
   setTimeout(drawSel,50);
 }
 document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));dev=b.dataset.dev;setScope(dev==='phone'?'phone':dev==='tablet'?'tablet':'all');layoutDevice();renderInsp()});
-$('#rot').onclick=()=>{landscape=!landscape;layoutDevice()};
+$('#rot').onclick=()=>{landscape=!landscape;if(scopeOri(editScope))setScope(scopeBase(editScope)+(landscape?'L':'P'));layoutDevice();renderInsp()};
 window.addEventListener('resize',layoutDevice);
 window.addEventListener('beforeunload',e=>{if(cur&&cur.dirty){e.preventDefault();e.returnValue=''}});
 
@@ -830,6 +830,10 @@ function layoutPanel(el){
     if(dsp==='inline'&&!a)h+=`<div class="warn">This is an <b>inline</b> element, so it sits inside the line of text: top/bottom margin, padding, width and height don't push other things away. Switch it to <b>Block</b> to give it its own row and real spacing.</div>`;
     const opts=[['inline','Inline'],['block','Block'],['inline-block','Inline block'],['flex','Row'],['grid','Grid']];
     h+=`<div class="field"><label>Display as</label><div class="row">${opts.map(([v,t])=>`<button data-disp="${v}" class="${dsp===v?'on':''}" title="${{inline:'Flows inside a line of text',block:'Takes its own full row',['inline-block']:'Sits in a line but respects spacing and size',flex:'Lays its children out in a row',grid:'Lays its children out in a grid'}[v]}">${t}</button>`).join('')}</div></div>`}
+  if(/flex/.test(cs.display)){const dir=cs.flexDirection.startsWith('column')?'column':'row';
+    h+=`<div class="field"><label>Lay out its children</label><div class="row"><button data-fdir="row" class="${dir==='row'?'on':''}">Side by side</button><button data-fdir="column" class="${dir==='column'?'on':''}">Stacked</button><button data-fwrap class="${cs.flexWrap==='wrap'?'on':''}" title="Let items move onto a new line when there isn't room">Wrap</button></div></div>`}
+  if(/grid/.test(cs.display)){const n=cs.gridTemplateColumns.split(' ').filter(Boolean).length;
+    h+=`<div class="field"><label>Columns</label><div class="row">${[1,2,3,4,5,6].map(k=>`<button data-gcols="${k}" class="${n===k?'on':''}">${k}</button>`).join('')}</div></div>`}
   h+=clipReport(live);
   if(live.textContent.trim()){const ta=cs.textAlign.replace('start','left').replace('end','right');
     h+=`<div class="field"><label>Text alignment</label><div class="row">${['left','center','right'].map(v=>`<button data-ta="${v}" class="${ta===v?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
@@ -868,6 +872,9 @@ function wireLayout(el){
   insp.querySelectorAll('[data-anchor]').forEach(b=>b.addEventListener('click',()=>{const[v,hz]=b.dataset.anchor.split('-');anchorTo(id,v,hz,+(q('#lGap')||{}).value||24)}));
   if(q('#lGap'))q('#lGap').addEventListener('change',e=>{const live=liveEl(id),a=anchorInfo(live);anchorTo(id,a.v==='stretch'?'top':a.v,a.h==='stretch'?'left':a.h,+e.target.value||0)});
   insp.querySelectorAll('[data-self]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'align-self':b.dataset.self==='auto'?'':b.dataset.self,'justify-self':b.dataset.self==='auto'?'':b.dataset.self}).then(renderInsp)));
+  insp.querySelectorAll('[data-fdir]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'flex-direction':b.dataset.fdir},b.dataset.fdir==='row'?'Side by side':'Stacked').then(renderInsp)));
+  insp.querySelectorAll('[data-fwrap]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'flex-wrap':b.classList.contains('on')?'nowrap':'wrap'}).then(renderInsp)));
+  insp.querySelectorAll('[data-gcols]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'grid-template-columns':`repeat(${b.dataset.gcols},minmax(0,1fr))`},b.dataset.gcols+' columns').then(renderInsp)));
   insp.querySelectorAll('[data-disp]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{display:b.dataset.disp},'Now displayed as '+b.textContent.toLowerCase()).then(renderInsp)));
   insp.querySelectorAll('[data-place]').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.place;
     styleBoth(id,{'margin-left':v==='left'?'0':'auto','margin-right':v==='right'?'0':'auto'},'Placed '+v).then(renderInsp)}));
@@ -1121,18 +1128,22 @@ function addElement(kind){
 // tablet and desktop layout is untouched.
 // =====================================================================
 const MQ={phone:'(max-width: 600px), (max-height: 500px)',desk:'(min-width: 601px) and (min-height: 501px)',
-  tablet:'(min-width: 601px) and (max-width: 1199px) and (min-height: 501px)',pc:'(min-width: 1200px) and (min-height: 501px)'};
+  tablet:'(min-width: 601px) and (max-width: 1199px) and (min-height: 501px)',pc:'(min-width: 1200px) and (min-height: 501px)',
+  tabletP:'(min-width: 601px) and (max-width: 1199px) and (min-height: 501px) and (orientation: portrait)',
+  tabletL:'(min-width: 601px) and (max-width: 1199px) and (min-height: 501px) and (orientation: landscape)',
+  phoneP:'(max-width: 600px) and (orientation: portrait)',phoneL:'(max-height: 500px) and (orientation: landscape)'};
 // later blocks win, so the specific tablet/desktop blocks come after the older combined one
-const SCOPES=['desk','tablet','pc','phone'];
-const SCOPE_NAME={phone:'Phone',tablet:'Tablet',pc:'Desktop',desk:'Tablet & desktop'};
+const SCOPES=['desk','tablet','tabletP','tabletL','pc','phone','phoneP','phoneL'];
+const SCOPE_NAME={phone:'Phone',tablet:'Tablet',pc:'Desktop',desk:'Tablet & desktop',tabletP:'Tablet portrait',tabletL:'Tablet landscape',phoneP:'Phone portrait',phoneL:'Phone landscape'};
+const scopeBase=s=>s.replace(/[PL]$/,''),scopeOri=s=>/[PL]$/.test(s)?s.slice(-1):'';
 let editScope='all';
 function scopeCls(el){return [...el.classList].find(c=>/^m-[a-z0-9]{4,}$/.test(c))||''}
 function ensureScopeCls(el){let c=scopeCls(el);if(c)return c;
   const used=new Set([...cur.doc.querySelectorAll('[class*="m-"]')].flatMap(e=>[...e.classList]));
   do{c='m-'+Math.random().toString(36).slice(2,6)}while(used.has(c));el.classList.add(c);return c}
 function readScreens(doc){
-  const st=(doc||cur.doc).getElementById('ed-screens'),out={phone:{},desk:{},tablet:{},pc:{}};if(!st)return out;
-  const re=/\/\*(phone|desk|tablet|pc)\*\/\s*@media[^{]*\{([\s\S]*?)\n\}/g;let m;
+  const st=(doc||cur.doc).getElementById('ed-screens'),out=Object.fromEntries(SCOPES.map(k=>[k,{}]));if(!st)return out;
+  const re=/\/\*(phoneP|phoneL|phone|desk|tabletP|tabletL|tablet|pc)\*\/\s*@media[^{]*\{([\s\S]*?)\n\}/g;let m;
   while((m=re.exec(st.textContent))){const rr=/\.(m-[a-z0-9]+)\{([^}]*)\}/g;let r;
     while((r=rr.exec(m[2]))){const o=out[m[1]][r[1]]={};r[2].split(';').forEach(d=>{const i=d.indexOf(':');if(i>0)o[d.slice(0,i).trim()]=d.slice(i+1).replace(/!important/,'').trim()})}}
   return out;
@@ -1164,18 +1175,24 @@ function clearScoped(id,scope){const L=srcEl(id);const c=L&&scopeCls(L);if(!c)re
 function scopePanel(el){
   const c=scopeCls(el),data=readScreens();
   const list=o=>Object.keys(o).map(k=>k==='display'&&o[k]==='none'?'hidden':k).join(', ');
-  const opt=(k,t)=>`<button data-scope="${k}" class="${editScope===k?'on':''}">${t}</button>`;
+  const opt=(k,t)=>`<button data-scope="${k}" class="${scopeBase(editScope)===k?'on':''}">${t}</button>`;
   let h=`<div class="scopebar ${editScope!=='all'?'ph':''}"><div class="row"><span>Changes apply to</span>${opt('all','All screens')}${opt('pc','Desktop only')}${opt('tablet','Tablet only')}${opt('phone','Phone only')}</div>`;
+  const b=scopeBase(editScope),o=scopeOri(editScope);
+  if(b==='tablet'||b==='phone')h+=`<div class="row" style="margin-top:6px"><span class="hint" style="margin:0">Orientation</span>${[['','Both'],['P','Portrait'],['L','Landscape']].map(([k,t])=>`<button data-ori="${k}" class="${o===k?'on':''}">${t}</button>`).join('')}</div>`;
   h+=`<p class="hint" style="margin:6px 0 0">${editScope==='all'?'Changes here are the base for every screen. Tablet-only and phone-only changes still win on those screens.':`Layout and appearance changes now only affect <b>${SCOPE_NAME[editScope].toLowerCase()}</b> screens. Text, links and images are shared by every screen.`}</p>`;
   const chips=SCOPES.filter(k=>c&&data[k][c]&&Object.keys(data[k][c]).length).map(k=>`<span class="chip">${SCOPE_NAME[k]}: ${esc(list(data[k][c]))}</span><button data-clrscope="${k}">Clear</button>`).join('');
   if(chips)h+=`<div class="row" style="margin-top:6px">${chips}</div>`;
   const hid=k=>c&&data[k][c]&&data[k][c].display==='none';
-  h+=`<div class="row" style="margin-top:6px"><span class="hint" style="margin:0">Hide on</span>${['pc','tablet','phone'].map(k=>`<button data-vis="${k}" class="${hid(k)||(k!=='phone'&&hid('desk'))?'on':''}">${SCOPE_NAME[k]}</button>`).join('')}</div></div>`;
+  h+=`<div class="row" style="margin-top:6px"><span class="hint" style="margin:0">Hide on</span>${['pc','tablet','phone',...(scopeOri(editScope)?[editScope]:[])].map(k=>`<button data-vis="${k}" class="${hid(k)||(k!=='phone'&&hid('desk'))?'on':''}">${SCOPE_NAME[k]}</button>`).join('')}</div></div>`;
   return h;
 }
 function wireScope(el){
   const id=el.dataset.ed;
   insp.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{setScope(b.dataset.scope);renderInsp()}));
+  insp.querySelectorAll('[data-ori]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.ori,base=scopeBase(editScope);setScope(base+k);
+    // show the matching orientation so the change is visible
+    if(k&&dev===base&&landscape!==(k==='L')){landscape=k==='L';layoutDevice()}
+    renderInsp()}));
   insp.querySelectorAll('[data-clrscope]').forEach(b=>b.addEventListener('click',()=>clearScoped(id,b.dataset.clrscope)));
   insp.querySelectorAll('[data-vis]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.vis,c=scopeCls(el),o=c&&readScreens()[k][c],on=o&&o.display==='none';
     // an older "tablet & desktop" hide is split into the two new ones before toggling one of them
