@@ -68,6 +68,11 @@ details.adv summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:
 .stale.show{display:flex}
 .stale b{color:#fff}
 .app.has-stale{grid-template-rows:48px auto 1fr}
+.agrid{display:grid;grid-template-columns:repeat(3,26px);gap:4px}
+.agrid .ag{width:26px;height:26px;padding:0;border-radius:5px;position:relative}
+.agrid .ag::after{content:"";position:absolute;inset:9px;border-radius:2px;background:#666}
+.agrid .ag.on{border-color:var(--accent)}.agrid .ag.on::after{background:var(--accent)}
+.row button.on{border-color:var(--accent);color:#fff}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#222;border:1px solid #444;padding:9px 14px;border-radius:9px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9}
 .toast.show{opacity:1}
 .welcome{padding:14px;color:var(--muted)}
@@ -88,6 +93,8 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
     </div>
     <div class="grp">
       <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
+    </div>
+    <div class="grp"><button id="guides" class="on" title="Show margins, padding and what the selection is pinned to">Guides</button>
     </div>
     <span class="sp"></span>
     <span class="status" id="status">Loading…</span>
@@ -209,7 +216,17 @@ frame.addEventListener('load',()=>{
   .__ed_tag{position:absolute;left:-2px;top:-20px;background:#e85002;color:#fff;font:600 11px/18px system-ui;padding:0 6px;border-radius:3px 3px 0 0;white-space:nowrap}
   [contenteditable=true]{outline:2px solid #e85002!important;outline-offset:2px;cursor:text}
   html.__ed_edit [data-ed]{pointer-events:auto!important}
-  html.__ed_edit a,html.__ed_edit button{cursor:default}`;
+  html.__ed_edit a,html.__ed_edit button{cursor:default}
+  .__ed_g>div{position:fixed;pointer-events:none;z-index:2147483644}
+  .__ed_gm{background:rgba(255,153,51,.18);outline:1px dashed rgba(255,153,51,.8)}
+  .__ed_gp{background:rgba(64,200,120,.16);outline:1px dashed rgba(64,200,120,.85)}
+  .__ed_gpar{outline:1px dashed #4aa3ff}
+  .__ed_gpar span{position:absolute;right:0;top:-18px;background:#4aa3ff;color:#fff;font:600 10px/16px system-ui;padding:0 5px;border-radius:3px 3px 0 0;white-space:nowrap}
+  .__ed_gv{border-left:1px solid #ff3d7f}.__ed_gh{border-top:1px solid #ff3d7f}
+  .__ed_gc{border-left:1px dashed #ff3d7f}.__ed_gcx{border-top:1px dashed #ff3d7f}
+  .__ed_gv span,.__ed_gh span,.__ed_gc span,.__ed_gcx span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#ff3d7f;color:#fff;font:600 10px/15px system-ui;padding:0 4px;border-radius:3px;white-space:nowrap}
+  .__ed_drop{position:fixed;display:none;pointer-events:none;z-index:2147483647;outline:2px solid #4aa3ff;box-shadow:0 0 0 1px #fff}
+  html.__ed_edit .__ed_dragging{cursor:grabbing!important}`;
   d.head.appendChild(st);
   const box=d.createElement('div');box.className='__ed_box';box.innerHTML='<span class="__ed_tag"></span>';
   const hov=d.createElement('div');hov.className='__ed_hov';
@@ -219,7 +236,7 @@ frame.addEventListener('load',()=>{
   d.addEventListener('mousemove',e=>{if(mode!=='edit'||editing){hov.style.display='none';return}const n=pick(e);place(hov,n)},true);
   d.addEventListener('mouseleave',()=>{hov.style.display='none'});
   d.addEventListener('click',e=>{
-    if(mode!=='edit')return;
+    if(mode!=='edit'||suppressClick)return;
     if(editing&&editing.contains(e.target))return;
     e.preventDefault();e.stopPropagation();
     if(editing)finishEdit();
@@ -231,6 +248,7 @@ frame.addEventListener('load',()=>{
   },true);
   d.addEventListener('submit',e=>{if(mode==='edit')e.preventDefault()},true);
   d.addEventListener('keydown',keys,true);
+  wireDrag(d);
   d.addEventListener('scroll',()=>{drawSel()},true);
   frame.contentWindow.addEventListener('resize',drawSel);
   if(pendingSel){selId=pendingSel;pendingSel=null}
@@ -245,8 +263,9 @@ function place(b,el){
 function drawSel(){
   const d=liveDoc();if(!d)return;const b=d.querySelector('.__ed_box');if(!b)return;
   const el=selId&&liveEl(selId);
-  if(!el||mode!=='edit'){b.style.display='none';return}
+  if(!el||mode!=='edit'){b.style.display='none';hideGuides();return}
   place(b,el);const L=srcEl(selId);if(L){const l=label(L);b.firstChild.textContent=l.tag+l.cls}
+  drawGuides();
 }
 setInterval(drawSel,400);
 
@@ -341,12 +360,18 @@ function renderInsp(){
     const im=el.querySelector('img[data-ed],video[data-ed]');
     if(im)h+=`<p class="hint">Contains ${im.tagName==='VIDEO'?'a video':'an image'}. <a data-go="${im.dataset.ed}" style="color:var(--accent);cursor:pointer">Select it</a> to replace it.</p>`;
   }
+  h+=layoutPanel(el);
+  const clip=getClip();
   h+=`<div class="sec"><h3>Block</h3><div class="row" style="margin-top:10px">
+    <button id="bCopy" title="Copy this block with its styles (Ctrl+C)">Copy</button>
+    <button id="bPasteA" ${clip?'':'disabled'} title="Paste after this block (Ctrl+V)">Paste after</button>
+    <button id="bPasteI" ${clip?'':'disabled'} title="Paste as the last item inside this block">Paste inside</button>
     <button id="bDup" title="Copy this block and place the copy right after it">Duplicate</button>
     <button id="bUp">Move up</button><button id="bDown">Move down</button>
     <button id="bHide">${el.hasAttribute('hidden')?'Show':'Hide'}</button>
     <button id="bDel" class="danger">Delete</button></div>
-    <p class="hint">Tip: Duplicate a tile, card or logo to add another, then change its text and image.</p></div>
+    ${clip?`<p class="hint">Clipboard: <b>${esc(clip.label)}</b> from ${esc(clip.from)}</p>`:''}
+    <p class="hint">Tip: Duplicate a tile, card or logo to add another, then change its text and image. Copy works across pages.</p></div>
   <details class="adv"><summary>Advanced: HTML and style</summary>
     <div class="field"><label>Classes</label><input id="fClass" value="${esc(el.getAttribute('class')||'')}"></div>
     <div class="field"><label>Inline style</label><input id="fStyle" value="${esc(el.getAttribute('style')||'')}" placeholder="e.g. color:#fff; margin-top:20px"></div>
@@ -360,6 +385,7 @@ function renderPageInsp(){
   insp.innerHTML=`<h3>Page</h3>
   <div class="field"><label>Browser tab title</label><input id="pTitle" value="${esc(t?t.textContent:'')}"></div>
   <div class="field"><label>Search engine description</label><textarea class="text" id="pDesc" rows="3">${esc(m?m.getAttribute('content'):'')}</textarea></div>
+  ${getClip()?`<div class="sec"><h3>Clipboard</h3><p class="hint"><b>${esc(getClip().label)}</b> from ${esc(getClip().from)}</p><div class="row" style="margin-top:8px"><button id="pPaste">Paste at end of page</button></div><p class="hint">Or select a block first and use Paste after / Paste inside.</p></div>`:''}
   <div class="sec welcome" style="padding:0;margin-top:16px">
     <h3>How to edit</h3>
     <ul style="padding-left:18px">
@@ -378,6 +404,7 @@ function renderPageInsp(){
     <div class="row" style="margin-top:6px"><button id="bSrc">Apply page source</button></div>
   </details>`;
   const on=(id,ev,fn)=>{const x=insp.querySelector(id);if(x)x.addEventListener(ev,fn)};
+  on('#pPaste','click',()=>pasteClip('after'));
   on('#pTitle','change',e=>change(doc=>{let t=doc.querySelector('title');if(!t){t=doc.createElement('title');doc.head.prepend(t)}t.textContent=e.target.value},{rerender:false}));
   on('#pDesc','change',e=>change(doc=>{let m=doc.querySelector('meta[name=description]');if(!m){m=doc.createElement('meta');m.setAttribute('name','description');doc.head.appendChild(m)}m.setAttribute('content',e.target.value)},{rerender:false}));
   on('#bSrc','click',()=>{const v=insp.querySelector('#pSrc').value;if(!/<html/i.test(v)){toast('That doesn\'t look like a full page.');return}
@@ -401,6 +428,10 @@ function wireInsp(el){
   if(q('#bPoster'))q('#bPoster').addEventListener('click',()=>replaceMedia(el,'poster'));
   if(q('#fClass'))q('#fClass').addEventListener('change',e=>setAttr('class',e.target.value.trim(),{rerender:true}));
   if(q('#fStyle'))q('#fStyle').addEventListener('change',e=>setAttr('style',e.target.value.trim(),{rerender:true}));
+  q('#bCopy').addEventListener('click',copySel);
+  if(q('#bPasteA'))q('#bPasteA').addEventListener('click',()=>pasteClip('after'));
+  if(q('#bPasteI'))q('#bPasteI').addEventListener('click',()=>pasteClip('inside'));
+  wireLayout(el);
   q('#bDup').addEventListener('click',()=>change(()=>{const c=el.cloneNode(true);renumber(c);el.after(c);selId=c.dataset.ed},{label:'Duplicated. The copy is selected.'}));
   q('#bUp').addEventListener('click',()=>{const p=el.previousElementSibling;if(!p){toast('Already first in its group');return}change(()=>p.before(el))});
   q('#bDown').addEventListener('click',()=>{const n=el.nextElementSibling;if(!n){toast('Already last in its group');return}change(()=>n.after(el))});
@@ -442,10 +473,17 @@ function keys(e){
   if((e.ctrlKey||e.metaKey)&&k==='s'){e.preventDefault();save()}
   else if((e.ctrlKey||e.metaKey)&&k==='z'&&!editing){e.preventDefault();e.shiftKey?redo():undo()}
   else if((e.ctrlKey||e.metaKey)&&k==='y'&&!editing){e.preventDefault();redo()}
+  else if((e.ctrlKey||e.metaKey)&&k==='c'&&!editing&&selId&&!isTextSelection(e)){e.preventDefault();copySel()}
+  else if((e.ctrlKey||e.metaKey)&&k==='v'&&!editing&&getClip()){e.preventDefault();pasteClip('after')}
+  else if((e.ctrlKey||e.metaKey)&&k==='d'&&!editing&&selId){e.preventDefault();const b=insp.querySelector('#bDup');if(b)b.click()}
+  else if((k==='delete'||k==='backspace')&&!editing&&selId){e.preventDefault();const b=insp.querySelector('#bDel');if(b)b.click()}
+  else if(k.startsWith('arrow')&&!editing&&selId){const st=e.shiftKey?10:1;const m={arrowleft:[-st,0],arrowright:[st,0],arrowup:[0,-st],arrowdown:[0,st]}[k];if(m&&nudge(...m))e.preventDefault()}
   else if(k==='escape'){if(editing){editing.blur()}else{selId=null;renderTree();renderInsp();drawSel()}}
   else if(k==='enter'&&editing&&!e.shiftKey){e.preventDefault();editing.blur()}
 }
 document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea')&&!((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'))return;keys(e)});
+$('#guides').onclick=()=>{showGuides=!showGuides;$('#guides').classList.toggle('on',showGuides);drawSel()};
+function isTextSelection(e){const sel=(e.target.ownerDocument||document).getSelection();return sel&&String(sel).length>0}
 $('#save').onclick=save;$('#discard').onclick=discard;$('#undo').onclick=undo;$('#redo').onclick=redo;
 $('#pageSel').onchange=e=>openPage(e.target.value);
 function setMode(m){mode=m;$('#modeEdit').classList.toggle('on',m==='edit');$('#modePrev').classList.toggle('on',m==='prev');const d=liveDoc();if(d)d.documentElement.classList.toggle('__ed_edit',m==='edit');if(editing)finishEdit();drawSel();const h=d&&d.querySelector('.__ed_hov');if(h)h.style.display='none'}
@@ -470,6 +508,273 @@ document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.query
 $('#rot').onclick=()=>{landscape=!landscape;layoutDevice()};
 window.addEventListener('resize',layoutDevice);
 window.addEventListener('beforeunload',e=>{if(cur&&cur.dirty){e.preventDefault();e.returnValue=''}});
+
+
+// =====================================================================
+// Copy / paste between pages (carries the element's own styles along)
+// =====================================================================
+const CLIP_KEY='mkSiteEditorClip';
+function getClip(){try{return JSON.parse(localStorage.getItem(CLIP_KEY)||'null')}catch(e){return null}}
+function absUrl(v,dir){if(!v||/^(\/|#|[a-z]+:|data:|blob:)/i.test(v))return v;return '/'+dir+v}
+function collectCss(live){
+  const d=live.ownerDocument,els=[live,...live.querySelectorAll('*')].filter(e=>!(e.className&&String(e.className).includes('__ed')));
+  const tokens=new Set();els.forEach(e=>{(e.getAttribute('class')||'').split(/\s+/).forEach(c=>c&&tokens.add('.'+c));if(e.id)tokens.add('#'+e.id)});
+  const strip=s=>s.replace(/::?(before|after|placeholder|marker|selection|first-line|first-letter)\b/g,'').replace(/:(hover|focus|focus-visible|focus-within|active|visited|checked|disabled)\b/g,'').replace(/:not\([^)]*\)/g,'');
+  const hits=r=>{if(!r.selectorText)return false;return r.selectorText.split(',').some(sel=>{
+      const own=[...sel.matchAll(/[.#][\w-]+/g)].map(m=>m[0]);if(!own.some(t=>tokens.has(t)))return false;
+      const base=strip(sel).trim();try{return els.some(e=>e.matches(base))}catch(x){return false}})};
+  const out=[],anims=new Set();
+  els.forEach(e=>{const w=d.defaultView;[null,'::before','::after'].forEach(ps=>{const n=w.getComputedStyle(e,ps).animationName;if(n&&n!=='none')n.split(',').forEach(x=>anims.add(x.trim()))})});
+  const walk=(rules,acc)=>{for(const r of rules){
+    if(r.type===1){if(hits(r))acc.push(r.cssText)}
+    else if(r.type===4){const inner=[];walk(r.cssRules,inner);if(inner.length)acc.push(`@media ${r.conditionText||r.media.mediaText}{${inner.join('')}}`)}
+    else if(r.type===12){const inner=[];walk(r.cssRules,inner);if(inner.length)acc.push(`@supports ${r.conditionText}{${inner.join('')}}`)}
+  }};
+  const kf=[];
+  for(const sh of d.styleSheets){if(sh.ownerNode&&sh.ownerNode.id==='__ed_css')continue;let rules;try{rules=sh.cssRules}catch(x){continue}
+    walk(rules,out);for(const r of rules){if(r.type===7&&anims.has(r.name))kf.push(r.cssText)}}
+  const dir=pageDir();
+  return [...out,...kf].map(t=>t.replace(/url\((['"]?)(?!data:|https?:|\/)([^'")]+)\1\)/g,(m,q,u)=>`url(${q}/${dir}${u}${q})`)).join('\n');
+}
+function copySel(){
+  const L=selId&&srcEl(selId),live=selId&&liveEl(selId);if(!L){toast('Select something to copy first');return}
+  const c=L.cloneNode(true),dir=pageDir();
+  [c,...c.querySelectorAll('*')].forEach(e=>{e.removeAttribute('data-ed');['src','href','poster','data-src'].forEach(a=>{if(e.hasAttribute(a))e.setAttribute(a,absUrl(e.getAttribute(a),dir))})});
+  const lab=label(L);
+  const clip={html:c.outerHTML,css:live?collectCss(live):'',from:cur.path,label:lab.tag+lab.cls+(lab.txt?' "'+lab.txt.slice(0,24)+'"':'')};
+  try{localStorage.setItem(CLIP_KEY,JSON.stringify(clip))}catch(e){toast('Could not copy: '+e.message);return}
+  toast('Copied '+clip.label+'. Open any page, select where it should go, and paste (Ctrl+V).',3500);renderInsp();
+}
+
+// Keep only rules the target page doesn't already style, so shared classes (like .label) keep this page's look
+function newRulesFor(css){
+  const ld=liveDoc(),sels=new Set(),frames=new Set();
+  const walk=rs=>{for(const r of rs){if(r.type===1)sels.add(r.selectorText);else if(r.type===7)frames.add(r.name);else if(r.cssRules)walk(r.cssRules)}};
+  for(const sh of ld.styleSheets){if(sh.ownerNode&&sh.ownerNode.id==='__ed_css')continue;try{walk(sh.cssRules)}catch(x){}}
+  let sheet;try{sheet=new CSSStyleSheet();sheet.replaceSync(css)}catch(x){return css.split('\n')}
+  const out=[];
+  for(const r of sheet.cssRules){
+    if(r.type===1){if(!sels.has(r.selectorText))out.push(r.cssText)}
+    else if(r.type===7){if(!frames.has(r.name))out.push(r.cssText)}
+    else if(r.type===4||r.type===12){
+      const keep=[...r.cssRules].filter(x=>x.type!==1||!sels.has(x.selectorText));
+      if(keep.length)out.push(`@${r.type===4?'media':'supports'} ${r.conditionText}{${keep.map(x=>x.cssText).join('')}}`)}
+  }
+  return out;
+}
+function pasteClip(where){
+  const clip=getClip();if(!clip){toast('Nothing copied yet');return}
+  const t=cur.doc.createElement('template');t.innerHTML=clip.html.trim();const node=t.content.firstElementChild;if(!node)return;
+  let target=selId&&srcEl(selId);
+  change(doc=>{
+    renumber(node);
+    if(!target){(doc.querySelector('main')||doc.body).appendChild(node)}
+    else if(where==='inside'){target.appendChild(node)}
+    else{target.after(node)}
+    if(clip.css){let st=doc.getElementById('ed-pasted');if(!st){st=doc.createElement('style');st.id='ed-pasted';doc.head.appendChild(st)}
+      const add=newRulesFor(clip.css);
+      if(add.length)st.textContent+=(st.textContent?'\n':'')+'/* pasted from '+clip.from+' */\n'+add.join('\n')}
+    selId=node.dataset.ed;
+  },{label:'Pasted '+clip.label+(clip.from!==cur.path?' with its styles':'')});
+}
+
+// =====================================================================
+// Inline style helpers
+// =====================================================================
+function setStyle(el,props){
+  const t=document.createElement('div');t.setAttribute('style',el.getAttribute('style')||'');
+  for(const[k,v]of Object.entries(props)){if(v===''||v==null)t.style.removeProperty(k);else t.style.setProperty(k,v)}
+  const s=t.getAttribute('style')||'';s.trim()?el.setAttribute('style',s):el.removeAttribute('style');
+}
+function styleBoth(id,props,lbl){const L=srcEl(id);if(!L)return Promise.resolve();
+  return change(()=>setStyle(L,props),{rerender:false,label:lbl}).then(()=>{const v=liveEl(id);if(v)setStyle(v,props);drawSel()})}
+
+// =====================================================================
+// Layout info + guides
+// =====================================================================
+let showGuides=true;
+function cssOf(live,ps){return live.ownerDocument.defaultView.getComputedStyle(live,ps||null)}
+function px(v){return Math.round(parseFloat(v)||0)}
+function containing(live){const cs=cssOf(live);if(cs.position==='fixed')return null;return live.offsetParent||live.ownerDocument.documentElement}
+function anchorInfo(live){
+  const cs=cssOf(live),pos=cs.position;
+  if(pos!=='absolute'&&pos!=='fixed')return null;
+  const cb=containing(live),r=live.getBoundingClientRect(),w=live.ownerDocument.defaultView;
+  const C=cb?cb.getBoundingClientRect():{left:0,top:0,right:w.innerWidth,bottom:w.innerHeight,width:w.innerWidth,height:w.innerHeight};
+  const auto=v=>v==='auto';
+  // which edges are set in CSS (computed values resolve auto too, so read specified via the cascade trick)
+  const spec=specified(live);
+  const h=(spec.left&&spec.right)?'stretch':spec.right&&!spec.left?'right':(spec.left&&/50%/.test(spec.left))?'center':'left';
+  const v=(spec.top&&spec.bottom)?'stretch':spec.bottom&&!spec.top?'bottom':(spec.top&&/50%/.test(spec.top))?'middle':'top';
+  return {pos,cb,C,r,h,v,gap:{left:Math.round(r.left-C.left),right:Math.round(C.right-r.right),top:Math.round(r.top-C.top),bottom:Math.round(C.bottom-r.bottom)}};
+}
+function specified(live){
+  // Read which of top/right/bottom/left are actually set by matching rules + inline style
+  const out={},d=live.ownerDocument,props=['top','right','bottom','left'];
+  const take=st=>props.forEach(p=>{const v=st.getPropertyValue(p);if(v&&v!=='auto')out[p]=v;else if(v==='auto')delete out[p]});
+  for(const sh of d.styleSheets){let rules;try{rules=sh.cssRules}catch(x){continue}
+    const walk=rs=>{for(const r of rs){if(r.type===1){try{if(live.matches(r.selectorText))take(r.style)}catch(x){}}else if(r.type===4&&d.defaultView.matchMedia(r.conditionText||r.media.mediaText).matches)walk(r.cssRules)}};walk(rules)}
+  take(live.style);return out;
+}
+function layoutText(live){
+  const cs=cssOf(live),p=live.parentElement,pcs=p?cssOf(p):null,lines=[];
+  const a=anchorInfo(live);
+  if(a){const hz={left:'left edge',right:'right edge',center:'horizontal centre',stretch:'both sides'}[a.h],vt={top:'top edge',bottom:'bottom edge',middle:'vertical centre',stretch:'top and bottom'}[a.v];
+    const pl=a.cb?label(srcEl(a.cb.dataset&&a.cb.dataset.ed)||{tagName:a.cb.tagName,getAttribute:()=>a.cb.className,textContent:''}):null;
+    lines.push(`<b>Pinned</b> (${a.pos}) to the ${vt} and ${hz} of ${a.cb?('<code>'+(a.cb.id?'#'+a.cb.id:a.cb.tagName.toLowerCase()+(a.cb.classList[0]?'.'+a.cb.classList[0]:''))+'</code>'):'the screen'}.`);
+    lines.push(`Distance: top ${a.gap.top}px · right ${a.gap.right}px · bottom ${a.gap.bottom}px · left ${a.gap.left}px`);
+  }else{
+    let flow='Flows in the page';
+    if(pcs&&/flex/.test(pcs.display)){const dir=pcs.flexDirection.startsWith('column')?'column':'row';flow=`Item in a flex ${dir}`;
+      const al=cs.alignSelf==='auto'?pcs.alignItems:cs.alignSelf;lines.push(`${flow}. Cross-axis alignment: <b>${al}</b>. Parent spacing: ${pcs.justifyContent}, gap ${pcs.gap||'0'}.`)}
+    else if(pcs&&/grid/.test(pcs.display)){lines.push(`Item in a grid (${pcs.gridTemplateColumns.split(' ').length} columns). Alignment: <b>${cs.alignSelf==='auto'?pcs.alignItems:cs.alignSelf}</b>.`)}
+    else lines.push(`${flow} (${cs.display}).`);
+  }
+  if(/flex|grid/.test(cs.display))lines.push(`Its own children: ${cs.display} ${/flex/.test(cs.display)?cs.flexDirection:''}, align ${cs.alignItems}, justify ${cs.justifyContent}.`);
+  if(cs.textAlign&&live.textContent.trim())lines.push(`Text aligned <b>${cs.textAlign.replace('start','left').replace('end','right')}</b>.`);
+  lines.push(`Size ${Math.round(live.getBoundingClientRect().width)} × ${Math.round(live.getBoundingClientRect().height)}px · margin ${cs.margin} · padding ${cs.padding}`);
+  return lines.map(l=>`<p class="hint" style="margin:6px 0 0">${l}</p>`).join('');
+}
+function hideGuides(){const d=liveDoc();const g=d&&d.querySelector('.__ed_g');if(g)g.innerHTML=''}
+function drawGuides(){
+  const d=liveDoc();if(!d)return;let g=d.querySelector('.__ed_g');
+  if(!g){g=d.createElement('div');g.className='__ed_g';d.body.appendChild(g)}
+  g.innerHTML='';const live=selId&&liveEl(selId);if(!live||mode!=='edit'||!showGuides||dragState)return;
+  const r=live.getBoundingClientRect(),cs=cssOf(live),add=(cls,x,y,w,h,txt)=>{const e=d.createElement('div');e.className=cls;Object.assign(e.style,{left:x+'px',top:y+'px',width:Math.max(0,w)+'px',height:Math.max(0,h)+'px'});if(txt){const s=d.createElement('span');s.textContent=txt;e.appendChild(s)}g.appendChild(e);return e};
+  // margin (orange) and padding (green)
+  const m={t:px(cs.marginTop),r:px(cs.marginRight),b:px(cs.marginBottom),l:px(cs.marginLeft)},p={t:px(cs.paddingTop),r:px(cs.paddingRight),b:px(cs.paddingBottom),l:px(cs.paddingLeft)};
+  if(m.t||m.r||m.b||m.l)add('__ed_gm',r.left-m.l,r.top-m.t,r.width+m.l+m.r,r.height+m.t+m.b);
+  if(p.t||p.r||p.b||p.l)add('__ed_gp',r.left+p.l,r.top+p.t,r.width-p.l-p.r,r.height-p.t-p.b);
+  const a=anchorInfo(live);
+  const par=a?a.cb:live.parentElement;
+  if(par&&par!==d.documentElement&&par!==d.body){const P=par.getBoundingClientRect();add('__ed_gpar',P.left,P.top,P.width,P.height,(a?'pinned to ':'inside ')+(par.id?'#'+par.id:par.tagName.toLowerCase()+(par.classList[0]?'.'+par.classList[0]:'')))}
+  if(a){const C=a.C,cx=r.left+r.width/2,cy=r.top+r.height/2;
+    if(a.v==='top'||a.v==='stretch')add('__ed_gv',cx,C.top,0,r.top-C.top,a.gap.top+'px');
+    if(a.v==='bottom'||a.v==='stretch')add('__ed_gv',cx,r.bottom,0,C.bottom-r.bottom,a.gap.bottom+'px');
+    if(a.h==='left'||a.h==='stretch')add('__ed_gh',C.left,cy,r.left-C.left,0,a.gap.left+'px');
+    if(a.h==='right'||a.h==='stretch')add('__ed_gh',r.right,cy,C.right-r.right,0,a.gap.right+'px');
+    if(a.h==='center')add('__ed_gc',C.left+C.width/2,C.top,0,C.height,'centre');
+    if(a.v==='middle')add('__ed_gcx',C.left,C.top+C.height/2,C.width,0,'middle');
+  }
+}
+
+// =====================================================================
+// Layout controls in the inspector
+// =====================================================================
+function layoutPanel(el){
+  const live=liveEl(el.dataset.ed);if(!live)return '';
+  const cs=cssOf(live),a=anchorInfo(live),p=live.parentElement,pcs=p?cssOf(p):null;
+  let h=`<div class="sec"><h3>Layout &amp; alignment</h3>${layoutText(live)}`;
+  if(a){
+    const cell=(v,hz)=>`<button class="ag${a.v===v&&a.h===hz?' on':''}" data-anchor="${v}-${hz}" title="${v} ${hz}"></button>`;
+    h+=`<div class="field"><label>Pin to (in its container)</label><div class="agrid">${['top','middle','bottom'].map(v=>['left','center','right'].map(hz=>cell(v,hz)).join('')).join('')}</div></div>
+    <div class="field"><label>Distance from edge (px)</label><div class="row"><input id="lGap" type="number" value="${Math.max(0,{top:a.gap.top,bottom:a.gap.bottom,middle:0,stretch:0}[a.v]||{left:a.gap.left,right:a.gap.right}[a.h]||0)}" style="width:90px"><span class="hint" style="margin:0">applies to the pinned edges</span></div></div>`;
+  }else if(pcs&&/flex|grid/.test(pcs.display)){
+    const cur=cs.alignSelf;
+    h+=`<div class="field"><label>Align in its ${/flex/.test(pcs.display)?'row/column':'grid cell'}</label><div class="row">${['auto','start','center','end','stretch'].map(v=>`<button data-self="${v}" class="${cur===v||(v==='start'&&cur==='flex-start')||(v==='end'&&cur==='flex-end')?'on':''}">${v==='auto'?'Default':v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`;
+  }
+  if(live.textContent.trim()){const ta=cs.textAlign.replace('start','left').replace('end','right');
+    h+=`<div class="field"><label>Text alignment</label><div class="row">${['left','center','right'].map(v=>`<button data-ta="${v}" class="${ta===v?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
+  if(/flex|grid/.test(cs.display)){
+    h+=`<div class="field"><label>Align its children</label><div class="row">${['start','center','end','stretch'].map(v=>`<button data-ai="${v}" class="${cs.alignItems.includes(v)?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
+  h+=`<div class="field"><label>Margin / padding (CSS, e.g. 0 auto or 20px 0)</label><div class="row"><input id="lMargin" placeholder="margin" value="${esc(el.style?el.style.margin:'')}" style="flex:1"><input id="lPad" placeholder="padding" value="${esc(el.style?el.style.padding:'')}" style="flex:1"></div></div>
+  <div class="field"><label>Width / height</label><div class="row"><input id="lW" placeholder="${Math.round(live.getBoundingClientRect().width)}px" value="${esc(el.style?el.style.width:'')}" style="flex:1"><input id="lH" placeholder="${Math.round(live.getBoundingClientRect().height)}px" value="${esc(el.style?el.style.height:'')}" style="flex:1"></div></div>
+  <p class="hint">${a?'Drag it in the page to move it; it snaps to the centre. Arrow keys nudge 1px (Shift: 10px).':'Drag it in the page to move it before or after its neighbours. Hold Alt while dragging to drop it inside another block instead.'}</p></div>`;
+  return h;
+}
+function wireLayout(el){
+  const id=el.dataset.ed,q=s=>insp.querySelector(s);
+  insp.querySelectorAll('[data-anchor]').forEach(b=>b.addEventListener('click',()=>{const[v,hz]=b.dataset.anchor.split('-');anchorTo(id,v,hz,+(q('#lGap')||{}).value||24)}));
+  if(q('#lGap'))q('#lGap').addEventListener('change',e=>{const live=liveEl(id),a=anchorInfo(live);anchorTo(id,a.v==='stretch'?'top':a.v,a.h==='stretch'?'left':a.h,+e.target.value||0)});
+  insp.querySelectorAll('[data-self]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'align-self':b.dataset.self==='auto'?'':b.dataset.self,'justify-self':b.dataset.self==='auto'?'':b.dataset.self}).then(renderInsp)));
+  insp.querySelectorAll('[data-ta]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'text-align':b.dataset.ta}).then(renderInsp)));
+  insp.querySelectorAll('[data-ai]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'align-items':b.dataset.ai}).then(renderInsp)));
+  [['#lMargin','margin'],['#lPad','padding'],['#lW','width'],['#lH','height']].forEach(([s,prop])=>{const i=q(s);if(i)i.addEventListener('change',e=>styleBoth(id,{[prop]:e.target.value.trim()}).then(renderInsp))});
+}
+function anchorTo(id,v,hz,gap){
+  const g=gap+'px',props={top:'',bottom:'',left:'',right:'',transform:''};
+  let tx='0',ty='0';
+  if(hz==='left')props.left=g;else if(hz==='right')props.right=g;else{props.left='50%';tx='-50%'}
+  if(v==='top')props.top=g;else if(v==='bottom')props.bottom=g;else{props.top='50%';ty='-50%'}
+  // explicitly cancel the opposite edges the stylesheet may set
+  ['top','bottom','left','right'].forEach(k=>{if(props[k]==='')props[k]='auto'});
+  props.transform=(tx!=='0'||ty!=='0')?`translate(${tx},${ty})`:'none';
+  return styleBoth(id,props,'Pinned '+v+' '+hz).then(renderInsp);
+}
+
+// =====================================================================
+// Drag to move
+// =====================================================================
+let dragState=null,suppressClick=false;
+function wireDrag(d){
+  const w=d.defaultView;
+  const ind=d.createElement('div');ind.className='__ed_drop';d.body.appendChild(ind);
+  d.addEventListener('mousedown',e=>{
+    if(mode!=='edit'||editing||e.button!==0||!selId)return;
+    const live=liveEl(selId);if(!live||!live.contains(e.target))return;
+    dragState={live,x0:e.clientX,y0:e.clientY,started:false};
+    e.preventDefault();
+  },true);
+  d.addEventListener('mousemove',e=>{
+    const s=dragState;if(!s)return;
+    const dx=e.clientX-s.x0,dy=e.clientY-s.y0;
+    if(!s.started){if(Math.abs(dx)+Math.abs(dy)<5)return;startDrag(s);hideGuides()}
+    if(s.kind==='free'){let nx=s.left+dx,ny=s.top+dy;if(e.shiftKey){Math.abs(dx)>Math.abs(dy)?ny=s.top:nx=s.left}
+      // snap to container centre
+      const cxC=s.C.width/2,cyC=s.C.height/2;s.snapX=Math.abs(nx+s.w/2-cxC)<8;s.snapY=Math.abs(ny+s.h/2-cyC)<8;
+      if(s.snapX)nx=cxC-s.w/2;if(s.snapY)ny=cyC-s.h/2;
+      Object.assign(s.live.style,{left:nx+'px',top:ny+'px'});s.nx=nx;s.ny=ny;
+      Object.assign(ind.style,{display:(s.snapX||s.snapY)?'block':'none',left:(s.snapX?s.C.left+cxC:s.C.left)+'px',top:(s.snapY?s.C.top+cyC:s.C.top)+'px',width:s.snapX?'0':s.C.width+'px',height:s.snapX?s.C.height+'px':'0'});
+    }else{
+      let hit=d.elementsFromPoint(e.clientX,e.clientY).find(n=>n.dataset&&n.dataset.ed&&!s.live.contains(n)&&!n.contains(s.live)&&n!==d.body&&n!==d.documentElement&&!String(n.className).includes('__ed'));
+      let tgt=hit||null;
+      // prefer the neighbour at the same level as the dragged block, so it can't drop inside another card by accident
+      if(tgt){let n=tgt;while(n&&n.parentElement!==s.live.parentElement)n=n.parentElement;if(n&&n!==s.live&&!e.altKey)tgt=n}
+      s.target=tgt;hit=tgt;if(!hit){ind.style.display='none';return}
+      const R=hit.getBoundingClientRect(),pcs=cssOf(hit.parentElement||hit),row=/flex/.test(pcs.display)&&pcs.flexDirection.startsWith('row')||/grid/.test(pcs.display);
+      s.before=row?(e.clientX<R.left+R.width/2):(e.clientY<R.top+R.height/2);
+      if(row)Object.assign(ind.style,{display:'block',left:(s.before?R.left-2:R.right+1)+'px',top:R.top+'px',width:'0',height:R.height+'px'});
+      else Object.assign(ind.style,{display:'block',left:R.left+'px',top:(s.before?R.top-2:R.bottom+1)+'px',width:R.width+'px',height:'0'});
+    }
+  },true);
+  d.addEventListener('mouseup',e=>{
+    const s=dragState;dragState=null;ind.style.display='none';
+    if(!s||!s.started)return;suppressClick=true;setTimeout(()=>suppressClick=false,50);
+    s.live.style.opacity=s.op||'';
+    const id=s.live.dataset.ed;
+    if(s.kind==='free'){
+      // pin to whichever side it ended closer to, so it stays put across screen sizes
+      const props={top:'auto',bottom:'auto',left:'auto',right:'auto'};let tx='0',ty='0';
+      if(s.snapX){props.left='50%';tx='-50%'}else if(s.nx+s.w/2>s.C.width/2)props.right=Math.round(s.C.width-s.nx-s.w)+'px';else props.left=Math.round(s.nx)+'px';
+      if(s.snapY){props.top='50%';ty='-50%'}else if(s.ny+s.h/2>s.C.height/2)props.bottom=Math.round(s.C.height-s.ny-s.h)+'px';else props.top=Math.round(s.ny)+'px';
+      props.transform=(tx!=='0'||ty!=='0')?`translate(${tx},${ty})`:'none';
+      setStyle(s.live,props);styleBoth(id,props,'Moved').then(renderInsp);
+    }else if(s.target){
+      const T=srcEl(s.target.dataset.ed),L=srcEl(id);if(!T||!L)return;
+      change(()=>{s.before?T.before(L):T.after(L)},{label:'Moved'});
+    }
+  },true);
+  d.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopPropagation()}},true);
+}
+function startDrag(s){
+  s.started=true;const live=s.live,cs=cssOf(live);
+  if(cs.position==='absolute'||cs.position==='fixed'){
+    s.kind='free';const w=live.ownerDocument.defaultView,cb=containing(live);
+    const C=cb?cb.getBoundingClientRect():{left:0,top:0,width:w.innerWidth,height:w.innerHeight};
+    const bl=cb?px(cssOf(cb).borderLeftWidth):0,bt=cb?px(cssOf(cb).borderTopWidth):0;
+    const r=live.getBoundingClientRect();s.C={left:C.left+bl,top:C.top+bt,width:cb?cb.clientWidth:C.width,height:cb?cb.clientHeight:C.height};
+    s.w=r.width;s.h=r.height;s.left=r.left-s.C.left;s.top=r.top-s.C.top;
+    Object.assign(live.style,{left:s.left+'px',top:s.top+'px',right:'auto',bottom:'auto',transform:'none'});
+  }else{s.kind='order';s.op=live.style.opacity;live.style.opacity='.45'}
+}
+function nudge(dx,dy){
+  const live=selId&&liveEl(selId);if(!live)return false;const a=anchorInfo(live);if(!a)return false;
+  const props={};
+  if(a.h==='right')props.right=(a.gap.right-dx)+'px';else if(a.h!=='center')props.left=(a.gap.left+dx)+'px';
+  if(a.v==='bottom')props.bottom=(a.gap.bottom-dy)+'px';else if(a.v!=='middle')props.top=(a.gap.top+dy)+'px';
+  if(!Object.keys(props).length)return false;
+  setStyle(live,props);clearTimeout(nudge.t);nudge.t=setTimeout(()=>styleBoth(selId,props).then(renderInsp),350);drawSel();return true;
+}
 
 (async()=>{
   try{await loadPages();const want=new URLSearchParams(location.search).get('page');await openPage(want&&pages.some(p=>p.path===want)?want:'index.html')}
