@@ -16,6 +16,17 @@ img{max-width:100%}
 .badges span.no{border-color:#ff5a3c;color:#ff5a3c}
 .compat{display:flex;gap:10px;align-items:flex-start;max-width:52ch;margin:0 0 26px;padding:10px 12px;border-left:3px solid #ff5a3c;background:rgba(0,0,0,.45);font-size:14.5px;color:#fff}
 .compat b{color:#ff5a3c;font:500 11.5px var(--f-mono);letter-spacing:.12em;white-space:nowrap;padding-top:2px}
+
+/* mailing list band */
+.news-band{padding-block:clamp(48px,7vw,80px);border-top:1px solid #1f1f1f}
+.news-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,72px);align-items:center}
+.news-band h2{font-size:clamp(26px,3vw,38px);line-height:1.1;margin:12px 0 10px}
+.news-band p{margin:0;color:var(--muted)}
+.news-band .soon-badge{margin-left:8px}
+.news-band .news{margin-top:0}
+.news-band .news input{max-width:none}
+.news-band .msg a{color:inherit}
+@media (max-width:860px){.news-wrap{grid-template-columns:1fr}}
 </style>
 <title>MK SSDM+</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -322,25 +333,25 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <video src="hero-3.mp4" muted="" playsinline="" preload="none"></video>
     </div>
     <script>/* HD hero on large or high-DPI screens */(function(){if(innerWidth*(devicePixelRatio||1)<2200)return;document.querySelectorAll('.hero-vid video').forEach(function(v){v.src=v.getAttribute('src').replace('.mp4','-hd.mp4')})})()</script>
-    <div class="wrap">
-      <h1 class="sr">MK SSDM+</h1>
-      <div class="hero-row" style="align-items: center;">
+    <div class="wrap" style="text-align: left;">
+      <h1 class="sr" style="inset: 50% auto auto 50%; transform: translate(-50%, -50%);">MK SSDM+</h1>
+      
+    <div class="hero-row" style="align-items: center; text-align: left; margin: 17px auto 15px; padding-top: 40px;">
         <div>
           <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
           <div class="ctas">
             <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
           </div>
-          <p class="no-nanite"><span class="label">No Nanite support</span>Works on regular, non-Nanite meshes and landscapes.</p>
+          
         </div>
-      </div>
-    <a class="cue label" href="#why" aria-label="Scroll down" style="inset: auto auto 18px 50%; transform: translate(-50%, 0px);"><span>Scroll</span><i></i></a></div>
+      </div></div><a class="cue label" href="#why" aria-label="Scroll down" style="inset: auto auto 24px 50%; transform: translate(-50%, 0px);"><span>Scroll</span><i></i></a>
   </section>
 
   <section class="gut t-dark intro-band" id="why">
     <div class="wrap">
       <div class="why">
         <div><span class="label">Inspired by Crimson Desert</span><p>Crimson Desert style displacement, brought to Unreal Engine 5.</p></div>
-        <div><span class="label">Built for non-Nanite workflows</span><p>Similar quality to Nanite displacement at a reduced cost, on regular meshes and landscapes.</p></div>
+        <div><span class="label">Built for non-Nanite workflows</span><p class="no-nanite"><span class="label">No Nanite support</span></p><p>Similar quality to Nanite displacement at a reduced cost, on regular meshes and landscapes.</p></div>
       </div>
     </div>
   </section>
@@ -491,14 +502,24 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
         <a class="btn" href="docs/">Read the docs</a>
       </div>
-      <form class="news" id="newsForm">
-        <label for="newsEmail" class="label" style="flex-basis:100%">New tools and updates, by email <em class="soon-badge">Coming soon</em></label>
-        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required="" disabled="">
-        <button class="btn" type="submit" id="newsBtn" disabled="">Subscribe</button>
-        <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
-      </form>
       </div>
       <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo">
+    </div>
+  </section>
+
+  <section class="gut t-black news-band" id="news">
+    <div class="wrap news-wrap">
+      <div>
+        <span class="label">Mailing list <em class="soon-badge">Coming soon</em></span>
+        <h2 class="display">New tools and updates, by email</h2>
+        <p>Release news for SSDM+ and future tools. No spam.</p>
+      </div>
+      <form class="news" id="newsForm">
+        <label for="newsEmail" class="sr">Email address</label>
+        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
+        <button class="btn" type="submit" id="newsBtn" disabled>Subscribe</button>
+        <span class="msg" id="newsMsg">Not live yet. In the meantime, follow along on <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> or <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a>.</span>
+      </form>
     </div>
   </section>
   
@@ -544,6 +565,13 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
       r.value=v;ba.style.setProperty('--split',v+'%');if(k<1)requestAnimationFrame(step)};setTimeout(()=>requestAnimationFrame(step),400)},{threshold:.5});
   io.observe(ba)}}
 </script>
+
+
+
+
+
+
+
 
 
 
