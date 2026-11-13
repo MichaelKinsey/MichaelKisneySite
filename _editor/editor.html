@@ -74,6 +74,23 @@ details.adv summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:
 .stale.show{display:flex}
 .stale b{color:#fff}
 .app.has-stale{grid-template-rows:48px auto 1fr}
+.boxgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}.boxgrid.two{grid-template-columns:1fr 1fr}.boxgrid.one{grid-template-columns:1fr;flex:1}
+.scrub{display:flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 7px;cursor:ew-resize;user-select:none;min-width:0;font-size:12px}
+.scrub:hover,.scrub.on{border-color:var(--accent)}
+.scrub .sl{color:var(--muted);font-size:10.5px;flex:0 0 auto}.scrub .sv{flex:1;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.scrub input{flex:1;min-width:0;width:100%;padding:0 2px;font-size:12px;background:#000;border:0;color:#fff;text-align:right}
+.scrubov{position:fixed;inset:0;z-index:99999;cursor:ew-resize}
+.crow{align-items:center}.crow input[type=color]{width:34px;height:28px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;flex:0 0 34px}
+.crow select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px}
+.addmenu{position:fixed;z-index:1000;width:340px;background:#151515;border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 16px 40px rgba(0,0,0,.6)}
+.am-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:600}
+.am-head button{padding:3px 8px;font-size:11.5px}.am-head button.on,.ltools button.on{border-color:var(--accent);color:#fff}
+.am-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.am-grid button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;font-size:12px}
+.am-grid button b{font-size:18px;line-height:1;color:var(--accent)}
+.am-grid button:hover{border-color:var(--accent)}
+.warn{margin:10px 0 0;padding:8px 10px;border-left:3px solid #e8a33d;background:rgba(232,163,61,.1);font-size:12px;line-height:1.45;color:var(--ink)}
+.warn code{color:#e9a37a}
 .agrid{display:grid;grid-template-columns:repeat(3,26px);gap:4px}
 .agrid .ag{width:26px;height:26px;padding:0;border-radius:5px;position:relative}
 .agrid .ag::after{content:"";position:absolute;inset:9px;border-radius:2px;background:#666}
@@ -100,6 +117,7 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
     <div class="grp">
       <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
     </div>
+    <div class="grp"><button id="addBtn" class="primary" title="Add a box, text, button, image…">+ Add</button></div>
     <div class="grp"><button id="guides" class="on" title="Show margins, padding and what the selection is pinned to">Guides</button>
     </div>
     <span class="sp"></span>
@@ -445,6 +463,7 @@ function renderInsp(){
     if(im)h+=`<p class="hint">Contains ${im.tagName==='VIDEO'?'a video':'an image'}. <a data-go="${im.dataset.ed}" style="color:var(--accent);cursor:pointer">Select it</a> to replace it.</p>`;
   }
   h+=layoutPanel(el);
+  h+=appearancePanel(el);
   const clip=getClip();
   h+=`<div class="sec"><h3>Block</h3><div class="row" style="margin-top:10px">
     <button id="bCopy" title="Copy this block with its styles (Ctrl+C)">Copy</button>
@@ -516,6 +535,8 @@ function wireInsp(el){
   if(q('#bPasteA'))q('#bPasteA').addEventListener('click',()=>pasteClip('after'));
   if(q('#bPasteI'))q('#bPasteI').addEventListener('click',()=>pasteClip('inside'));
   wireLayout(el);
+  wireAppearance(el);
+  wireScrubs(el.dataset.ed,scrubMap());
   q('#bDup').addEventListener('click',()=>change(()=>{const c=el.cloneNode(true);renumber(c);el.after(c);selId=c.dataset.ed},{label:'Duplicated. The copy is selected.'}));
   q('#bUp').addEventListener('click',()=>sibMove(el.dataset.ed,-1));
   q('#bDown').addEventListener('click',()=>sibMove(el.dataset.ed,1));
@@ -572,6 +593,8 @@ $('#guides').onclick=()=>{showGuides=!showGuides;$('#guides').classList.toggle('
 function isTextSelection(e){const sel=(e.target.ownerDocument||document).getSelection();return sel&&String(sel).length>0}
 $('#ltools').addEventListener('click',e=>{const b=e.target.closest('[data-lt]');if(!b)return;if(!selId){toast('Select a layer first');return}
   ({up:()=>sibMove(selId,-1),down:()=>sibMove(selId,1),out:()=>outLevel(selId),in:()=>intoAbove(selId)})[b.dataset.lt]()});
+let addMenu=null;
+$('#addBtn').onclick=()=>{if(!addMenu)addMenu=buildAddMenu();if(!addMenu.hidden){addMenu.hidden=true;return}const r=$('#addBtn').getBoundingClientRect();addMenu.style.left=r.left+'px';addMenu.style.top=(r.bottom+6)+'px';addMenu.hidden=false};
 $('#save').onclick=save;$('#discard').onclick=discard;$('#undo').onclick=undo;$('#redo').onclick=redo;
 $('#pageSel').onchange=e=>openPage(e.target.value);
 function setMode(m){mode=m;$('#modeEdit').classList.toggle('on',m==='edit');$('#modePrev').classList.toggle('on',m==='prev');const d=liveDoc();if(d)d.documentElement.classList.toggle('__ed_edit',m==='edit');if(editing)finishEdit();drawSel();const h=d&&d.querySelector('.__ed_hov');if(h)h.style.display='none'}
@@ -761,20 +784,57 @@ function layoutPanel(el){
     const cur=cs.alignSelf;
     h+=`<div class="field"><label>Align in its ${/flex/.test(pcs.display)?'row/column':'grid cell'}</label><div class="row">${['auto','start','center','end','stretch'].map(v=>`<button data-self="${v}" class="${cur===v||(v==='start'&&cur==='flex-start')||(v==='end'&&cur==='flex-end')?'on':''}">${v==='auto'?'Default':v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`;
   }
+  if(!a&&p&&p!==live.ownerDocument.body){
+    // horizontal placement of the block itself, via auto margins (works in normal flow, flex and grid)
+    const R=live.getBoundingClientRect(),pc=cssOf(p),P=p.getBoundingClientRect();
+    const inL=P.left+px(pc.paddingLeft)+px(pc.borderLeftWidth),inR=P.right-px(pc.paddingRight)-px(pc.borderRightWidth);
+    const room=(inR-inL)-R.width,gl=R.left-inL,gr=inR-R.right;
+    const curH=room<2?'full':Math.abs(gl-gr)<3?'center':gl<gr?'left':'right';
+    h+=`<div class="field"><label>Place this block in its container</label><div class="row">${[['left','Left'],['center','Center'],['right','Right']].map(([v,t])=>`<button data-place="${v}" class="${curH===v?'on':''}">${t}</button>`).join('')}</div>${curH==='full'?`<p class="hint">It fills the full width of its container, so there is no room to move it sideways. Give it a smaller Width below (e.g. 560px or 60%) first.</p>`:''}</div>`;
+  }
+  h+=clipReport(live);
   if(live.textContent.trim()){const ta=cs.textAlign.replace('start','left').replace('end','right');
     h+=`<div class="field"><label>Text alignment</label><div class="row">${['left','center','right'].map(v=>`<button data-ta="${v}" class="${ta===v?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
   if(/flex|grid/.test(cs.display)){
     h+=`<div class="field"><label>Align its children</label><div class="row">${['start','center','end','stretch'].map(v=>`<button data-ai="${v}" class="${cs.alignItems.includes(v)?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
-  h+=`<div class="field"><label>Margin / padding (CSS, e.g. 0 auto or 20px 0)</label><div class="row"><input id="lMargin" placeholder="margin" value="${esc(el.style?el.style.margin:'')}" style="flex:1"><input id="lPad" placeholder="padding" value="${esc(el.style?el.style.padding:'')}" style="flex:1"></div></div>
-  <div class="field"><label>Width / height</label><div class="row"><input id="lW" placeholder="${Math.round(live.getBoundingClientRect().width)}px" value="${esc(el.style?el.style.width:'')}" style="flex:1"><input id="lH" placeholder="${Math.round(live.getBoundingClientRect().height)}px" value="${esc(el.style?el.style.height:'')}" style="flex:1"></div></div>
+  if(/flex|grid|block/.test(cs.display)&&live.children.length){const ov=cs.overflow.split(' ')[0];
+    h+=`<div class="field"><label>Things that stick out of this block</label><div class="row"><button data-ovf="visible" class="${ov==='visible'?'on':''}">Show them</button><button data-ovf="hidden" class="${ov!=='visible'?'on':''}">Cut them off</button></div></div>`}
+  h+=`<div class="field"><label>Margin (space outside)</label>${boxGrid(el,live,'margin')}</div>
+  <div class="field"><label>Padding (space inside)</label>${boxGrid(el,live,'padding')}</div>
+  <div class="field"><label>Size</label>${sizeFields(el,live)}</div>
   <p class="hint">${a?'Drag it in the page to move it; it snaps to the centre. Arrow keys nudge 1px (Shift: 10px).':'Drag it in the page: drop on the middle of a block to put it inside, or on a side to place it on that side. Hold Alt to target the exact block under the cursor.'}</p></div>`;
   return h;
+}
+function ancName(n){return n.id?'#'+n.id:n.tagName.toLowerCase()+(n.classList[0]?'.'+n.classList[0]:'')}
+function clipReport(live){
+  const R=live.getBoundingClientRect(),d=live.ownerDocument;let out='';
+  // 1) an ancestor that cuts it off
+  for(let n=live.parentElement;n&&n!==d.documentElement;n=n.parentElement){
+    const c=cssOf(n);if(c.overflow==='visible'&&c.clipPath==='none')continue;
+    const P=n.getBoundingClientRect();
+    if(R.left<P.left-1||R.right>P.right+1||R.top<P.top-1||R.bottom>P.bottom+1){
+      out+=`<div class="warn">Cut off by <code>${esc(ancName(n))}</code>, which hides anything outside its edges.<div class="row" style="margin-top:6px">${n.dataset.ed?`<button data-unclip="${n.dataset.ed}">Let it show outside</button>`:''}<button data-pick="${n.dataset.ed||''}">Select ${esc(ancName(n))}</button></div></div>`;break}
+  }
+  // 2) another block it sits on top of / under
+  const cb=cssOf(live).position==='absolute'?(live.offsetParent||live.parentElement):live.parentElement;
+  if(cb){const seen=new Set();const cands=[...new Set([...cb.children,...live.parentElement.children])].filter(n=>n.dataset&&n.dataset.ed&&n!==live&&!n.contains(live)&&!live.contains(n)&&!/^(SCRIPT|STYLE)$/.test(n.tagName)&&cssOf(n).position!=='absolute'||n!==live&&n.dataset&&n.dataset.ed&&cssOf(n).position==='absolute'&&!n.contains(live)&&!live.contains(n)&&!/hero-vid|bg|backdrop/.test(n.className));
+    for(const n of cands){if(seen.size)break;const c=cssOf(n);if(c.display==='none'||c.visibility==='hidden')continue;
+      const Q=n.getBoundingClientRect();if(Q.width<4||Q.height<4)continue;
+      const ix=Math.min(R.right,Q.right)-Math.max(R.left,Q.left),iy=Math.min(R.bottom,Q.bottom)-Math.max(R.top,Q.top);
+      if(ix>2&&iy>2){const top=n;seen.add(top);
+        out+=`<div class="warn">Overlaps <code>${esc(ancName(top))}</code>. Move it, or give their container more padding to make room.<div class="row" style="margin-top:6px"><button data-pick="${top.dataset.ed}">Select ${esc(ancName(top))}</button>${cb.dataset&&cb.dataset.ed?`<button data-pick="${cb.dataset.ed}">Select the container</button>`:''}</div></div>`}}}
+  return out;
 }
 function wireLayout(el){
   const id=el.dataset.ed,q=s=>insp.querySelector(s);
   insp.querySelectorAll('[data-anchor]').forEach(b=>b.addEventListener('click',()=>{const[v,hz]=b.dataset.anchor.split('-');anchorTo(id,v,hz,+(q('#lGap')||{}).value||24)}));
   if(q('#lGap'))q('#lGap').addEventListener('change',e=>{const live=liveEl(id),a=anchorInfo(live);anchorTo(id,a.v==='stretch'?'top':a.v,a.h==='stretch'?'left':a.h,+e.target.value||0)});
   insp.querySelectorAll('[data-self]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'align-self':b.dataset.self==='auto'?'':b.dataset.self,'justify-self':b.dataset.self==='auto'?'':b.dataset.self}).then(renderInsp)));
+  insp.querySelectorAll('[data-place]').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.place;
+    styleBoth(id,{'margin-left':v==='left'?'0':'auto','margin-right':v==='right'?'0':'auto'},'Placed '+v).then(renderInsp)}));
+  insp.querySelectorAll('[data-ovf]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{overflow:b.dataset.ovf}).then(renderInsp)));
+  insp.querySelectorAll('[data-unclip]').forEach(b=>b.addEventListener('click',()=>styleBoth(b.dataset.unclip,{overflow:'visible'},'It can show outside now').then(renderInsp)));
+  insp.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.pick)select(b.dataset.pick,{scroll:true})}));
   insp.querySelectorAll('[data-ta]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'text-align':b.dataset.ta}).then(renderInsp)));
   insp.querySelectorAll('[data-ai]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'align-items':b.dataset.ai}).then(renderInsp)));
   [['#lMargin','margin'],['#lPad','padding'],['#lW','width'],['#lH','height']].forEach(([s,prop])=>{const i=q(s);if(i)i.addEventListener('change',e=>styleBoth(id,{[prop]:e.target.value.trim()}).then(renderInsp))});
@@ -874,6 +934,145 @@ function nudge(dx,dy){
   if(a.v==='bottom')props.bottom=(a.gap.bottom-dy)+'px';else if(a.v!=='middle')props.top=(a.gap.top+dy)+'px';
   if(!Object.keys(props).length)return false;
   setStyle(live,props);clearTimeout(nudge.t);nudge.t=setTimeout(()=>styleBoth(selId,props).then(renderInsp),350);drawSel();return true;
+}
+
+// =====================================================================
+// Scrub fields: drag sideways to change, double-click to type
+// =====================================================================
+function numUnit(v){const m=String(v||'').trim().match(/^(-?[\d.]+)([a-z%]*)$/i);return m?{n:parseFloat(m[1]),u:m[2]||'px'}:null}
+function scrub(prop,label,{min=-9999,max=9999,step=1,unit='px',val,auto,title}={}){
+  const shown=val==null||val===''?'':val;
+  return `<div class="scrub" data-prop="${prop}" data-min="${min}" data-max="${max}" data-step="${step}" data-unit="${unit}" data-auto="${esc(auto==null?'':String(auto))}" data-val="${esc(String(shown))}" title="${esc(title||'Drag left/right to change. Shift = faster, Alt = finer. Double-click to type an exact value (px, %, auto…). Right-click to reset.')}"><span class="sl">${label}</span><span class="sv">${esc(String(shown===''?(auto==null?'–':auto):shown))}</span></div>`;
+}
+const SCRUB_SPECIAL={opacity:{fmt:n=>String(Math.round(n)/100),read:v=>parseFloat(v)*100,unit:''}};
+function wireScrubs(id,applyMap){
+  insp.querySelectorAll('.scrub').forEach(sc=>{
+    const prop=sc.dataset.prop,map=(applyMap&&applyMap[prop])||(v=>({[prop]:v})),sv=sc.querySelector('.sv');
+    const toCss=(n,u)=>u==='×'?String(n):(u===''?String(n):n+u);
+    sc.addEventListener('mousedown',e=>{
+      if(e.button!==0||sc.querySelector('input'))return;e.preventDefault();
+      const start=numUnit(sc.dataset.val)||numUnit(sc.dataset.auto)||{n:0,u:sc.dataset.unit};
+      const unit=sc.dataset.unit==='%'?'%':(start.u||sc.dataset.unit);
+      const min=+sc.dataset.min,max=+sc.dataset.max,step=+sc.dataset.step,x0=e.clientX;let moved=false,last=null;
+      const ov=document.createElement('div');ov.className='scrubov';sc.classList.add('on');
+      const mv=ev=>{const dx=ev.clientX-x0;if(!moved&&Math.abs(dx)>2){moved=true;document.body.appendChild(ov)}if(!moved)return;
+        const k=ev.shiftKey?10:ev.altKey?0.1:1;let n=start.n+Math.round(dx/2)*step*k;n=Math.max(min,Math.min(max,n));n=Math.round(n*10)/10;
+        last=toCss(n,unit);sv.textContent=last;const live=liveEl(id);if(live){setStyle(live,map(last));drawSel()}};
+      const up=()=>{removeEventListener('mousemove',mv);removeEventListener('mouseup',up);ov.remove();sc.classList.remove('on');
+        if(moved&&last!=null)styleBoth(id,map(last)).then(renderInsp)};
+      addEventListener('mousemove',mv);addEventListener('mouseup',up);
+    });
+    sc.addEventListener('dblclick',()=>{
+      const inp=document.createElement('input');inp.value=sc.dataset.val||sc.dataset.auto||'';sv.replaceWith(inp);inp.focus();inp.select();
+      const done=ok=>{if(done.d)return;done.d=1;let v=inp.value.trim();
+        if(!ok){renderInsp();return}
+        if(/^-?[\d.]+$/.test(v)&&sc.dataset.unit!=='raw'&&sc.dataset.unit!=='')v+=sc.dataset.unit;
+        styleBoth(id,map(v)).then(renderInsp)};
+      inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')done(true);if(e.key==='Escape')done(false)});
+      inp.addEventListener('blur',()=>done(true));
+    });
+    sc.addEventListener('contextmenu',e=>{e.preventDefault();styleBoth(id,map('')).then(renderInsp)});
+  });
+}
+function boxGrid(el,live,kind){
+  const cs=cssOf(live),sides=['top','right','bottom','left'],short={top:'T',right:'R',bottom:'B',left:'L'};
+  return `<div class="boxgrid">${sides.map(sd=>scrub(`${kind}-${sd}`,short[sd],{min:kind==='padding'?0:-2000,val:el.style.getPropertyValue(`${kind}-${sd}`),auto:Math.round(parseFloat(cs.getPropertyValue(`${kind}-${sd}`))||0)+'px'})).join('')}</div>`;
+}
+function sizeFields(el,live){
+  const R=live.getBoundingClientRect(),g=p=>el.style.getPropertyValue(p);
+  return `<div class="boxgrid two">${scrub('width','W',{min:0,val:g('width'),auto:Math.round(R.width)+'px'})}${scrub('height','H',{min:0,val:g('height'),auto:Math.round(R.height)+'px'})}${scrub('max-width','Max W',{min:0,val:g('max-width'),auto:cssOf(live).maxWidth})}${scrub('min-height','Min H',{min:0,val:g('min-height'),auto:cssOf(live).minHeight})}</div>`;
+}
+
+// =====================================================================
+// Appearance: fill, text colour, opacity, border, corners, shadow, type
+// =====================================================================
+function parseColor(c){const m=String(c).match(/rgba?\(([\d.]+)[ ,]+([\d.]+)[ ,]+([\d.]+)(?:[ ,/]+([\d.]+%?))?\)/);if(!m)return {hex:'#000000',a:c==='transparent'?0:1};
+  const h=[m[1],m[2],m[3]].map(x=>(+x|0).toString(16).padStart(2,'0')).join('');let a=m[4]==null?1:m[4].endsWith('%')?parseFloat(m[4])/100:+m[4];return {hex:'#'+h,a}}
+function rgba(hex,a){const n=parseInt(hex.slice(1),16);return a>=1?hex:`rgba(${n>>16&255},${n>>8&255},${n&255},${Math.round(a*100)/100})`}
+function chamferOf(el){const m=(el.style.clipPath||'').match(/^polygon\(([\d.]+)px 0/);return m?+m[1]:0}
+function chamferPath(n){const v=n+'px';return `polygon(${v} 0, calc(100% - ${v}) 0, 100% ${v}, 100% calc(100% - ${v}), calc(100% - ${v}) 100%, ${v} 100%, 0 calc(100% - ${v}), 0 ${v})`}
+function appearancePanel(el){
+  const live=liveEl(el.dataset.ed);if(!live)return '';
+  const cs=cssOf(live),bg=parseColor(cs.backgroundColor),fg=parseColor(cs.color),bc=parseColor(cs.borderTopColor),g=p=>el.style.getPropertyValue(p);
+  const texty=live.textContent.trim().length>0,ch=chamferOf(el);
+  let h=`<div class="sec"><h3>Appearance</h3>
+  <div class="field"><label>Fill</label><div class="row crow"><input type="color" id="aBg" value="${bg.hex}"><div class="boxgrid one">${scrub('--ed-bg-a','Opacity',{min:0,max:100,unit:'%',val:'',auto:Math.round(bg.a*100)+'%',title:'Fill opacity. Drag or double-click.'})}</div><button id="aBgClear" title="Remove the fill">None</button></div></div>`;
+  if(texty)h+=`<div class="field"><label>Text colour</label><div class="row crow"><input type="color" id="aFg" value="${fg.hex}"><div class="boxgrid one">${scrub('font-size','Size',{min:6,max:300,val:g('font-size'),auto:Math.round(parseFloat(cs.fontSize))+'px'})}</div><button id="aFgClear" title="Use the page's colour">Reset</button></div></div>`;
+  h+=`<div class="field"><label>Whole block</label><div class="boxgrid two">${scrub('opacity','Opacity',{min:0,max:100,unit:'%',val:g('opacity')?Math.round(parseFloat(g('opacity'))*100)+'%':'',auto:Math.round(parseFloat(cs.opacity)*100)+'%'})}${scrub('--ed-shadow','Shadow',{min:0,max:120,val:'',auto:(live.dataset.edShadow||'0')+'px',title:'Drop shadow softness. Drag or double-click.'})}</div></div>
+  <div class="field"><label>Edges</label><div class="row crow"><input type="color" id="aBc" value="${bc.hex}"><div class="boxgrid one">${scrub('border-width','Width',{min:0,max:60,val:g('border-width'),auto:Math.round(parseFloat(cs.borderTopWidth))+'px'})}</div>
+    <select id="aBs">${['solid','dashed','dotted','double','none'].map(v=>`<option ${cs.borderTopStyle===v?'selected':''}>${v}</option>`).join('')}</select></div></div>
+  <div class="field"><label>Corners</label><div class="row" style="margin-bottom:6px"><button data-corner="round" class="${ch?'':'on'}">Rounded</button><button data-corner="chamfer" class="${ch?'on':''}">Chamfered</button></div>
+    <div class="boxgrid two">${ch?scrub('--ed-chamfer','Cut',{min:0,max:200,val:ch+'px',auto:ch+'px'}):scrub('border-radius','Radius',{min:0,max:999,val:g('border-radius'),auto:Math.round(parseFloat(cs.borderTopLeftRadius))+'px'})}</div></div>
+  <p class="hint">Drag a number sideways to change it, double-click to type, right-click to reset.</p></div>`;
+  return h;
+}
+function wireAppearance(el){
+  const id=el.dataset.ed,q=s=>insp.querySelector(s),live=()=>liveEl(id);
+  const color=(sel,fn)=>{const i=q(sel);if(!i)return;i.addEventListener('input',()=>{const l=live();if(l)setStyle(l,fn(i.value));drawSel()});i.addEventListener('change',()=>styleBoth(id,fn(i.value)).then(renderInsp))};
+  const bgA=()=>{const l=live();return l?parseColor(cssOf(l).backgroundColor).a||1:1};
+  color('#aBg',v=>({'background-color':rgba(v,bgA())}));
+  color('#aFg',v=>({color:v}));
+  color('#aBc',v=>({'border-color':v,...(parseFloat(cssOf(live()).borderTopWidth)?{}:{'border-width':'1px','border-style':'solid'})}));
+  if(q('#aBgClear'))q('#aBgClear').addEventListener('click',()=>styleBoth(id,{'background-color':'transparent','background':''}).then(renderInsp));
+  if(q('#aFgClear'))q('#aFgClear').addEventListener('click',()=>styleBoth(id,{color:''}).then(renderInsp));
+  if(q('#aBs'))q('#aBs').addEventListener('change',e=>styleBoth(id,{'border-style':e.target.value,...(e.target.value!=='none'&&!parseFloat(cssOf(live()).borderTopWidth)?{'border-width':'1px'}:{})}).then(renderInsp));
+  insp.querySelectorAll('[data-corner]').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.corner==='chamfer'){const r=Math.max(12,Math.round(parseFloat(cssOf(live()).borderTopLeftRadius))||0);styleBoth(id,{'clip-path':chamferPath(r),'border-radius':'0'},'Chamfered corners. Note: chamfers cut off edges and shadows at the corners.').then(renderInsp)}
+    else styleBoth(id,{'clip-path':'','border-radius':(chamferOf(srcEl(id))||12)+'px'}).then(renderInsp)}));
+}
+function scrubMap(){
+  const pct=v=>{const n=numUnit(v);return n?n.n:null};
+  return {
+    'opacity':v=>{if(v==='')return {opacity:''};const n=pct(v);return {opacity:n==null?v:String(Math.max(0,Math.min(100,n))/100)}},
+    '--ed-bg-a':v=>{const l=liveEl(selId),c=parseColor(cssOf(l).backgroundColor);const n=pct(v);return {'background-color':v===''?'':rgba(c.hex,n==null?1:Math.max(0,Math.min(100,n))/100)}},
+    '--ed-shadow':v=>{const n=pct(v)||0;const l=liveEl(selId);if(l)l.dataset.edShadow=n;return {'box-shadow':n?`0 ${Math.round(n*.35)}px ${n}px rgba(0,0,0,.45)`:''}},
+    '--ed-chamfer':v=>{const n=pct(v)||0;return {'clip-path':n?chamferPath(n):''}},
+    'border-width':v=>{const out={'border-width':v};const l=liveEl(selId);if(v&&l&&cssOf(l).borderTopStyle==='none')out['border-style']='solid';return out},
+  };
+}
+
+// =====================================================================
+// Add element menu
+// =====================================================================
+const EDGE='1px solid color-mix(in srgb, currentColor 22%, transparent)';
+const ADD_ITEMS=[
+  ['box','Box','▢','A container you can drop things into',`<div style="padding:24px;border:${EDGE};border-radius:12px;min-height:96px"></div>`],
+  ['text','Text','¶','A paragraph',`<p>New text. Double-click to edit.</p>`],
+  ['heading','Heading','H','A large title',`<h2 class="display">New heading</h2>`],
+  ['label','Label','·','Small mono caption, like the section labels',`<span class="label">Label</span>`],
+  ['button','Button','◉','An orange button link',`<a class="btn primary" href="#">Button</a>`],
+  ['button2','Outline button','○','A secondary button link',`<a class="btn" href="#">Button</a>`],
+  ['link','Link','↗','A text link',`<a href="#">Link text</a>`],
+  ['image','Image','▣','Then use Replace to pick your image',`<img src="/assets/brand/mk.webp" alt="" style="display:block;max-width:100%;height:auto;border-radius:12px">`],
+  ['video','Video','▶','Looping, muted video. Use Replace to pick it',`<video src="" muted loop playsinline autoplay style="display:block;width:100%;border-radius:12px;background:#111;aspect-ratio:16/9"></video>`],
+  ['row','Row','⇹','Side-by-side items that wrap',`<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;min-height:48px"></div>`],
+  ['cols2','2 columns','▥','Two equal columns',`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px"><div style="padding:24px;border:${EDGE};border-radius:12px;min-height:96px"><p>Column one</p></div><div style="padding:24px;border:${EDGE};border-radius:12px;min-height:96px"><p>Column two</p></div></div>`],
+  ['cols3','3 columns','▦','Three equal columns',`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px">${[1,2,3].map(i=>`<div style="padding:24px;border:${EDGE};border-radius:12px;min-height:96px"><p>Column ${i}</p></div>`).join('')}</div>`],
+  ['divider','Divider','—','A thin line',`<hr style="border:0;border-top:${EDGE};margin:24px 0">`],
+  ['spacer','Spacer','↕','Empty space. Drag its height',`<div style="height:48px"></div>`],
+];
+let addWhere='after';
+function buildAddMenu(){
+  const m=document.createElement('div');m.id='addMenu';m.className='addmenu';m.hidden=true;
+  m.innerHTML=`<div class="am-head"><span>Add</span><div class="row"><button data-aw="after" class="on">After selection</button><button data-aw="inside">Inside selection</button></div></div>
+  <div class="am-grid">${ADD_ITEMS.map(([k,t,ic,d])=>`<button data-add="${k}" title="${esc(d)}"><b>${ic}</b><span>${t}</span></button>`).join('')}</div>
+  <p class="hint" style="margin:8px 2px 0">Nothing selected? It goes at the end of the page. You can drag it anywhere after.</p>`;
+  document.body.appendChild(m);
+  m.addEventListener('click',e=>{const w=e.target.closest('[data-aw]');if(w){addWhere=w.dataset.aw;m.querySelectorAll('[data-aw]').forEach(b=>b.classList.toggle('on',b===w));return}
+    const b=e.target.closest('[data-add]');if(b){m.hidden=true;addElement(b.dataset.add)}});
+  document.addEventListener('mousedown',e=>{if(!m.hidden&&!m.contains(e.target)&&e.target.id!=='addBtn')m.hidden=true});
+  return m;
+}
+function addElement(kind){
+  if(!cur)return;const it=ADD_ITEMS.find(x=>x[0]===kind);if(!it)return;
+  const t=cur.doc.createElement('template');t.innerHTML=it[4];const node=t.content.firstElementChild;
+  const target=selId&&srcEl(selId);
+  let where=addWhere;if(where==='inside'&&target&&!canHold(target)){where='after';toast('That block can’t hold others, so it went right after it')}
+  change(doc=>{renumber(node);
+    if(!target)(doc.querySelector('main')||doc.body).appendChild(node);
+    else if(where==='inside'){target.appendChild(node);open.add(target.dataset.ed)}
+    else target.after(node);
+    selId=node.dataset.ed},{label:'Added '+it[1].toLowerCase()+(kind==='image'||kind==='video'?'. Use Replace in the inspector to pick the file.':'')});
 }
 
 (async()=>{
