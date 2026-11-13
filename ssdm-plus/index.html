@@ -77,6 +77,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .compat b{color:#ff5a3c;font:500 11.5px var(--f-mono);letter-spacing:.12em;white-space:nowrap;padding-top:2px}
 .tbl td.no{color:#ff5a3c}
 .ctas{display:flex;gap:12px;flex-wrap:wrap}
+.no-nanite{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:18px 0 0;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);font-size:14px;line-height:1.4;color:rgba(255,255,255,.72)}
+.no-nanite .label{color:#e85002;border:1px solid rgba(232,80,2,.7);border-radius:6px;padding:4px 8px;white-space:nowrap}
 
 /* section heads */
 section.block{padding-block:72px;border-top:1px solid var(--line)}
@@ -214,6 +216,7 @@ table{color:inherit;font:inherit}
 .brand .bd{width:1px;height:18px;background:rgba(255,255,255,.28)}
 .brand .br{height:10px;width:auto;display:block;max-width:none;opacity:.8}
 @media (max-width:560px){.brand .bd,.brand .br{display:none}}
+@media (max-width:560px){.top nav{flex-wrap:nowrap;gap:12px}.top nav a[href="docs/"]{display:none}.top .btn{white-space:nowrap;padding:7px 12px;font-size:12px}.brand .bn{height:13px;width:auto}}
 .top{position:sticky!important;top:0!important;background:#000!important;backdrop-filter:none!important;border-bottom:1px solid #1f1f1f!important}
 
 /* MK mark image */
@@ -313,6 +316,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           <div class="ctas">
             <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
           </div>
+          <p class="no-nanite"><span class="label">No Nanite support</span>Works on regular, non-Nanite meshes and landscapes.</p>
         </div>
       </div>
     </div>
