@@ -307,12 +307,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   0%, 100% { transform: scaleY(0.4); transform-origin: center top; }
   50% { transform: scaleY(1); transform-origin: center top; }
 }</style><style id="ed-screens">
-/* Phone-only and desktop-only tweaks made in the site editor */
+/* Phone, tablet and desktop-only tweaks made in the site editor */
 /*phone*/
 @media (max-width: 600px), (max-height: 500px){
-.m-4oob{margin-bottom:0px !important;height:185px !important;max-width:626px !important;margin-top:0px !important;padding-top:10px !important;padding-bottom:10px !important;margin-left:auto !important;margin-right:auto !important;padding-left:20px !important}
+.m-4oob{margin-bottom:0px !important;height:194px !important;max-width:626px !important;margin-top:0px !important;padding-top:10px !important;padding-bottom:10px !important;margin-left:auto !important;margin-right:auto !important;padding-left:20px !important}
 .m-p24f{padding-top:580px !important;padding-bottom:29px !important}
 .m-3mje{width:340px !important;height:340px !important;align-self:center !important;justify-self:center !important}
+.m-agds{margin-bottom:13px !important;display:block !important}
+.m-v1iq{display:flex !important;margin-bottom:0px !important;padding-bottom:0px !important;flex-direction:row !important}
 }
 </style></head>
 <body>
@@ -345,9 +347,9 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <h1 class="sr" style="inset: 50% auto auto 50%; transform: translate(-50%, -50%);">MK SSDM+</h1>
       
     <div class="hero-row m-4oob" style="align-items: center; text-align: left; margin: 17px auto 24px; padding-top: 40px;">
-        <div>
+        <div class="m-agds">
           <p class="pitch" style="margin-bottom: 14px;">MK SSDM+<br>Screen Space Displacement Mapping &amp; contact shadows.</p>
-          <span class="label" style="font-size: 13px; width: 243px; max-width: 93px; margin-left: 0px; margin-right: auto; text-align: left; padding-top: 0px; min-height: 0px; display: block; margin-bottom: 14px;">Version 1.0</span><div class="ctas">
+          <span class="label" style="font-size: 13px; width: 243px; max-width: 93px; margin-left: 0px; margin-right: auto; text-align: left; padding-top: 0px; min-height: 0px; display: block; margin-bottom: 14px;">Version 1.0</span><div class="ctas m-v1iq">
             <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
           </div>
           
@@ -573,6 +575,8 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
       r.value=v;ba.style.setProperty('--split',v+'%');if(k<1)requestAnimationFrame(step)};setTimeout(()=>requestAnimationFrame(step),400)},{threshold:.5});
   io.observe(ba)}}
 </script>
+
+
 
 
 
