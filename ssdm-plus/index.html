@@ -262,6 +262,21 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 /* compare labels readable on light sections */
 .ba .tag{color:#fff!important;background:rgba(0,0,0,.72)!important;font-weight:600}
 .ba .tag.r{color:#ff7a33!important}
+
+/* feedback pass: simpler hero, solo section heads, clearer compare handle */
+.hero.has-vid .hero-row{grid-template-columns:1fr;max-width:560px}
+.hero.has-vid .pitch{margin-bottom:22px}
+.head.solo{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.head.solo p{max-width:52ch}
+.head.solo > a{color:var(--accent);text-decoration:none;font-weight:600}
+.ba .divider{width:3px;transform:translateX(-1.5px);background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.ba .divider::after{content:"⟷  Drag";width:auto;height:auto;padding:12px 18px;border-radius:999px;background:var(--accent);color:#fff;font:600 15px var(--f-body);white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.35),0 0 0 6px rgba(255,255,255,.18);animation:baPulse 2.4s ease-in-out infinite}
+.ba.used .divider::after{animation:none}
+@keyframes baPulse{50%{box-shadow:0 6px 24px rgba(0,0,0,.35),0 0 0 14px rgba(255,255,255,0)}}
+.ba .tag{font-size:13px;padding:7px 11px;background:rgba(0,0,0,.7)}
+.ba .tag{color:#fff!important;background:rgba(0,0,0,.72)!important;font-weight:600}
+.ba .tag.r{color:#ff7a33!important}
+@media (prefers-reduced-motion:reduce){.ba .divider::after{animation:none}}
 </style>
 </head>
 <body>
@@ -294,20 +309,10 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <h1 class="sr">MK SSDM+</h1>
       <div class="hero-row">
         <div>
-          <div class="mini"><img class="mini-logo" src="logo.webp" width="56" height="56" alt="MK SSDM+ logo"><span class="label">Unreal Engine plugin · Screen space</span></div>
           <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
           <div class="ctas">
             <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
           </div>
-        </div>
-        <div>
-          <div class="badges">
-            <span>UE 5.8 · 5.9 · Win64</span>
-            <span>Plugin only · no engine changes</span>
-            <span class="no">Nanite not supported</span>
-            <span>v1.0</span>
-          </div>
-          <p class="compat"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
         </div>
       </div>
     </div>
@@ -316,18 +321,15 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   <section class="gut t-dark intro-band" id="why">
     <div class="wrap">
       <div class="why">
-        <div><span class="label">Inspired by Crimson Desert</span><p>Screen space displacement like Crimson Desert's, brought to Unreal Engine 5 as a drop-in plugin.</p></div>
-        <div><span class="label">Built for non-Nanite workflows</span><p>Made for regular meshes and landscapes, aiming for similar quality to Nanite displacement at a reduced cost, through screen space displacement.</p></div>
+        <div><span class="label">Inspired by Crimson Desert</span><p>Crimson Desert style displacement, brought to Unreal Engine 5.</p></div>
+        <div><span class="label">Built for non-Nanite workflows</span><p>Similar quality to Nanite displacement at a reduced cost, on regular meshes and landscapes.</p></div>
       </div>
     </div>
   </section>
 
   <section class="block gut t-white" id="compare">
     <div class="wrap">
-      <div class="head">
-        <div><span class="label">01 · Before / after</span><h2 class="display">Drag to compare</h2></div>
-        <p>Left is the stone wall with normal mapping only. Right adds SSDM+ displacement and contact shadows, including a decal that writes its own height.</p>
-      </div>
+      <div class="head solo"><h2 class="display">Drag to Compare</h2></div>
       <div class="ba" id="ba">
         <img class="shot-img" id="baOff" src="ba-off.webp" alt="Stone wall with SSDM+ off: flat surface">
         <img class="shot-img" id="baOn" src="ba-on.webp" alt="Same wall with SSDM+ on: displaced stones and a displacement decal">
@@ -336,36 +338,32 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         <label for="baRange" class="label" style="position:absolute;left:-9999px">Comparison position</label>
         <input type="range" id="baRange" min="0" max="100" value="50">
       </div>
-      <div class="under"><span class="label">In-engine · same camera and light</span><span class="label">Drag the handle</span></div>
     </div>
   </section>
 
   <section class="block gut t-dark" id="strengths">
     <div class="wrap">
-      <div class="head">
-        <div><span class="label">02 · What it does</span><h2 class="display">Lots of depth, little cost</h2></div>
-        <p>Add one node to a material and it displaces. Everything below ships in v1.0.</p>
-      </div>
+      <div class="head solo"><h2 class="display">Lots of Depth, Little Cost</h2></div>
       <div id="feats">
         <div class="feat">
-          <div class="media vid"><video src="one-node.mp4" poster="one-node.webp" muted loop playsinline preload="none" aria-label="One node, real depth"></video></div>
-          <div><span class="label">Displacement</span><h3 class="display">One node, real depth</h3><p>Wire your height in centimetres into the MK_SSDM_Height node. The surface displaces in screen space on regular meshes and landscapes, with no tessellation. An optional direction pin overrides the vertex normal.</p></div>
+          <div class="media vid"><video src="one-node.mp4" poster="one-node.webp" muted loop playsinline preload="none" aria-label="Real Depth"></video></div>
+          <div><h3 class="display">Real Depth</h3><p>Add one node to your material. Regular meshes and landscapes displace, with no tessellation.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="temporal.mp4" poster="temporal.webp" muted loop playsinline preload="none" aria-label="Stable under TAA and TSR"></video></div>
-          <div><span class="label">Temporal</span><h3 class="display">Stable under TAA and TSR</h3><p>Displaced depth and velocity are written back, including camera parallax on moving and skinned objects, so temporal anti-aliasing reprojects the displaced surface instead of smearing it.</p></div>
+          <div class="media vid"><video src="temporal.mp4" poster="temporal.webp" muted loop playsinline preload="none" aria-label="Temporally Stable"></video></div>
+          <div><h3 class="display">Temporally Stable</h3><p>Writes displaced depth and velocity, so TAA and TSR stay sharp in motion.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="edges.mp4" poster="edges.webp" muted loop playsinline preload="none" aria-label="No tearing, no seams"></video></div>
-          <div><span class="label">Clean edges</span><h3 class="display">No tearing, no seams</h3><p>Silhouette fade, crease smoothing on hard edges and an occlusion ramp around buried meshes keep displaced surfaces attached where they meet other geometry. Triplanar-mapped materials are supported too.</p></div>
+          <div class="media vid"><video src="edges.mp4" poster="edges.webp" muted loop playsinline preload="none" aria-label="Clean Edges"></video></div>
+          <div><h3 class="display">Clean Edges</h3><p>No tearing or seams where displaced surfaces meet other geometry. Triplanar materials work too.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="decals.mp4" poster="decals.webp" muted loop playsinline preload="none" aria-label="Decals with height"></video></div>
-          <div><span class="label">Decals</span><h3 class="display">Decals with height</h3><p>Deferred and mesh decals with the node write their height too, replacing the surface height inside the decal.</p></div>
+          <div class="media vid"><video src="decals.mp4" poster="decals.webp" muted loop playsinline preload="none" aria-label="Decals With Height"></video></div>
+          <div><h3 class="display">Decals With Height</h3><p>Deferred and mesh decals displace the surface under them.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="quality.mp4" poster="quality.webp" muted loop playsinline preload="none" aria-label="Low to Epic in one setting"></video></div>
-          <div><span class="label">Scalable</span><h3 class="display">Low to Epic in one setting</h3><p>One quality preset sets resolution, filtering, smoothing and shadow steps together, and follows your project&#x27;s scalability levels.</p></div>
+          <div class="media vid"><video src="quality.mp4" poster="quality.webp" muted loop playsinline preload="none" aria-label="Scalable Quality"></video></div>
+          <div><h3 class="display">Scalable Quality</h3><p>One preset from Low to Epic, tied to your project's scalability levels.</p></div>
         </div>
       </div>
     </div>
@@ -373,24 +371,85 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 
   <section class="block gut t-light" id="modes">
     <div class="wrap">
-      <div class="head">
-        <div><span class="label">03 · Modes</span><h2 class="display">Use one or both</h2></div>
-        <p>Pick a mode in Project Settings. Tune everything else in the MK SSDM Plus Settings panel, or with one quality preset from Low to Epic.</p>
-      </div>
+      <div class="head solo"><h2 class="display">Use One or Both</h2></div>
       <div class="modes">
-        <div class="mode"><div class="sw"><i class="on"></i><i></i></div><h3 class="display">SSDM only</h3><p>Screen space displacement from the height buffer, with your existing shadow setup.</p></div>
-        <div class="mode"><div class="sw"><i></i><i class="on"></i></div><h3 class="display">Contact shadows only</h3><p>Height-aware contact shadows without displacement. Fixes self-shadowing on surfaces using pixel depth offset.</p></div>
-        <div class="mode"><div class="sw"><i class="on"></i><i class="on"></i></div><h3 class="display">Both</h3><p>Displacement and shadows read the same buffer, so the shadows always match the displaced surface.</p></div>
+        <div class="mode"><div class="sw"><i class="on"></i><i></i></div><h3 class="display">Displacement</h3><p>Screen space displacement with your existing shadows.</p></div>
+        <div class="mode"><div class="sw"><i></i><i class="on"></i></div><h3 class="display">Contact Shadows</h3><p>Height-aware contact shadows that fix pixel depth offset self-shadowing.</p></div>
+        <div class="mode"><div class="sw"><i class="on"></i><i class="on"></i></div><h3 class="display">Both</h3><p>Shadows that always match the displaced surface.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="block gut t-black" id="how">
+  <section class="block gut t-white" id="specs">
     <div class="wrap">
-      <div class="head">
-        <div><span class="label">04 · How it works</span><h2 class="display">One height buffer</h2></div>
-        <p>Materials write height through a custom output. A custom mesh pass fills the buffer using the main view's existing culling, so there's no second scene traversal. Both effects read from it.</p>
+      <div class="head solo"><h2 class="display">The Numbers</h2></div>
+      <div class="two">
+        <div class="card">
+          <h3 class="display">GPU Cost</h3><span class="label">Worst case · RTX 5090 Laptop · 2560×1440 · 100% screen size and coverage</span>
+          <div class="scroll"><table class="tbl">
+            <thead><tr><th>Preset</th><th>Displacement</th><th>Contact shadows</th><th>Total</th></tr></thead>
+            <tbody><tr><td>Low</td><td class="num">1.53 ms</td><td class="num">0.27 ms</td><td class="num"><b>1.80 ms</b></td></tr><tr><td>Medium (default)</td><td class="num">1.96 ms</td><td class="num">0.32 ms</td><td class="num"><b>2.28 ms</b></td></tr><tr><td>High</td><td class="num">2.02 ms</td><td class="num">0.29 ms</td><td class="num"><b>2.31 ms</b></td></tr><tr><td>Epic</td><td class="num">2.39 ms</td><td class="num">0.34 ms</td><td class="num"><b>2.73 ms</b></td></tr></tbody>
+          </table></div>
+          <p class="note">Cost scales with screen coverage and the settings used, so most scenes cost less than this. Check your own with <code>stat MKSSDM</code>. Version 1.1 will reduce the cost further.</p>
+        </div>
+        <div class="card">
+          <h3 class="display">Specs</h3><span class="label">What you get</span>
+          <div class="scroll"><table class="tbl">
+            <tbody>
+              <tr><th>Engine</th><td>UE 5.8 and 5.9</td></tr>
+              <tr><th>Platform</th><td>Windows (Win64)</td></tr>
+              <tr><th>Version</th><td>1.0</td></tr>
+              <tr><th>Type</th><td>C++ code plugin</td></tr>
+              <tr><th>Modules</th><td>MKSSDMPlus, MKSSDMPlusMeshPass, MKSSDMPlusEditor</td></tr>
+              <tr><th>Engine changes</th><td class="yes">None</td></tr>
+              <tr><th>Nanite</th><td class="no">Not supported</td></tr>
+              <tr><th>Settings</th><td>Project Settings, settings panel, console variables</td></tr>
+              <tr><th>Quality presets</th><td>Low, Medium, High, Epic</td></tr>
+              <tr><th>TAA / TSR</th><td class="yes">Writes displaced depth and velocity</td></tr>
+              <tr><th>Includes</th><td>Demo map with RVT landscape</td></tr>
+              <tr><th>Author</th><td>Michael Kinsey</td></tr>
+            </tbody>
+          </table></div>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <section class="block gut t-light" id="docs">
+    <div class="wrap">
+      <div class="head solo"><h2 class="display">FAQ</h2><a href="docs/">Read the docs →</a></div>
+      <div class="faq">
+        <details open><summary>Does it support Nanite?</summary><p><b>No.</b> SSDM+ does not support Nanite meshes or Nanite landscapes. Use it on regular, non-Nanite geometry.</p></details>
+        <details><summary>Do I need a source build of the engine?</summary><p>Draft: confirm before launch. The plugin makes no engine source changes.</p></details>
+        <details><summary>Does it work on RVT landscapes?</summary><p>Yes. Contact shadows read height written into the RVT, where stock contact shadows lose pixel depth offset.</p></details>
+        <details><summary>Where do I get support?</summary><p>Join the <a href="https://discord.gg/RDX7mExGZH" target="_blank" rel="noopener">support Discord</a> or email <a href="mailto:contact@michaelkinsey.xyz?subject=MK%20SSDM%2B%20support">contact@michaelkinsey.xyz</a>.</p></details>
+        <details><summary>Which engine versions are supported?</summary><p>Unreal Engine 5.8 and 5.9, on Windows (Win64).</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="block gut t-grad" id="buy">
+    <div class="wrap cta">
+      <div class="cta-text">
+      <span class="label">Coming to Fab</span>
+      <h2 class="display">Get MK SSDM<span style="color:var(--accent)">+</span></h2>
+      <div class="ctas">
+        <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
+        <a class="btn" href="docs/">Read the docs</a>
+      </div>
+      <form class="news" id="newsForm">
+        <label for="newsEmail" class="label" style="flex-basis:100%">New tools and updates, by email <em class="soon-badge">Coming soon</em></label>
+        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
+        <button class="btn" type="submit" id="newsBtn" disabled>Subscribe</button>
+        <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
+      </form>
+      </div>
+      <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo">
+    </div>
+  </section>
+  <section class="block gut t-dark" id="how">
+    <div class="wrap">
+      <div class="head solo"><h2 class="display">How It Works</h2><p>Materials and decals write height into one buffer. Displacement and contact shadows both read it.</p></div>
       <div class="diagram">
         <svg viewBox="0 0 1000 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a7a7a7"/></marker>
@@ -415,85 +474,6 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           <path class="arrow" d="M820 213 C 850 213, 850 162, 878 162" marker-end="url(#ah)"/>
         </svg>
       </div>
-    </div>
-  </section>
-
-  <section class="block gut t-white" id="specs">
-    <div class="wrap">
-      <div class="head">
-        <div><span class="label">05 · Proof &amp; specs</span><h2 class="display">The numbers</h2></div>
-        <p>Worst-case GPU time per quality preset: 100% screen size with displacement covering the whole screen. Median of 12 <code>ProfileGPU</code> captures.</p>
-      </div>
-      <div class="two">
-        <div class="card">
-          <h3 class="display">GPU cost</h3><span class="label">Worst case · RTX 5090 Laptop · 2560×1440 · 100% screen size and coverage</span>
-          <div class="scroll"><table class="tbl">
-            <thead><tr><th>Preset</th><th>Displacement</th><th>Contact shadows</th><th>Total</th></tr></thead>
-            <tbody><tr><td>Low</td><td class="num">1.53 ms</td><td class="num">0.27 ms</td><td class="num"><b>1.80 ms</b></td></tr><tr><td>Medium (default)</td><td class="num">1.96 ms</td><td class="num">0.32 ms</td><td class="num"><b>2.28 ms</b></td></tr><tr><td>High</td><td class="num">2.02 ms</td><td class="num">0.29 ms</td><td class="num"><b>2.31 ms</b></td></tr><tr><td>Epic</td><td class="num">2.39 ms</td><td class="num">0.34 ms</td><td class="num"><b>2.73 ms</b></td></tr></tbody>
-          </table></div>
-          <p class="note">Cost scales with screen coverage and the settings used, so most scenes cost less than this. Check your own with <code>stat MKSSDM</code>. Version 1.1 will reduce the cost further.</p>
-        </div>
-        <div class="card">
-          <h3 class="display">Specs</h3><span class="label">What you get</span>
-          <div class="scroll"><table class="tbl">
-            <tbody>
-              <tr><th>Engine</th><td>UE 5.8 and 5.9</td></tr>
-              <tr><th>Platform</th><td>Windows (Win64)</td></tr>
-              <tr><th>Version</th><td>1.0</td></tr>
-              <tr><th>Price</th><td>$25.99 Personal · $99.99 Professional</td></tr>
-              <tr><th>Type</th><td>C++ code plugin</td></tr>
-              <tr><th>Modules</th><td>MKSSDMPlus, MKSSDMPlusMeshPass, MKSSDMPlusEditor</td></tr>
-              <tr><th>Engine changes</th><td class="yes">None</td></tr>
-              <tr><th>Nanite</th><td class="no">Not supported</td></tr>
-              <tr><th>Settings</th><td>Project Settings, settings panel, console variables</td></tr>
-              <tr><th>Quality presets</th><td>Low, Medium, High, Epic</td></tr>
-              <tr><th>TAA / TSR</th><td class="yes">Writes displaced depth and velocity</td></tr>
-              <tr><th>Includes</th><td>Demo map with RVT landscape</td></tr>
-              <tr><th>Author</th><td>Michael Kinsey</td></tr>
-            </tbody>
-          </table></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="block gut t-light" id="docs">
-    <div class="wrap">
-      <div class="head">
-        <div><span class="label">06 · Questions</span><h2 class="display">FAQ</h2></div>
-        <p>Full setup lives in the docs: quick start, settings reference, troubleshooting and licence. <a href="docs/">Read the docs →</a></p>
-      </div>
-      <div class="faq">
-        <details open><summary>Does it support Nanite?</summary><p><b>No.</b> SSDM+ does not support Nanite meshes or Nanite landscapes. Use it on regular, non-Nanite geometry.</p></details>
-        <details><summary>Do I need a source build of the engine?</summary><p>Draft: confirm before launch. The plugin makes no engine source changes.</p></details>
-        <details><summary>Does it work on RVT landscapes?</summary><p>Yes. Contact shadows read height written into the RVT, where stock contact shadows lose pixel depth offset.</p></details>
-        <details><summary>Where do I get support?</summary><p>Join the <a href="https://discord.gg/RDX7mExGZH" target="_blank" rel="noopener">support Discord</a> or email <a href="mailto:contact@michaelkinsey.xyz?subject=MK%20SSDM%2B%20support">contact@michaelkinsey.xyz</a>.</p></details>
-        <details><summary>Which engine versions are supported?</summary><p>Unreal Engine 5.8 and 5.9, on Windows (Win64).</p></details>
-      </div>
-    </div>
-  </section>
-
-  <section class="block gut t-grad" id="buy">
-    <div class="wrap cta">
-      <div class="cta-text">
-      <span class="label">Coming to Fab</span>
-      <h2 class="display">Get MK SSDM<span style="color:var(--accent)">+</span></h2>
-      <div class="prices">
-        <div><span class="label">Personal</span><b>$25.99</b><small>USD · Fab Personal licence</small></div>
-        <div><span class="label">Professional</span><b>$99.99</b><small>USD · Fab Professional licence</small></div>
-      </div>
-      <div class="ctas">
-        <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
-        <a class="btn" href="docs/">Read the docs</a>
-      </div>
-      <form class="news" id="newsForm">
-        <label for="newsEmail" class="label" style="flex-basis:100%">New tools and updates, by email <em class="soon-badge">Coming soon</em></label>
-        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
-        <button class="btn" type="submit" id="newsBtn" disabled>Subscribe</button>
-        <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
-      </form>
-      </div>
-      <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo">
     </div>
   </section>
 </main>
@@ -528,6 +508,15 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
   document.addEventListener('visibilitychange',()=>{document.hidden?vs[i].pause():play(vs[i])});
   play(vs[0]);
  }}
+
+/* compare: hint sweep on first view */
+{const ba=document.getElementById('ba'),r=document.getElementById('baRange');let used=false;
+ const mark=()=>{used=true;ba.classList.add('used')};['pointerdown','touchstart','keydown'].forEach(e=>r.addEventListener(e,mark));
+ if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>{if(!es[0].isIntersecting||used)return;io.disconnect();
+    const t0=performance.now(),D=2400;const step=t=>{if(used)return;const k=Math.min(1,(t-t0)/D);const v=50+Math.sin(k*Math.PI*2)*22;
+      r.value=v;ba.style.setProperty('--split',v+'%');if(k<1)requestAnimationFrame(step)};setTimeout(()=>requestAnimationFrame(step),400)},{threshold:.5});
+  io.observe(ba)}}
 </script>
 </body>
 </html>
