@@ -393,27 +393,27 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         <p>Materials write height through a custom output. A custom mesh pass fills the buffer using the main view's existing culling, so there's no second scene traversal. Both effects read from it.</p>
       </div>
       <div class="diagram">
-        <svg viewBox="0 0 980 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
+        <svg viewBox="0 0 1000 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
           <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a7a7a7"/></marker>
           <marker id="ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffffff"/></marker></defs>
           <rect class="box" x="10" y="40" width="200" height="86"/>
           <text class="t" x="28" y="76">Materials</text><text class="s" x="28" y="100">custom height output</text>
           <rect class="box" x="10" y="170" width="200" height="86"/>
           <text class="t" x="28" y="206">Decals</text><text class="s" x="28" y="230">deferred + mesh</text>
-          <rect class="box hl" x="290" y="105" width="220" height="86"/>
-          <text class="t" x="308" y="141">Height buffer</text><text class="s" x="308" y="165">custom mesh pass</text>
-          <rect class="box" x="590" y="40" width="190" height="86"/>
-          <text class="t" x="608" y="76">SSDM</text><text class="s" x="608" y="100">depth overlap fix</text>
-          <rect class="box" x="590" y="170" width="190" height="86"/>
-          <text class="t" x="608" y="206">Contact shadows</text><text class="s" x="608" y="230">height-aware</text>
-          <rect class="box" x="850" y="105" width="120" height="86"/>
-          <text class="t" x="868" y="141">Final</text><text class="s" x="868" y="165">image</text>
-          <path class="arrow" d="M210 83 C 250 83, 250 135, 288 135" marker-end="url(#ah)"/>
-          <path class="arrow" d="M210 213 C 250 213, 250 162, 288 162" marker-end="url(#ah)"/>
-          <path class="arrow hl" d="M510 135 C 550 135, 550 83, 588 83" marker-end="url(#ahA)"/>
-          <path class="arrow hl" d="M510 162 C 550 162, 550 213, 588 213" marker-end="url(#ahA)"/>
-          <path class="arrow" d="M780 83 C 815 83, 815 135, 848 135" marker-end="url(#ah)"/>
-          <path class="arrow" d="M780 213 C 815 213, 815 162, 848 162" marker-end="url(#ah)"/>
+          <rect class="box hl" x="280" y="105" width="220" height="86"/>
+          <text class="t" x="298" y="141">Height buffer</text><text class="s" x="298" y="165">custom mesh pass</text>
+          <rect class="box" x="570" y="40" width="250" height="86"/>
+          <text class="t" x="588" y="76">SSDM</text><text class="s" x="588" y="100">depth overlap fix</text>
+          <rect class="box" x="570" y="170" width="250" height="86"/>
+          <text class="t" x="588" y="206">Contact shadows</text><text class="s" x="588" y="230">height-aware</text>
+          <rect class="box" x="880" y="105" width="110" height="86"/>
+          <text class="t" x="898" y="141">Final</text><text class="s" x="898" y="165">image</text>
+          <path class="arrow" d="M210 83 C 245 83, 245 135, 278 135" marker-end="url(#ah)"/>
+          <path class="arrow" d="M210 213 C 245 213, 245 162, 278 162" marker-end="url(#ah)"/>
+          <path class="arrow hl" d="M500 135 C 535 135, 535 83, 568 83" marker-end="url(#ahA)"/>
+          <path class="arrow hl" d="M500 162 C 535 162, 535 213, 568 213" marker-end="url(#ahA)"/>
+          <path class="arrow" d="M820 83 C 850 83, 850 135, 878 135" marker-end="url(#ah)"/>
+          <path class="arrow" d="M820 213 C 850 213, 850 162, 878 162" marker-end="url(#ah)"/>
         </svg>
       </div>
     </div>
