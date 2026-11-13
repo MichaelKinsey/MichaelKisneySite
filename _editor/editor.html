@@ -33,10 +33,12 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
 .insp{background:var(--panel);border-left:1px solid var(--line);overflow:auto;min-height:0;padding:12px}
 .side h3,.insp h3{margin:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .side h3{padding:12px 12px 6px}
-.stage{display:flex;justify-content:center;background:#050505;min-height:0;overflow:auto}
-.stage iframe{border:0;background:#fff;height:100%;width:100%;transition:width .25s}
-.stage.tablet iframe{width:820px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
-.stage.phone iframe{width:390px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.stage{position:relative;display:flex;justify-content:center;align-items:flex-start;background:#050505;min-height:0;overflow:hidden}
+.stage .dev{width:100%;height:100%;flex:0 0 auto}
+.stage iframe{border:0;background:#fff;height:100%;width:100%;display:block;transform-origin:0 0}
+.stage.device{align-items:center;background:radial-gradient(circle at 50% 40%,#1a1a1a,#050505)}
+.stage.device .dev{border-radius:22px;overflow:hidden;box-shadow:0 0 0 10px #1c1c1c,0 0 0 11px #333,0 20px 60px rgba(0,0,0,.6)}
+.devlabel{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);color:var(--muted);font-size:11px;letter-spacing:.04em;pointer-events:none}
 /* layers */
 .tree{padding:0 6px 20px;font-size:12px}
 .node{display:flex;align-items:center;gap:4px;padding:2px 4px;border-radius:5px;cursor:pointer;white-space:nowrap;overflow:hidden}
@@ -78,7 +80,7 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
       <button id="modeEdit" class="on">Edit</button><button id="modePrev">Preview</button>
     </div>
     <div class="grp" title="Screen width">
-      <button data-dev="desk" class="on">Desktop</button><button data-dev="tablet">Tablet</button><button data-dev="phone">Phone</button>
+      <button data-dev="desk" class="on">Desktop</button><button data-dev="tablet" title="iPad, 820 × 1180">iPad</button><button data-dev="phone" title="iPhone 13 Pro, 390 × 844">iPhone</button><button id="rot" disabled title="Switch between portrait and landscape">Portrait</button>
     </div>
     <div class="grp">
       <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
@@ -90,7 +92,7 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
   </div>
   <div class="main">
     <aside class="side"><h3>Layers</h3><div class="tree" id="tree"></div></aside>
-    <div class="stage" id="stage"><iframe id="frame" title="Page"></iframe></div>
+    <div class="stage" id="stage"><div class="dev" id="dev"><iframe id="frame" title="Page"></iframe></div><span class="devlabel" id="devlabel"></span></div>
     <aside class="insp" id="insp"></aside>
   </div>
 </div>
@@ -433,7 +435,25 @@ $('#save').onclick=save;$('#discard').onclick=discard;$('#undo').onclick=undo;$(
 $('#pageSel').onchange=e=>openPage(e.target.value);
 function setMode(m){mode=m;$('#modeEdit').classList.toggle('on',m==='edit');$('#modePrev').classList.toggle('on',m==='prev');const d=liveDoc();if(d)d.documentElement.classList.toggle('__ed_edit',m==='edit');if(editing)finishEdit();drawSel();const h=d&&d.querySelector('.__ed_hov');if(h)h.style.display='none'}
 $('#modeEdit').onclick=()=>setMode('edit');$('#modePrev').onclick=()=>setMode('prev');
-document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));stage.className='stage '+(b.dataset.dev==='desk'?'':b.dataset.dev)});
+/* device preview: real CSS viewport sizes, scaled to fit */
+const DEVICES={tablet:{name:'iPad',w:820,h:1180},phone:{name:'iPhone 13 Pro',w:390,h:844}};
+let dev='desk',landscape=false;
+function layoutDevice(){
+  const box=$('#dev'),lab=$('#devlabel'),rot=$('#rot');
+  rot.disabled=dev==='desk';rot.textContent=landscape?'Landscape':'Portrait';rot.classList.toggle('on',landscape&&dev!=='desk');
+  if(dev==='desk'){stage.classList.remove('device');Object.assign(box.style,{width:'100%',height:'100%'});Object.assign(frame.style,{width:'100%',height:'100%',transform:''});lab.textContent='';return}
+  const d=DEVICES[dev],w=landscape?d.h:d.w,h=landscape?d.w:d.h;
+  const pad=48,sw=stage.clientWidth-pad,sh=stage.clientHeight-pad-18;
+  const k=Math.min(1,sw/w,sh/h);
+  stage.classList.add('device');
+  Object.assign(frame.style,{width:w+'px',height:h+'px',transform:`scale(${k})`});
+  Object.assign(box.style,{width:Math.round(w*k)+'px',height:Math.round(h*k)+'px'});
+  lab.textContent=`${d.name} · ${landscape?'landscape':'portrait'} · ${w} × ${h}`+(k<1?` · shown at ${Math.round(k*100)}%`:'');
+  setTimeout(drawSel,50);
+}
+document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));dev=b.dataset.dev;layoutDevice()});
+$('#rot').onclick=()=>{landscape=!landscape;layoutDevice()};
+window.addEventListener('resize',layoutDevice);
 window.addEventListener('beforeunload',e=>{if(cur&&cur.dirty){e.preventDefault();e.returnValue=''}});
 
 (async()=>{
