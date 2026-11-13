@@ -434,7 +434,7 @@ function renderInsp(){
   const texty=isTexty(el)&&el.textContent.trim()&&!MEDIA.has(tag);
   if(texty){
     const plain=!el.children.length;
-    h+=`<div class="field"><label>Text</label>${plain?`<textarea class="text" id="fText" rows="3">${esc(el.textContent)}</textarea>`:`<textarea id="fHtmlIn" rows="4">${esc(stripIds(el.innerHTML))}</textarea><div class="hint">Has formatting (bold, links…). Edit here, or <b>double-click</b> it in the page to type directly.</div>`}</div>`;
+    h+=`<div class="field"><label>Text</label>${plain?`<textarea class="text" id="fText" rows="3">${esc(el.textContent)}</textarea><div class="hint">Press Enter for a new line. In the page, double-click and use Enter too.</div>`:`<textarea id="fHtmlIn" rows="4">${esc(stripIds(el.innerHTML))}</textarea><div class="hint">Has formatting (bold, links…). Edit here, or <b>double-click</b> it in the page to type directly.</div>`}</div>`;
   }else if(!MEDIA.has(tag)){
     h+=`<p class="hint">This block holds other blocks. Click one in the page or in Layers, or <b>double-click</b> text in the page to type.</p>`;
   }
@@ -520,7 +520,10 @@ function wireInsp(el){
   insp.querySelectorAll('[data-go]').forEach(a=>a.addEventListener('click',()=>select(a.dataset.go,{scroll:true})));
   const live=()=>liveEl(id);
   const setAttr=(name,val,{rerender=false}={})=>change(()=>{val?el.setAttribute(name,val):el.removeAttribute(name)},{rerender}).then(()=>{const L=live();if(L&&!rerender){val?L.setAttribute(name,val):L.removeAttribute(name)}});
-  if(q('#fText'))q('#fText').addEventListener('change',e=>{const v=e.target.value;change(()=>{el.textContent=v},{rerender:false}).then(()=>{const L=live();if(L)L.textContent=v;drawSel()})});
+  if(q('#fText'))q('#fText').addEventListener('change',e=>{const v=e.target.value.replace(/\r/g,'');
+    // a new line in the box becomes a real line break on the page
+    if(v.includes('\n')){const html=v.split('\n').map(t=>esc(t)).join('<br>');change(()=>{el.innerHTML=html;el.querySelectorAll('*').forEach(x=>{if(!x.dataset.ed)x.setAttribute('data-ed',String(nextId++))})},{label:'Line break added'})}
+    else change(()=>{el.textContent=v},{rerender:false}).then(()=>{const L=live();if(L)L.textContent=v;drawSel()})});
   if(q('#fHtmlIn'))q('#fHtmlIn').addEventListener('change',e=>{const v=e.target.value;change(()=>{el.innerHTML=v;el.querySelectorAll('*').forEach(c=>c.setAttribute('data-ed',String(nextId++)))})});
   if(q('#fHref'))q('#fHref').addEventListener('change',e=>setAttr('href',e.target.value.trim()));
   if(q('#fNew'))q('#fNew').addEventListener('change',e=>change(()=>{if(e.target.checked){el.setAttribute('target','_blank');el.setAttribute('rel','noopener')}else{el.removeAttribute('target');el.removeAttribute('rel')}},{rerender:false}));
