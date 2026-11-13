@@ -805,6 +805,10 @@ function layoutPanel(el){
     const curH=room<2?'full':Math.abs(gl-gr)<3?'center':gl<gr?'left':'right';
     h+=`<div class="field"><label>Place this block in its container</label><div class="row">${[['left','Left'],['center','Center'],['right','Right']].map(([v,t])=>`<button data-place="${v}" class="${curH===v?'on':''}">${t}</button>`).join('')}</div>${curH==='full'?`<p class="hint">It fills the full width of its container, so there is no room to move it sideways. Give it a smaller Width below (e.g. 560px or 60%) first.</p>`:''}</div>`;
   }
+  {const dsp=cs.display;
+    if(dsp==='inline'&&!a)h+=`<div class="warn">This is an <b>inline</b> element, so it sits inside the line of text: top/bottom margin, padding, width and height don't push other things away. Switch it to <b>Block</b> to give it its own row and real spacing.</div>`;
+    const opts=[['inline','Inline'],['block','Block'],['inline-block','Inline block'],['flex','Row'],['grid','Grid']];
+    h+=`<div class="field"><label>Display as</label><div class="row">${opts.map(([v,t])=>`<button data-disp="${v}" class="${dsp===v?'on':''}" title="${{inline:'Flows inside a line of text',block:'Takes its own full row',['inline-block']:'Sits in a line but respects spacing and size',flex:'Lays its children out in a row',grid:'Lays its children out in a grid'}[v]}">${t}</button>`).join('')}</div></div>`}
   h+=clipReport(live);
   if(live.textContent.trim()){const ta=cs.textAlign.replace('start','left').replace('end','right');
     h+=`<div class="field"><label>Text alignment</label><div class="row">${['left','center','right'].map(v=>`<button data-ta="${v}" class="${ta===v?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
@@ -843,6 +847,7 @@ function wireLayout(el){
   insp.querySelectorAll('[data-anchor]').forEach(b=>b.addEventListener('click',()=>{const[v,hz]=b.dataset.anchor.split('-');anchorTo(id,v,hz,+(q('#lGap')||{}).value||24)}));
   if(q('#lGap'))q('#lGap').addEventListener('change',e=>{const live=liveEl(id),a=anchorInfo(live);anchorTo(id,a.v==='stretch'?'top':a.v,a.h==='stretch'?'left':a.h,+e.target.value||0)});
   insp.querySelectorAll('[data-self]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{'align-self':b.dataset.self==='auto'?'':b.dataset.self,'justify-self':b.dataset.self==='auto'?'':b.dataset.self}).then(renderInsp)));
+  insp.querySelectorAll('[data-disp]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{display:b.dataset.disp},'Now displayed as '+b.textContent.toLowerCase()).then(renderInsp)));
   insp.querySelectorAll('[data-place]').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.place;
     styleBoth(id,{'margin-left':v==='left'?'0':'auto','margin-right':v==='right'?'0':'auto'},'Placed '+v).then(renderInsp)}));
   insp.querySelectorAll('[data-ovf]').forEach(b=>b.addEventListener('click',()=>styleBoth(id,{overflow:b.dataset.ovf}).then(renderInsp)));
