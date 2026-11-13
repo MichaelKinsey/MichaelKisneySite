@@ -1,0 +1,43 @@
+[
+ {
+  "key": "blank",
+  "name": "Blank page",
+  "desc": "Just the top bar, a title section, one text section and the footer."
+ },
+ {
+  "key": "product",
+  "name": "Product page",
+  "desc": "Big video hero, before/after slider, feature rows, specs table, FAQ and a buy section. Built from the SSDM+ page.",
+  "from": "ssdm-plus/index.html"
+ },
+ {
+  "key": "grid",
+  "name": "Tile grid",
+  "desc": "A grid of large tiles with background media, then text sections. Built from the Tools page.",
+  "from": "tools/index.html"
+ },
+ {
+  "key": "library",
+  "name": "Card library",
+  "desc": "A grid of cards plus an about section. Built from the Tutorials page.",
+  "from": "tutorials/index.html"
+ },
+ {
+  "key": "info",
+  "name": "Info / services page",
+  "desc": "Hero, offer cards, experience, process steps and contact. Built from the Services page.",
+  "from": "services/index.html"
+ },
+ {
+  "key": "docs",
+  "name": "Documentation",
+  "desc": "Docs layout with a side menu and long-form sections. Built from the SSDM+ docs.",
+  "from": "ssdm-plus/docs/index.html"
+ },
+ {
+  "key": "landing",
+  "name": "Landing (columns)",
+  "desc": "The home page layout: three big columns, about, services and newsletter.",
+  "from": "index.html"
+ }
+]

@@ -96,6 +96,18 @@ details.adv summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:
 .scopetag{font-size:11.5px;font-weight:600;color:#fff;background:#4aa3ff;border-radius:999px;padding:4px 10px}
 body.phone-scope .scrub{border-color:rgba(74,163,255,.45)}
 .node .scm{color:#4aa3ff;font-size:11px;margin-right:2px}
+.npwrap{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:24px}
+.npwrap[hidden]{display:none}
+.npbox{width:min(1040px,100%);max-height:100%;overflow:auto;background:#141414;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.nphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.nphead h2{margin:0;font-size:18px}
+.npgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.npcard{display:flex;flex-direction:column;align-items:stretch;gap:6px;text-align:left;padding:8px;white-space:normal;border-radius:10px}
+.npcard.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.npcard b{font-size:13px}.npcard span{color:var(--muted);font-size:11.5px;line-height:1.4}
+.npthumb{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;border-radius:6px;background:#222}
+.npcopy{display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--accent)}
+.npform{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.npaddr{flex-wrap:nowrap}.npaddr span{color:var(--muted);font-size:13px}.npaddr input{flex:1}
 .warn{margin:10px 0 0;padding:8px 10px;border-left:3px solid #e8a33d;background:rgba(232,163,61,.1);font-size:12px;line-height:1.45;color:var(--ink)}
 .warn code{color:#e9a37a}
 .agrid{display:grid;grid-template-columns:repeat(3,26px);gap:4px}
@@ -114,7 +126,7 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
 <div class="app">
   <div class="top">
     <span class="brand">Site Editor</span>
-    <select id="pageSel" title="Page"></select>
+    <select id="pageSel" title="Page"></select><button id="npBtn" title="Make a new page from a template">+ Page</button>
     <div class="grp" title="Edit: click to select, double-click text to type. Preview: use the page normally.">
       <button id="modeEdit" class="on">Edit</button><button id="modePrev">Preview</button>
     </div>
@@ -608,6 +620,7 @@ $('#ltools').addEventListener('click',e=>{const b=e.target.closest('[data-lt]');
   ({up:()=>sibMove(selId,-1),down:()=>sibMove(selId,1),out:()=>outLevel(selId),in:()=>intoAbove(selId)})[b.dataset.lt]()});
 let addMenu=null;
 $('#addBtn').onclick=()=>{if(!addMenu)addMenu=buildAddMenu();if(!addMenu.hidden){addMenu.hidden=true;return}const r=$('#addBtn').getBoundingClientRect();addMenu.style.left=r.left+'px';addMenu.style.top=(r.bottom+6)+'px';addMenu.hidden=false};
+$('#npBtn').onclick=()=>{if(cur)openNewPage()};
 $('#save').onclick=save;$('#discard').onclick=discard;$('#undo').onclick=undo;$('#redo').onclick=redo;
 $('#pageSel').onchange=e=>openPage(e.target.value);
 function setMode(m){mode=m;$('#modeEdit').classList.toggle('on',m==='edit');$('#modePrev').classList.toggle('on',m==='prev');const d=liveDoc();if(d)d.documentElement.classList.toggle('__ed_edit',m==='edit');if(editing)finishEdit();drawSel();const h=d&&d.querySelector('.__ed_hov');if(h)h.style.display='none'}
@@ -1154,6 +1167,56 @@ function wireScope(el){
     styleScoped(id,{display:on?'':'none'},k,on?'Shown again':(k==='phone'?'Hidden on phones (still in Layers)':'Hidden on tablet and desktop (still in Layers)')).then(()=>{renderTree();renderInsp()})}));
 }
 function setScope(s){editScope=s;document.body.classList.toggle('phone-scope',s==='phone');const t=$('#scopeTag');if(t)t.hidden=s!=='phone'}
+
+// =====================================================================
+// New page from a template (or a copy of the current page)
+// =====================================================================
+let tplList=null,npChoice='blank';
+function slugify(s){return String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9/]+/g,'-').replace(/\/+/g,'/').replace(/(^[-/]+|[-/]+$)/g,'').replace(/-+\//g,'/').replace(/\/-+/g,'/')}
+function absolutize(html,dir){
+  if(!dir)return html;
+  const fix=v=>/^(\/|#|[a-z][a-z0-9+.-]*:|data:|blob:|\$\{)/i.test(v)||v===''?v:'/'+dir+v;
+  return html.replace(/\b(src|href|poster|data-src|data-hd)="([^"]*)"/g,(m,a,v)=>`${a}="${fix(v)}"`)
+             .replace(/url\((["']?)([^)"']+)\1\)/g,(m,q,v)=>`url(${q}${fix(v)}${q})`);
+}
+async function openNewPage(){
+  if(!tplList){try{tplList=await (await fetch('/_editor/templates/index.json',{cache:'no-store'})).json()}catch(e){tplList=[]}}
+  let m=$('#npModal');
+  if(!m){m=document.createElement('div');m.id='npModal';m.className='npwrap';document.body.appendChild(m);
+    m.addEventListener('mousedown',e=>{if(e.target===m)m.hidden=true})}
+  const cards=[{key:'copy',name:'Copy of this page',desc:'An exact copy of '+(cur.url||cur.path)+', with all its text and media, to change from there.'},...tplList];
+  m.innerHTML=`<div class="npbox"><div class="nphead"><h2>New page</h2><button id="npClose">Close</button></div>
+    <div class="npgrid">${cards.map(t=>`<button class="npcard${t.key===npChoice?' on':''}" data-tpl="${t.key}">${t.key==='copy'?`<div class="npthumb npcopy">⧉</div>`:`<img class="npthumb" src="/_editor/templates/${t.key}.webp" alt="">`}<b>${esc(t.name)}</b><span>${esc(t.desc)}</span></button>`).join('')}</div>
+    <div class="npform"><div class="field"><label>Page name (shows in the browser tab)</label><input id="npName" placeholder="e.g. MK Fast Weather"></div>
+    <div class="field"><label>Web address</label><div class="row npaddr"><span>michaelkinsey.xyz/</span><input id="npSlug" placeholder="mk-fast-weather"><span>/</span></div>
+    <p class="hint">Use a slash for a page inside another, e.g. <code>tools/mk-fast-weather</code> or <code>ssdm-plus/changelog</code>.</p></div>
+    <div class="row" style="justify-content:flex-end;gap:8px"><span class="hint" id="npMsg" style="margin:0 auto 0 0"></span><button id="npCancel">Cancel</button><button id="npGo" class="primary">Create page</button></div></div></div>`;
+  m.hidden=false;
+  const name=m.querySelector('#npName'),slug=m.querySelector('#npSlug'),msg=m.querySelector('#npMsg');let slugTouched=false;
+  name.addEventListener('input',()=>{if(!slugTouched)slug.value=slugify(name.value);check()});
+  slug.addEventListener('input',()=>{slugTouched=true;check()});
+  const check=()=>{const sl=slugify(slug.value);const p=sl+'/index.html';const taken=pages.some(x=>x.path===p);
+    msg.textContent=!sl?'':taken?'That address is already a page.':'Will create /'+sl+'/';msg.style.color=taken?'#ff7a5c':'';return sl&&!taken};
+  m.querySelectorAll('[data-tpl]').forEach(b=>b.addEventListener('click',()=>{npChoice=b.dataset.tpl;m.querySelectorAll('[data-tpl]').forEach(x=>x.classList.toggle('on',x===b))}));
+  m.querySelector('#npClose').onclick=m.querySelector('#npCancel').onclick=()=>{m.hidden=true};
+  m.querySelector('#npGo').onclick=async()=>{
+    const sl=slugify(slug.value);if(!name.value.trim()){name.focus();msg.textContent='Give the page a name.';return}
+    if(!check()){slug.focus();return}
+    const path=sl+'/index.html';
+    try{
+      let html;
+      if(npChoice==='copy'){if(editing)finishEdit();html=absolutize(stripIds(cur.src),pageDir())}
+      else{const r=await fetch('/_editor/templates/'+npChoice+'.template',{cache:'no-store'});if(!r.ok)throw new Error('template missing');html=await r.text()}
+      const title=name.value.trim();
+      html=html.replace(/<title>[\s\S]*?<\/title>/i,`<title>${esc(title)} | Michael Kinsey</title>`);
+      if(npChoice!=='copy')html=html.replace(/(<h1[^>]*>)\s*Page title\s*(<\/h1>)/,`$1${esc(title)}$2`);
+      const j=await api('/__ed/api/upload?path='+encodeURIComponent(path),{method:'POST',body:html});
+      m.hidden=true;await loadPages();$('#pageSel').value=j.path;await openPage(j.path);
+      toast('Created /'+sl+'/ and saved it in your site folder. Link to it from another page so people can find it.',5000);
+    }catch(e){msg.textContent='Could not create it: '+e.message;msg.style.color='#ff7a5c'}
+  };
+  setTimeout(()=>name.focus(),30);
+}
 
 (async()=>{
   try{await loadPages();const want=new URLSearchParams(location.search).get('page');await openPage(want&&pages.some(p=>p.path===want)?want:'index.html')}
