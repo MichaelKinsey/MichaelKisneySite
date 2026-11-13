@@ -64,6 +64,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
 .sec{border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
 .thumb{max-width:100%;max-height:140px;border-radius:6px;display:block;margin-top:6px;background:#000}
 details.adv summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:14px}
+.stale{display:none;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;background:#3a2a0a;border-bottom:1px solid #6b4a12;color:#ffd99a;font-size:12.5px}
+.stale.show{display:flex}
+.stale b{color:#fff}
+.app.has-stale{grid-template-rows:48px auto 1fr}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#222;border:1px solid #444;padding:9px 14px;border-radius:9px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9}
 .toast.show{opacity:1}
 .welcome{padding:14px;color:var(--muted)}
@@ -90,6 +94,8 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
     <button id="discard" class="danger" disabled title="Throw away unsaved changes on this page">Discard</button>
     <button id="save" class="primary" disabled title="Save this page to your site folder (Ctrl+S)">Save page</button>
   </div>
+  <div class="stale" id="stale"><span><b>This page was changed on disk</b> (by Claude or another editor window) after you started editing here. Your unsaved edits are based on the older copy.</span>
+    <button id="staleReload">Load the newer page (drop my unsaved edits)</button><button id="staleKeep">Keep my edits</button></div>
   <div class="main">
     <aside class="side"><h3>Layers</h3><div class="tree" id="tree"></div></aside>
     <div class="stage" id="stage"><div class="dev" id="dev"><iframe id="frame" title="Page"></iframe></div><span class="devlabel" id="devlabel"></span></div>
@@ -139,11 +145,20 @@ async function openPage(path,{reloadFrame=true}={}){
   const pg=pages.find(p=>p.path===path)||{path,url:'/'+path};
   const doc=new DOMParser().parseFromString(j.html,'text/html');
   cur={path,url:pg.url,src:j.html,doc,dirty:j.draft,hist:[],fut:[]};
+  showStale(!!j.stale);
   nextId=maxId(doc)+1;selId=null;open=new Set();
   $('#pageSel').value=path;
   if(reloadFrame){keepScroll=0;frame.src=pg.url}
   renderTree();renderInsp();updateBar();
 }
+
+function showStale(on){$('#stale').classList.toggle('show',on);document.querySelector('.app').classList.toggle('has-stale',on)}
+$('#staleReload').onclick=async()=>{await api('/__ed/api/discard?path='+encodeURIComponent(cur.path),{method:'POST'});await openPage(cur.path);toast('Loaded the newer page')};
+$('#staleKeep').onclick=()=>{showStale(false);toast('Keeping your edits. Saving will replace the newer copy on disk.',4000)};
+/* re-check when you come back to this tab, so changes made meanwhile are noticed */
+document.addEventListener('visibilitychange',async()=>{if(document.hidden||!cur)return;try{
+  if(cur.dirty){const j=await api('/__ed/api/page?path='+encodeURIComponent(cur.path));showStale(!!j.stale)}
+  else{await openPage(cur.path,{reloadFrame:true})}}catch(e){}});
 
 // ---------- change pipeline ----------
 async function change(fn,{rerender=true,label:lbl}={}){

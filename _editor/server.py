@@ -31,6 +31,7 @@ mimetypes.add_type('image/svg+xml', '.svg')
 mimetypes.add_type('application/json', '.jsonc')
 
 DRAFTS = {}          # page path -> html text (with data-ed ids)
+DRAFT_BASE = {}      # page path -> disk mtime when the draft started
 LOCK = threading.Lock()
 
 
@@ -108,6 +109,13 @@ def strip_ids(text):
     return re.sub(r' data-ed="\d+"', '', text)
 
 
+def disk_mtime(rel):
+    try:
+        return os.path.getmtime(safe_path(rel))
+    except OSError:
+        return 0
+
+
 def page_text(rel):
     with LOCK:
         if rel in DRAFTS:
@@ -115,6 +123,13 @@ def page_text(rel):
     full = safe_path(rel)
     with open(full, 'r', encoding='utf-8') as fh:
         return inject_ids(fh.read()), False
+
+
+def draft_is_stale(rel):
+    """True when the file on disk changed after this draft was started (e.g. Claude or another tool edited it)."""
+    with LOCK:
+        base = DRAFT_BASE.get(rel)
+    return base is not None and disk_mtime(rel) > base + 0.5
 
 
 def backup(full):
@@ -180,7 +195,9 @@ class Handler(BaseHTTPRequestHandler):
             if not full or not os.path.isfile(full):
                 return self._json({'error': 'not found'}, 404)
             text, draft = page_text(rel)
-            return self._json({'html': text, 'draft': draft})
+            return self._json({'html': text, 'draft': draft, 'stale': draft and draft_is_stale(rel)})
+        if path == '/__ed/api/whoami':
+            return self._json({'root': ROOT})
         if path == '/__ed/api/drafts':
             with LOCK:
                 return self._json(sorted(DRAFTS))
@@ -230,11 +247,14 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if u.path == '/__ed/api/draft':
                 with LOCK:
+                    if rel not in DRAFTS:
+                        DRAFT_BASE[rel] = disk_mtime(rel)
                     DRAFTS[rel] = self._body().decode('utf-8')
                 return self._json({'ok': True})
             if u.path == '/__ed/api/discard':
                 with LOCK:
                     DRAFTS.pop(rel, None)
+                    DRAFT_BASE.pop(rel, None)
                 return self._json({'ok': True})
             if u.path == '/__ed/api/save':
                 text = strip_ids(self._body().decode('utf-8'))
@@ -246,6 +266,7 @@ class Handler(BaseHTTPRequestHandler):
                     fh.write(text)
                 with LOCK:
                     DRAFTS.pop(rel, None)
+                    DRAFT_BASE.pop(rel, None)
                 return self._json({'ok': True})
             if u.path == '/__ed/api/upload':
                 full = unique_name(full)
@@ -258,7 +279,26 @@ class Handler(BaseHTTPRequestHandler):
         return self._json({'error': 'unknown endpoint'}, 404)
 
 
+def running_editor():
+    """URL of an editor that is already running for this site folder, if any."""
+    import urllib.request
+    for p in range(8787, 8800):
+        try:
+            with urllib.request.urlopen(f'http://127.0.0.1:{p}/__ed/api/whoami', timeout=0.4) as r:
+                if json.loads(r.read().decode()).get('root') == ROOT:
+                    return f'http://127.0.0.1:{p}/__ed/'
+        except Exception:
+            pass
+    return None
+
+
 def main():
+    existing = running_editor()
+    if existing:
+        print('The editor is already open at ' + existing + ' - switching to it.')
+        if '--no-browser' not in sys.argv:
+            webbrowser.open(existing)
+        return
     port = None
     for p in range(8787, 8800):
         with socket.socket() as s:
