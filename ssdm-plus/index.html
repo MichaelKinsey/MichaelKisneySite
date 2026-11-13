@@ -306,7 +306,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 @keyframes cue { 
   0%, 100% { transform: scaleY(0.4); transform-origin: center top; }
   50% { transform: scaleY(1); transform-origin: center top; }
-}</style></head>
+}</style><style id="ed-screens">
+/* Phone-only and desktop-only tweaks made in the site editor */
+/*phone*/
+@media (max-width: 600px), (max-height: 500px){
+.m-4oob{margin-bottom:0px !important;height:185px !important;max-width:626px !important;margin-top:0px !important;padding-top:10px !important;padding-bottom:10px !important;margin-left:auto !important;margin-right:auto !important;padding-left:20px !important}
+.m-p24f{padding-top:580px !important;padding-bottom:29px !important}
+}
+</style></head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"></path><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"></path><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"></path><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"></path><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"></path></symbol></defs></svg>
 <header class="top gut">
@@ -333,12 +340,12 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <video src="hero-3.mp4" muted="" playsinline="" preload="none"></video>
     </div>
     <script>/* HD hero on large or high-DPI screens */(function(){if(innerWidth*(devicePixelRatio||1)<2200)return;document.querySelectorAll('.hero-vid video').forEach(function(v){v.src=v.getAttribute('src').replace('.mp4','-hd.mp4')})})()</script>
-    <div class="wrap" style="text-align: left;">
+    <div class="wrap m-p24f" style="text-align: left;">
       <h1 class="sr" style="inset: 50% auto auto 50%; transform: translate(-50%, -50%);">MK SSDM+</h1>
       
-    <div class="hero-row" style="align-items: center; text-align: left; margin: 17px auto 15px; padding-top: 40px;">
+    <div class="hero-row m-4oob" style="align-items: center; text-align: left; margin: 17px auto 24px; padding-top: 40px;">
         <div>
-          <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
+          <p class="pitch">Screen Space Displacement Mapping &amp; contact shadows.</p><span class="label" style="font-size: 13px; width: 182px;">Version 1.0</span>
           <div class="ctas">
             <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
           </div>
@@ -350,7 +357,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
   <section class="gut t-dark intro-band" id="why">
     <div class="wrap">
       <div class="why">
-        <div><span class="label">Inspired by Crimson Desert</span><p>Crimson Desert style displacement, brought to Unreal Engine 5.</p></div>
+        <div><span class="label">Inspired by Crimson Desert</span><p class="no-nanite"></p><p>Crimson Desert style displacement. <br>Brought to Unreal Engine 5.</p></div>
         <div><span class="label">Built for non-Nanite workflows</span><p class="no-nanite"><span class="label">No Nanite support</span></p><p>Similar quality to Nanite displacement at a reduced cost, on regular meshes and landscapes.</p></div>
       </div>
     </div>
@@ -388,11 +395,11 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         </div>
         <div class="feat">
           <div class="media vid"><video src="decals.mp4" poster="decals.webp" muted="" loop="" playsinline="" preload="none" aria-label="Decals With Height"></video></div>
-          <div><h3 class="display">Decals With Height</h3><p>Deferred and mesh decals displace the surface under them.</p></div>
+          <div><h3 class="display">Decals With Height</h3><p>Deferred and mesh decals displace the surface under them.<br>Positive and negative Height Supported</p></div>
         </div>
         <div class="feat">
           <div class="media vid"><video src="quality.mp4" poster="quality.webp" muted="" loop="" playsinline="" preload="none" aria-label="Scalable Quality"></video></div>
-          <div><h3 class="display">Scalable Quality</h3><p>One preset from Low to Epic, tied to your project's scalability levels.</p></div>
+          <div><h3 class="display">Scalable Quality</h3><p>One preset from Low to Epic, tied to your project's scalability levels. <br>Easy settings control with a built in utility window.</p></div>
         </div>
       </div>
     </div>
@@ -497,13 +504,13 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
         <span>v1.0</span>
         <span>From $25.99</span>
       </div>
-      <p class="compat"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
+      <p class="compat" style="max-width: 610.9px;"><b>NANITE</b><span>Not supported. SSDM+ works on regular, non-Nanite meshes and landscapes.</span></p>
       <div class="ctas">
         <a class="btn primary pending" href="#buy">Awaiting Fab approval</a>
         <a class="btn" href="docs/">Read the docs</a>
       </div>
       </div>
-      <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo">
+      <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo" style="width: 340px; height: 340px; max-width: 400px; place-self: center;">
     </div>
   </section>
 
@@ -516,8 +523,8 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       </div>
       <form class="news" id="newsForm">
         <label for="newsEmail" class="sr">Email address</label>
-        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
-        <button class="btn" type="submit" id="newsBtn" disabled>Subscribe</button>
+        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required="" disabled="">
+        <button class="btn" type="submit" id="newsBtn" disabled="">Subscribe</button>
         <span class="msg" id="newsMsg">Not live yet. In the meantime, follow along on <a href="https://www.patreon.com/cw/ArtOfMichaelKinsey" target="_blank" rel="noopener">Patreon</a> or <a href="https://www.youtube.com/@ArtOfMichaelKinsey" target="_blank" rel="noopener">YouTube</a>.</span>
       </form>
     </div>
@@ -565,6 +572,17 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
       r.value=v;ba.style.setProperty('--split',v+'%');if(k<1)requestAnimationFrame(step)};setTimeout(()=>requestAnimationFrame(step),400)},{threshold:.5});
   io.observe(ba)}}
 </script>
+
+
+
+
+
+
+
+
+
+
+
 
 
 
