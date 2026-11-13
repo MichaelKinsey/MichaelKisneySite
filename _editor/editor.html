@@ -89,6 +89,13 @@ details.adv summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:
 .am-grid button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;font-size:12px}
 .am-grid button b{font-size:18px;line-height:1;color:var(--accent)}
 .am-grid button:hover{border-color:var(--accent)}
+.scopebar{margin:12px 0 4px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);font-size:12px}
+.scopebar.ph{border-color:#4aa3ff;background:rgba(74,163,255,.08)}
+.scopebar button.on{border-color:var(--accent);color:#fff}.scopebar.ph button[data-scope=phone].on{border-color:#4aa3ff;background:#4aa3ff;color:#fff}
+.chip{font-size:11px;padding:3px 7px;border-radius:999px;background:#222;border:1px solid var(--line);color:var(--ink)}
+.scopetag{font-size:11.5px;font-weight:600;color:#fff;background:#4aa3ff;border-radius:999px;padding:4px 10px}
+body.phone-scope .scrub{border-color:rgba(74,163,255,.45)}
+.node .scm{color:#4aa3ff;font-size:11px;margin-right:2px}
 .warn{margin:10px 0 0;padding:8px 10px;border-left:3px solid #e8a33d;background:rgba(232,163,61,.1);font-size:12px;line-height:1.45;color:var(--ink)}
 .warn code{color:#e9a37a}
 .agrid{display:grid;grid-template-columns:repeat(3,26px);gap:4px}
@@ -117,6 +124,7 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
     <div class="grp">
       <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
     </div>
+    <span class="scopetag" id="scopeTag" hidden title="Layout and style changes only affect phones. Change this in the inspector.">Editing phone only</span>
     <div class="grp"><button id="addBtn" class="primary" title="Add a box, text, button, image…">+ Add</button></div>
     <div class="grp"><button id="guides" class="on" title="Show margins, padding and what the selection is pinned to">Guides</button>
     </div>
@@ -161,7 +169,7 @@ function liveEl(id){const d=liveDoc();return d&&d.querySelector(`[data-ed="${id}
 function pageDir(){const p=cur.path;return p.includes('/')?p.slice(0,p.lastIndexOf('/')+1):''}
 function isTexty(el){return [...el.querySelectorAll('*')].every(c=>TEXTY.has(c.tagName))}
 function label(el){
-  const cls=(el.getAttribute('class')||'').trim().split(/\s+/).filter(Boolean)[0];
+  const cls=(el.getAttribute('class')||'').trim().split(/\s+/).filter(c=>c&&!/^m-[a-z0-9]{4,}$/.test(c))[0];
   let t='';
   if(MEDIA.has(el.tagName))t=(el.getAttribute('src')||el.getAttribute('data-src')||'').split('/').pop();
   else t=(el.textContent||'').replace(/\s+/g,' ').trim();
@@ -339,7 +347,7 @@ function renderTree(){
       if(SKIP.has(c.tagName)||!c.dataset.ed)continue;
       const kids=[...c.children].some(k=>!SKIP.has(k.tagName)&&k.dataset.ed);
       const id=c.dataset.ed,isOpen=open.has(id),l=label(c);
-      h+=`<div class="node${id===selId?' sel':''}${c.hasAttribute('hidden')?' hid':''}" data-id="${id}" draggable="true"><span class="tw" data-tw="${kids?id:''}">${kids?(isOpen?'▾':'▸'):''}</span><span class="tg">${l.tag}</span><span class="cl">${esc(l.cls)}</span><span class="tx">${esc(l.txt)}</span></div>`;
+      h+=`<div class="node${id===selId?' sel':''}${c.hasAttribute('hidden')?' hid':''}" data-id="${id}" draggable="true"><span class="tw" data-tw="${kids?id:''}">${kids?(isOpen?'▾':'▸'):''}</span><span class="tg">${l.tag}</span><span class="cl">${esc(l.cls)}</span>${scopeCls(c)?'<span class="scm" title="Has phone or desktop-only changes">±</span>':''}<span class="tx">${esc(l.txt)}</span></div>`;
       if(kids&&isOpen)h+=`<div class="kids">${build(c,depth+1)}</div>`;
     }
     return h;
@@ -462,6 +470,7 @@ function renderInsp(){
     const im=el.querySelector('img[data-ed],video[data-ed]');
     if(im)h+=`<p class="hint">Contains ${im.tagName==='VIDEO'?'a video':'an image'}. <a data-go="${im.dataset.ed}" style="color:var(--accent);cursor:pointer">Select it</a> to replace it.</p>`;
   }
+  h+=scopePanel(el);
   h+=layoutPanel(el);
   h+=appearancePanel(el);
   const clip=getClip();
@@ -537,6 +546,7 @@ function wireInsp(el){
   q('#bCopy').addEventListener('click',copySel);
   if(q('#bPasteA'))q('#bPasteA').addEventListener('click',()=>pasteClip('after'));
   if(q('#bPasteI'))q('#bPasteI').addEventListener('click',()=>pasteClip('inside'));
+  wireScope(el);
   wireLayout(el);
   wireAppearance(el);
   wireScrubs(el.dataset.ed,scrubMap());
@@ -618,7 +628,7 @@ function layoutDevice(){
   lab.textContent=`${d.name} · ${landscape?'landscape':'portrait'} · ${w} × ${h}`+(k<1?` · shown at ${Math.round(k*100)}%`:'');
   setTimeout(drawSel,50);
 }
-document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));dev=b.dataset.dev;layoutDevice()});
+document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));dev=b.dataset.dev;setScope(dev==='phone'?'phone':'all');layoutDevice();renderInsp()});
 $('#rot').onclick=()=>{landscape=!landscape;layoutDevice()};
 window.addEventListener('resize',layoutDevice);
 window.addEventListener('beforeunload',e=>{if(cur&&cur.dirty){e.preventDefault();e.returnValue=''}});
@@ -695,12 +705,12 @@ function pasteClip(where){
 // =====================================================================
 // Inline style helpers
 // =====================================================================
-function setStyle(el,props){
+function setStyle(el,props,imp){
   const t=document.createElement('div');t.setAttribute('style',el.getAttribute('style')||'');
-  for(const[k,v]of Object.entries(props)){if(v===''||v==null)t.style.removeProperty(k);else t.style.setProperty(k,v)}
+  for(const[k,v]of Object.entries(props)){if(v===''||v==null)t.style.removeProperty(k);else t.style.setProperty(k,v,imp?'important':'')}
   const s=t.getAttribute('style')||'';s.trim()?el.setAttribute('style',s):el.removeAttribute('style');
 }
-function styleBoth(id,props,lbl){const L=srcEl(id);if(!L)return Promise.resolve();
+function styleBoth(id,props,lbl){if(editScope!=='all')return styleScoped(id,props,editScope,lbl);const L=srcEl(id);if(!L)return Promise.resolve();
   return change(()=>setStyle(L,props),{rerender:false,label:lbl}).then(()=>{const v=liveEl(id);if(v)setStyle(v,props);drawSel()})}
 
 // =====================================================================
@@ -960,7 +970,7 @@ function wireScrubs(id,applyMap){
       const ov=document.createElement('div');ov.className='scrubov';sc.classList.add('on');
       const mv=ev=>{const dx=ev.clientX-x0;if(!moved&&Math.abs(dx)>2){moved=true;document.body.appendChild(ov)}if(!moved)return;
         const k=ev.shiftKey?10:ev.altKey?0.1:1;let n=start.n+Math.round(dx/2)*step*k;n=Math.max(min,Math.min(max,n));n=Math.round(n*10)/10;
-        last=toCss(n,unit);sv.textContent=last;const live=liveEl(id);if(live){setStyle(live,map(last));drawSel()}};
+        last=toCss(n,unit);sv.textContent=last;const live=liveEl(id);if(live){setStyle(live,map(last),editScope!=='all');drawSel()}};
       const up=()=>{removeEventListener('mousemove',mv);removeEventListener('mouseup',up);ov.remove();sc.classList.remove('on');
         if(moved&&last!=null)styleBoth(id,map(last)).then(renderInsp)};
       addEventListener('mousemove',mv);addEventListener('mouseup',up);
@@ -979,10 +989,10 @@ function wireScrubs(id,applyMap){
 }
 function boxGrid(el,live,kind){
   const cs=cssOf(live),sides=['top','right','bottom','left'],short={top:'T',right:'R',bottom:'B',left:'L'};
-  return `<div class="boxgrid">${sides.map(sd=>scrub(`${kind}-${sd}`,short[sd],{min:kind==='padding'?0:-2000,val:el.style.getPropertyValue(`${kind}-${sd}`),auto:Math.round(parseFloat(cs.getPropertyValue(`${kind}-${sd}`))||0)+'px'})).join('')}</div>`;
+  return `<div class="boxgrid">${sides.map(sd=>scrub(`${kind}-${sd}`,short[sd],{min:kind==='padding'?0:-2000,val:scopedVal(el,`${kind}-${sd}`),auto:Math.round(parseFloat(cs.getPropertyValue(`${kind}-${sd}`))||0)+'px'})).join('')}</div>`;
 }
 function sizeFields(el,live){
-  const R=live.getBoundingClientRect(),g=p=>el.style.getPropertyValue(p);
+  const R=live.getBoundingClientRect(),g=p=>scopedVal(el,p);
   return `<div class="boxgrid two">${scrub('width','W',{min:0,val:g('width'),auto:Math.round(R.width)+'px'})}${scrub('height','H',{min:0,val:g('height'),auto:Math.round(R.height)+'px'})}${scrub('max-width','Max W',{min:0,val:g('max-width'),auto:cssOf(live).maxWidth})}${scrub('min-height','Min H',{min:0,val:g('min-height'),auto:cssOf(live).minHeight})}</div>`;
 }
 
@@ -992,11 +1002,11 @@ function sizeFields(el,live){
 function parseColor(c){const m=String(c).match(/rgba?\(([\d.]+)[ ,]+([\d.]+)[ ,]+([\d.]+)(?:[ ,/]+([\d.]+%?))?\)/);if(!m)return {hex:'#000000',a:c==='transparent'?0:1};
   const h=[m[1],m[2],m[3]].map(x=>(+x|0).toString(16).padStart(2,'0')).join('');let a=m[4]==null?1:m[4].endsWith('%')?parseFloat(m[4])/100:+m[4];return {hex:'#'+h,a}}
 function rgba(hex,a){const n=parseInt(hex.slice(1),16);return a>=1?hex:`rgba(${n>>16&255},${n>>8&255},${n&255},${Math.round(a*100)/100})`}
-function chamferOf(el){const m=(el.style.clipPath||'').match(/^polygon\(([\d.]+)px 0/);return m?+m[1]:0}
+function chamferOf(el){const m=(scopedVal(el,'clip-path')||'').match(/^polygon\(([\d.]+)px 0/);return m?+m[1]:0}
 function chamferPath(n){const v=n+'px';return `polygon(${v} 0, calc(100% - ${v}) 0, 100% ${v}, 100% calc(100% - ${v}), calc(100% - ${v}) 100%, ${v} 100%, 0 calc(100% - ${v}), 0 ${v})`}
 function appearancePanel(el){
   const live=liveEl(el.dataset.ed);if(!live)return '';
-  const cs=cssOf(live),bg=parseColor(cs.backgroundColor),fg=parseColor(cs.color),bc=parseColor(cs.borderTopColor),g=p=>el.style.getPropertyValue(p);
+  const cs=cssOf(live),bg=parseColor(cs.backgroundColor),fg=parseColor(cs.color),bc=parseColor(cs.borderTopColor),g=p=>scopedVal(el,p);
   const texty=live.textContent.trim().length>0,ch=chamferOf(el);
   let h=`<div class="sec"><h3>Appearance</h3>
   <div class="field"><label>Fill</label><div class="row crow"><input type="color" id="aBg" value="${bg.hex}"><div class="boxgrid one">${scrub('--ed-bg-a','Opacity',{min:0,max:100,unit:'%',val:'',auto:Math.round(bg.a*100)+'%',title:'Fill opacity. Drag or double-click.'})}</div><button id="aBgClear" title="Remove the fill">None</button></div></div>`;
@@ -1011,7 +1021,7 @@ function appearancePanel(el){
 }
 function wireAppearance(el){
   const id=el.dataset.ed,q=s=>insp.querySelector(s),live=()=>liveEl(id);
-  const color=(sel,fn)=>{const i=q(sel);if(!i)return;i.addEventListener('input',()=>{const l=live();if(l)setStyle(l,fn(i.value));drawSel()});i.addEventListener('change',()=>styleBoth(id,fn(i.value)).then(renderInsp))};
+  const color=(sel,fn)=>{const i=q(sel);if(!i)return;i.addEventListener('input',()=>{const l=live();if(l)setStyle(l,fn(i.value),editScope!=='all');drawSel()});i.addEventListener('change',()=>styleBoth(id,fn(i.value)).then(renderInsp))};
   const bgA=()=>{const l=live();return l?parseColor(cssOf(l).backgroundColor).a||1:1};
   color('#aBg',v=>({'background-color':rgba(v,bgA())}));
   color('#aFg',v=>({color:v}));
@@ -1077,6 +1087,68 @@ function addElement(kind){
     else target.after(node);
     selId=node.dataset.ed},{label:'Added '+it[1].toLowerCase()+(kind==='image'||kind==='video'?'. Use Replace in the inspector to pick the file.':'')});
 }
+
+// =====================================================================
+// Phone-only / desktop-only styles
+// Edits made with "Phone only" go into one <style id="ed-screens"> block as
+// media-query rules keyed by a small class (m-xxxx) on the element, so the
+// tablet and desktop layout is untouched.
+// =====================================================================
+const MQ={phone:'(max-width: 600px), (max-height: 500px)',desk:'(min-width: 601px) and (min-height: 501px)'};
+let editScope='all';
+function scopeCls(el){return [...el.classList].find(c=>/^m-[a-z0-9]{4,}$/.test(c))||''}
+function ensureScopeCls(el){let c=scopeCls(el);if(c)return c;
+  const used=new Set([...cur.doc.querySelectorAll('[class*="m-"]')].flatMap(e=>[...e.classList]));
+  do{c='m-'+Math.random().toString(36).slice(2,6)}while(used.has(c));el.classList.add(c);return c}
+function readScreens(doc){
+  const st=(doc||cur.doc).getElementById('ed-screens'),out={phone:{},desk:{}};if(!st)return out;
+  const re=/\/\*(phone|desk)\*\/\s*@media[^{]*\{([\s\S]*?)\n\}/g;let m;
+  while((m=re.exec(st.textContent))){const rr=/\.(m-[a-z0-9]+)\{([^}]*)\}/g;let r;
+    while((r=rr.exec(m[2]))){const o=out[m[1]][r[1]]={};r[2].split(';').forEach(d=>{const i=d.indexOf(':');if(i>0)o[d.slice(0,i).trim()]=d.slice(i+1).replace(/!important/,'').trim()})}}
+  return out;
+}
+function writeScreens(doc,data){
+  let st=doc.getElementById('ed-screens');
+  const block=k=>{const cls=Object.entries(data[k]).filter(([c,o])=>Object.keys(o).length);if(!cls.length)return '';
+    return `/*${k}*/\n@media ${MQ[k]}{\n${cls.map(([c,o])=>`.${c}{${Object.entries(o).map(([p,v])=>`${p}:${v} !important`).join(';')}}`).join('\n')}\n}\n`};
+  const txt=block('phone')+block('desk');
+  if(!txt){if(st)st.remove();return}
+  if(!st){st=doc.createElement('style');st.id='ed-screens';doc.head.appendChild(st)}
+  st.textContent='\n/* Phone-only and desktop-only tweaks made in the site editor */\n'+txt;
+}
+function scopedVal(el,p){if(editScope==='all')return el.style.getPropertyValue(p);const c=scopeCls(el);const o=c&&readScreens()[editScope][c];return o&&o[p]!=null?o[p]:''}
+function styleScoped(id,props,scope,lbl){
+  const L=srcEl(id);if(!L)return Promise.resolve();
+  return change(doc=>{const c=ensureScopeCls(L),data=readScreens(doc),o=data[scope][c]||(data[scope][c]={});
+    for(const[k,v]of Object.entries(props)){if(v===''||v==null)delete o[k];else o[k]=v}
+    writeScreens(doc,data)},{rerender:false,label:lbl}).then(()=>syncScreensLive(id))}
+function syncScreensLive(id){
+  const d=liveDoc(),L=srcEl(id),v=liveEl(id);if(!d)return;
+  if(v&&L){v.className=L.className;L.getAttribute('style')?v.setAttribute('style',L.getAttribute('style')):v.removeAttribute('style')}
+  const src=cur.doc.getElementById('ed-screens');let st=d.getElementById('ed-screens');
+  if(!src){if(st)st.remove()}else{if(!st){st=d.createElement('style');st.id='ed-screens';d.head.appendChild(st)}st.textContent=src.textContent}
+  drawSel();
+}
+function clearScoped(id,scope){const L=srcEl(id);const c=L&&scopeCls(L);if(!c)return;
+  change(doc=>{const data=readScreens(doc);delete data[scope][c];writeScreens(doc,data);if(!data.phone[c]&&!data.desk[c])L.classList.remove(c)},{rerender:false,label:(scope==='phone'?'Phone':'Tablet & desktop')+' changes cleared'}).then(()=>{syncScreensLive(id);renderInsp()})}
+function scopePanel(el){
+  const c=scopeCls(el),data=readScreens(),ph=c&&data.phone[c],dk=c&&data.desk[c];
+  const list=o=>Object.keys(o).map(k=>k==='display'&&o[k]==='none'?'hidden':k).join(', ');
+  let h=`<div class="scopebar ${editScope==='phone'?'ph':''}"><div class="row"><span>Changes apply to</span><button data-scope="all" class="${editScope==='all'?'on':''}">All screens</button><button data-scope="phone" class="${editScope==='phone'?'on':''}">Phone only</button></div>`;
+  if(editScope==='phone')h+=`<p class="hint" style="margin:6px 0 0">Layout and appearance changes now only affect phones. Text, links and images are shared by every screen.</p>`;
+  else if(dev!=='phone')h+=`<p class="hint" style="margin:6px 0 0">Switch to the iPhone view to make phone-only changes.</p>`;
+  h+=`<div class="row" style="margin-top:6px">${ph&&Object.keys(ph).length?`<span class="chip">Phone: ${esc(list(ph))}</span><button data-clrscope="phone">Clear</button>`:''}${dk&&Object.keys(dk).length?`<span class="chip">Tablet &amp; desktop: ${esc(list(dk))}</span><button data-clrscope="desk">Clear</button>`:''}</div>
+  <div class="row" style="margin-top:6px"><button data-vis="phone" class="${ph&&ph.display==='none'?'on':''}">Hide on phone</button><button data-vis="desk" class="${dk&&dk.display==='none'?'on':''}">Hide on tablet &amp; desktop</button></div></div>`;
+  return h;
+}
+function wireScope(el){
+  const id=el.dataset.ed;
+  insp.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{setScope(b.dataset.scope);renderInsp()}));
+  insp.querySelectorAll('[data-clrscope]').forEach(b=>b.addEventListener('click',()=>clearScoped(id,b.dataset.clrscope)));
+  insp.querySelectorAll('[data-vis]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.vis,c=scopeCls(el),o=c&&readScreens()[k][c],on=o&&o.display==='none';
+    styleScoped(id,{display:on?'':'none'},k,on?'Shown again':(k==='phone'?'Hidden on phones (still in Layers)':'Hidden on tablet and desktop (still in Layers)')).then(()=>{renderTree();renderInsp()})}));
+}
+function setScope(s){editScope=s;document.body.classList.toggle('phone-scope',s==='phone');const t=$('#scopeTag');if(t)t.hidden=s!=='phone'}
 
 (async()=>{
   try{await loadPages();const want=new URLSearchParams(location.search).get('page');await openPage(want&&pages.some(p=>p.path===want)?want:'index.html')}
