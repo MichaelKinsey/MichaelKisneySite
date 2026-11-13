@@ -136,7 +136,7 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
     <div class="grp">
       <button id="undo" title="Undo (Ctrl+Z)" disabled>Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled>Redo</button>
     </div>
-    <span class="scopetag" id="scopeTag" hidden title="Layout and style changes only affect phones. Change this in the inspector.">Editing phone only</span>
+    <span class="scopetag" id="scopeTag" hidden title="Layout and style changes only affect this screen size. Change this in the inspector.">Editing phone only</span>
     <div class="grp"><button id="addBtn" class="primary" title="Add a box, text, button, image…">+ Add</button></div>
     <div class="grp"><button id="guides" class="on" title="Show margins, padding and what the selection is pinned to">Guides</button>
     </div>
@@ -631,7 +631,15 @@ let dev='desk',landscape=false;
 function layoutDevice(){
   const box=$('#dev'),lab=$('#devlabel'),rot=$('#rot');
   rot.disabled=dev==='desk';rot.textContent=landscape?'Landscape':'Portrait';rot.classList.toggle('on',landscape&&dev!=='desk');
-  if(dev==='desk'){stage.classList.remove('device');Object.assign(box.style,{width:'100%',height:'100%'});Object.assign(frame.style,{width:'100%',height:'100%',transform:''});lab.textContent='';return}
+  if(dev==='desk'){
+    stage.classList.remove('device');
+    const sw=stage.clientWidth,sh=stage.clientHeight;
+    if(sw>=1200){Object.assign(box.style,{width:'100%',height:'100%'});Object.assign(frame.style,{width:'100%',height:'100%',transform:''});lab.textContent='';return}
+    // the stage is narrower than a desktop screen: render a 1440px-wide desktop and scale it down, so desktop-only styles apply
+    const W=1440,k=sw/W,H=Math.round(sh/k);
+    Object.assign(box.style,{width:sw+'px',height:sh+'px'});
+    Object.assign(frame.style,{width:W+'px',height:H+'px',transform:`scale(${k})`});
+    lab.textContent='';setTimeout(drawSel,50);return}
   const d=DEVICES[dev],w=landscape?d.h:d.w,h=landscape?d.w:d.h;
   const pad=48,sw=stage.clientWidth-pad,sh=stage.clientHeight-pad-18;
   const k=Math.min(1,sw/w,sh/h);
@@ -641,7 +649,7 @@ function layoutDevice(){
   lab.textContent=`${d.name} · ${landscape?'landscape':'portrait'} · ${w} × ${h}`+(k<1?` · shown at ${Math.round(k*100)}%`:'');
   setTimeout(drawSel,50);
 }
-document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));dev=b.dataset.dev;setScope(dev==='phone'?'phone':'all');layoutDevice();renderInsp()});
+document.querySelectorAll('[data-dev]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-dev]').forEach(x=>x.classList.toggle('on',x===b));dev=b.dataset.dev;setScope(dev==='phone'?'phone':dev==='tablet'?'tablet':'all');layoutDevice();renderInsp()});
 $('#rot').onclick=()=>{landscape=!landscape;layoutDevice()};
 window.addEventListener('resize',layoutDevice);
 window.addEventListener('beforeunload',e=>{if(cur&&cur.dirty){e.preventDefault();e.returnValue=''}});
@@ -1112,15 +1120,19 @@ function addElement(kind){
 // media-query rules keyed by a small class (m-xxxx) on the element, so the
 // tablet and desktop layout is untouched.
 // =====================================================================
-const MQ={phone:'(max-width: 600px), (max-height: 500px)',desk:'(min-width: 601px) and (min-height: 501px)'};
+const MQ={phone:'(max-width: 600px), (max-height: 500px)',desk:'(min-width: 601px) and (min-height: 501px)',
+  tablet:'(min-width: 601px) and (max-width: 1199px) and (min-height: 501px)',pc:'(min-width: 1200px) and (min-height: 501px)'};
+// later blocks win, so the specific tablet/desktop blocks come after the older combined one
+const SCOPES=['desk','tablet','pc','phone'];
+const SCOPE_NAME={phone:'Phone',tablet:'Tablet',pc:'Desktop',desk:'Tablet & desktop'};
 let editScope='all';
 function scopeCls(el){return [...el.classList].find(c=>/^m-[a-z0-9]{4,}$/.test(c))||''}
 function ensureScopeCls(el){let c=scopeCls(el);if(c)return c;
   const used=new Set([...cur.doc.querySelectorAll('[class*="m-"]')].flatMap(e=>[...e.classList]));
   do{c='m-'+Math.random().toString(36).slice(2,6)}while(used.has(c));el.classList.add(c);return c}
 function readScreens(doc){
-  const st=(doc||cur.doc).getElementById('ed-screens'),out={phone:{},desk:{}};if(!st)return out;
-  const re=/\/\*(phone|desk)\*\/\s*@media[^{]*\{([\s\S]*?)\n\}/g;let m;
+  const st=(doc||cur.doc).getElementById('ed-screens'),out={phone:{},desk:{},tablet:{},pc:{}};if(!st)return out;
+  const re=/\/\*(phone|desk|tablet|pc)\*\/\s*@media[^{]*\{([\s\S]*?)\n\}/g;let m;
   while((m=re.exec(st.textContent))){const rr=/\.(m-[a-z0-9]+)\{([^}]*)\}/g;let r;
     while((r=rr.exec(m[2]))){const o=out[m[1]][r[1]]={};r[2].split(';').forEach(d=>{const i=d.indexOf(':');if(i>0)o[d.slice(0,i).trim()]=d.slice(i+1).replace(/!important/,'').trim()})}}
   return out;
@@ -1129,10 +1141,10 @@ function writeScreens(doc,data){
   let st=doc.getElementById('ed-screens');
   const block=k=>{const cls=Object.entries(data[k]).filter(([c,o])=>Object.keys(o).length);if(!cls.length)return '';
     return `/*${k}*/\n@media ${MQ[k]}{\n${cls.map(([c,o])=>`.${c}{${Object.entries(o).map(([p,v])=>`${p}:${v} !important`).join(';')}}`).join('\n')}\n}\n`};
-  const txt=block('phone')+block('desk');
+  const txt=SCOPES.map(block).join('');
   if(!txt){if(st)st.remove();return}
   if(!st){st=doc.createElement('style');st.id='ed-screens';doc.head.appendChild(st)}
-  st.textContent='\n/* Phone-only and desktop-only tweaks made in the site editor */\n'+txt;
+  st.textContent='\n/* Phone, tablet and desktop-only tweaks made in the site editor */\n'+txt;
 }
 function scopedVal(el,p){if(editScope==='all')return el.style.getPropertyValue(p);const c=scopeCls(el);const o=c&&readScreens()[editScope][c];return o&&o[p]!=null?o[p]:''}
 function styleScoped(id,props,scope,lbl){
@@ -1148,15 +1160,17 @@ function syncScreensLive(id){
   drawSel();
 }
 function clearScoped(id,scope){const L=srcEl(id);const c=L&&scopeCls(L);if(!c)return;
-  change(doc=>{const data=readScreens(doc);delete data[scope][c];writeScreens(doc,data);if(!data.phone[c]&&!data.desk[c])L.classList.remove(c)},{rerender:false,label:(scope==='phone'?'Phone':'Tablet & desktop')+' changes cleared'}).then(()=>{syncScreensLive(id);renderInsp()})}
+  change(doc=>{const data=readScreens(doc);delete data[scope][c];writeScreens(doc,data);if(!SCOPES.some(k=>data[k][c]))L.classList.remove(c)},{rerender:false,label:SCOPE_NAME[scope]+' changes cleared'}).then(()=>{syncScreensLive(id);renderInsp()})}
 function scopePanel(el){
-  const c=scopeCls(el),data=readScreens(),ph=c&&data.phone[c],dk=c&&data.desk[c];
+  const c=scopeCls(el),data=readScreens();
   const list=o=>Object.keys(o).map(k=>k==='display'&&o[k]==='none'?'hidden':k).join(', ');
-  let h=`<div class="scopebar ${editScope==='phone'?'ph':''}"><div class="row"><span>Changes apply to</span><button data-scope="all" class="${editScope==='all'?'on':''}">All screens</button><button data-scope="phone" class="${editScope==='phone'?'on':''}">Phone only</button></div>`;
-  if(editScope==='phone')h+=`<p class="hint" style="margin:6px 0 0">Layout and appearance changes now only affect phones. Text, links and images are shared by every screen.</p>`;
-  else if(dev!=='phone')h+=`<p class="hint" style="margin:6px 0 0">Switch to the iPhone view to make phone-only changes.</p>`;
-  h+=`<div class="row" style="margin-top:6px">${ph&&Object.keys(ph).length?`<span class="chip">Phone: ${esc(list(ph))}</span><button data-clrscope="phone">Clear</button>`:''}${dk&&Object.keys(dk).length?`<span class="chip">Tablet &amp; desktop: ${esc(list(dk))}</span><button data-clrscope="desk">Clear</button>`:''}</div>
-  <div class="row" style="margin-top:6px"><button data-vis="phone" class="${ph&&ph.display==='none'?'on':''}">Hide on phone</button><button data-vis="desk" class="${dk&&dk.display==='none'?'on':''}">Hide on tablet &amp; desktop</button></div></div>`;
+  const opt=(k,t)=>`<button data-scope="${k}" class="${editScope===k?'on':''}">${t}</button>`;
+  let h=`<div class="scopebar ${editScope!=='all'?'ph':''}"><div class="row"><span>Changes apply to</span>${opt('all','All screens')}${opt('pc','Desktop only')}${opt('tablet','Tablet only')}${opt('phone','Phone only')}</div>`;
+  h+=`<p class="hint" style="margin:6px 0 0">${editScope==='all'?'Changes here are the base for every screen. Tablet-only and phone-only changes still win on those screens.':`Layout and appearance changes now only affect <b>${SCOPE_NAME[editScope].toLowerCase()}</b> screens. Text, links and images are shared by every screen.`}</p>`;
+  const chips=SCOPES.filter(k=>c&&data[k][c]&&Object.keys(data[k][c]).length).map(k=>`<span class="chip">${SCOPE_NAME[k]}: ${esc(list(data[k][c]))}</span><button data-clrscope="${k}">Clear</button>`).join('');
+  if(chips)h+=`<div class="row" style="margin-top:6px">${chips}</div>`;
+  const hid=k=>c&&data[k][c]&&data[k][c].display==='none';
+  h+=`<div class="row" style="margin-top:6px"><span class="hint" style="margin:0">Hide on</span>${['pc','tablet','phone'].map(k=>`<button data-vis="${k}" class="${hid(k)||(k!=='phone'&&hid('desk'))?'on':''}">${SCOPE_NAME[k]}</button>`).join('')}</div></div>`;
   return h;
 }
 function wireScope(el){
@@ -1164,9 +1178,13 @@ function wireScope(el){
   insp.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{setScope(b.dataset.scope);renderInsp()}));
   insp.querySelectorAll('[data-clrscope]').forEach(b=>b.addEventListener('click',()=>clearScoped(id,b.dataset.clrscope)));
   insp.querySelectorAll('[data-vis]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.vis,c=scopeCls(el),o=c&&readScreens()[k][c],on=o&&o.display==='none';
-    styleScoped(id,{display:on?'':'none'},k,on?'Shown again':(k==='phone'?'Hidden on phones (still in Layers)':'Hidden on tablet and desktop (still in Layers)')).then(()=>{renderTree();renderInsp()})}));
+    // an older "tablet & desktop" hide is split into the two new ones before toggling one of them
+    const dk=c&&readScreens().desk[c];
+    const pre=(k!=='phone'&&dk&&dk.display==='none')?styleScoped(id,{display:''},'desk').then(()=>styleScoped(id,{display:'none'},k==='pc'?'tablet':'pc')):Promise.resolve();
+    const nowOn=on||(k!=='phone'&&dk&&dk.display==='none');
+    pre.then(()=>styleScoped(id,{display:nowOn?'':'none'},k,nowOn?'Shown again on '+SCOPE_NAME[k].toLowerCase():'Hidden on '+SCOPE_NAME[k].toLowerCase()+' (still in Layers)')).then(()=>{renderTree();renderInsp()})}));
 }
-function setScope(s){editScope=s;document.body.classList.toggle('phone-scope',s==='phone');const t=$('#scopeTag');if(t)t.hidden=s!=='phone'}
+function setScope(s){editScope=s;document.body.classList.toggle('phone-scope',s!=='all');const t=$('#scopeTag');if(t){t.hidden=s==='all';t.textContent='Editing '+(SCOPE_NAME[s]||'').toLowerCase()+' only'}}
 
 // =====================================================================
 // New page from a template (or a copy of the current page)
@@ -1219,7 +1237,7 @@ async function openNewPage(){
 }
 
 (async()=>{
-  try{await loadPages();const want=new URLSearchParams(location.search).get('page');await openPage(want&&pages.some(p=>p.path===want)?want:'index.html')}
+  try{layoutDevice();await loadPages();const want=new URLSearchParams(location.search).get('page');await openPage(want&&pages.some(p=>p.path===want)?want:'index.html')}
   catch(e){$('#status').textContent='Could not reach the editor server. Is the Edit Site window still open?'}
 })();
 </script>
