@@ -1,6 +1,5 @@
 <!doctype html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="MK SSDM+: screen space displacement and height-aware contact shadows for Unreal Engine 5.8.">
@@ -13,7 +12,7 @@ img{max-width:100%}
 </style>
 <title>MK SSDM+</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&amp;family=Geist+Mono:wght@400..500&amp;display=swap">
 <style>
 /* Layout: product promo template. Black-and-white Michael Kinsey brand (heavy condensed caps, logo mark),
    one amber accent for SSDM+. Product thumbnail in the hero; placeholders double as the capture shot list.
@@ -281,9 +280,17 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 .ba .tag.r{color:#ff7a33!important}
 @media (prefers-reduced-motion:reduce){.ba .divider::after{animation:none}}
 </style>
-</head>
+<style id="ed-pasted">/* pasted from index.html */
+.cue { position: absolute; z-index: 6; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; }
+.cue i { display: block; width: 1px; height: 26px; background: var(--ink); opacity: 0.6; animation: 2s ease-in-out 0s infinite normal none running cue; }
+@media (max-width: 720px){.cue { display: none; }}
+@media (prefers-reduced-motion: reduce){.cue i { animation: auto ease 0s 1 normal none running none; }}
+@keyframes cue { 
+  0%, 100% { transform: scaleY(0.4); transform-origin: center top; }
+  50% { transform: scaleY(1); transform-origin: center top; }
+}</style></head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"/><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"/><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"/><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"/><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"/></symbol></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mk" viewBox="11.37 11.37 274.09 228.41"><path d="M285.4615,11.370483L171.2569,125.575134L216.93878,171.25693L285.4615,102.73419z"></path><path d="M194.09784,239.77972L285.4615,239.77972L285.4615,148.41602z"></path><path d="M11.370483,148.41602L11.370483,239.77972L102.73413,239.77972z"></path><path d="M239.7796,11.370483L57.052307,11.370483L148.41595,102.73419z"></path><path d="M11.370483,11.370483L11.370483,102.73419L148.41595,239.77972L194.09784,194.09787z"></path></symbol></defs></svg>
 <header class="top gut">
   <div class="wrap">
     <a class="brand" href="/" aria-label="Michael Kinsey">
@@ -303,14 +310,14 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
 <main id="top">
   <section class="hero gut t-black has-vid">
     <div class="hero-vid" aria-hidden="true">
-      <video class="on" src="hero-1.mp4" poster="hero-1.webp" muted playsinline autoplay preload="auto"></video>
-      <video src="hero-2.mp4" muted playsinline preload="none"></video>
-      <video src="hero-3.mp4" muted playsinline preload="none"></video>
+      <video class="on" src="hero-1.mp4" poster="hero-1.webp" muted="" playsinline="" autoplay="" preload="auto"></video>
+      <video src="hero-2.mp4" muted="" playsinline="" preload="none"></video>
+      <video src="hero-3.mp4" muted="" playsinline="" preload="none"></video>
     </div>
     <script>/* HD hero on large or high-DPI screens */(function(){if(innerWidth*(devicePixelRatio||1)<2200)return;document.querySelectorAll('.hero-vid video').forEach(function(v){v.src=v.getAttribute('src').replace('.mp4','-hd.mp4')})})()</script>
     <div class="wrap">
       <h1 class="sr">MK SSDM+</h1>
-      <div class="hero-row">
+      <div class="hero-row" style="align-items: center;">
         <div>
           <p class="pitch">Screen space displacement and contact shadows that finally agree with each other.</p>
           <div class="ctas">
@@ -319,7 +326,7 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
           <p class="no-nanite"><span class="label">No Nanite support</span>Works on regular, non-Nanite meshes and landscapes.</p>
         </div>
       </div>
-    </div>
+    <a class="cue label" href="#about" aria-label="Scroll to About" style="inset: auto auto 18px 50%; transform: translate(-50%, 0px);"><span>Scroll</span><i></i></a></div>
   </section>
 
   <section class="gut t-dark intro-band" id="why">
@@ -350,23 +357,23 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       <div class="head solo"><h2 class="display">Lots of Depth, Little Cost</h2></div>
       <div id="feats">
         <div class="feat">
-          <div class="media vid"><video src="one-node.mp4" poster="one-node.webp" muted loop playsinline preload="none" aria-label="Real Depth"></video></div>
-          <div><h3 class="display">Real Depth</h3><p>Add one node to your material. Regular meshes and landscapes displace, with no tessellation.</p></div>
+          <div class="media vid"><video src="one-node.mp4" poster="one-node.webp" muted="" loop="" playsinline="" preload="none" aria-label="Real Depth"></video></div>
+          <div><h3 class="display">One Node Instant Depth</h3><p>Add one node to your material. Regular meshes and landscapes displace, with no tessellation.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="temporal.mp4" poster="temporal.webp" muted loop playsinline preload="none" aria-label="Temporally Stable"></video></div>
+          <div class="media vid"><video src="temporal.mp4" poster="temporal.webp" muted="" loop="" playsinline="" preload="none" aria-label="Temporally Stable"></video></div>
           <div><h3 class="display">Temporally Stable</h3><p>Writes displaced depth and velocity, so TAA and TSR stay sharp in motion.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="edges.mp4" poster="edges.webp" muted loop playsinline preload="none" aria-label="Clean Edges"></video></div>
+          <div class="media vid"><video src="edges.mp4" poster="edges.webp" muted="" loop="" playsinline="" preload="none" aria-label="Clean Edges"></video></div>
           <div><h3 class="display">Clean Edges</h3><p>No tearing or seams where displaced surfaces meet other geometry. Triplanar materials work too.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="decals.mp4" poster="decals.webp" muted loop playsinline preload="none" aria-label="Decals With Height"></video></div>
+          <div class="media vid"><video src="decals.mp4" poster="decals.webp" muted="" loop="" playsinline="" preload="none" aria-label="Decals With Height"></video></div>
           <div><h3 class="display">Decals With Height</h3><p>Deferred and mesh decals displace the surface under them.</p></div>
         </div>
         <div class="feat">
-          <div class="media vid"><video src="quality.mp4" poster="quality.webp" muted loop playsinline preload="none" aria-label="Scalable Quality"></video></div>
+          <div class="media vid"><video src="quality.mp4" poster="quality.webp" muted="" loop="" playsinline="" preload="none" aria-label="Scalable Quality"></video></div>
           <div><h3 class="display">Scalable Quality</h3><p>One preset from Low to Epic, tied to your project's scalability levels.</p></div>
         </div>
       </div>
@@ -419,11 +426,39 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
     </div>
   </section>
 
-  <section class="block gut t-light" id="docs">
+  <section class="block gut t-dark" id="how">
+    <div class="wrap">
+      <div class="head solo"><h2 class="display">How It Works</h2><p>Materials and decals write height into one buffer. Displacement and contact shadows both read it.</p></div>
+      <div class="diagram">
+        <svg viewBox="0 0 1000 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a7a7a7"></path></marker>
+          <marker id="ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffffff"></path></marker></defs>
+          <rect class="box" x="10" y="40" width="200" height="86"></rect>
+          <text class="t" x="28" y="76">Materials</text><text class="s" x="28" y="100">custom height output</text>
+          <rect class="box" x="10" y="170" width="200" height="86"></rect>
+          <text class="t" x="28" y="206">Decals</text><text class="s" x="28" y="230">deferred + mesh</text>
+          <rect class="box hl" x="280" y="105" width="220" height="86"></rect>
+          <text class="t" x="298" y="141">Height buffer</text><text class="s" x="298" y="165">custom mesh pass</text>
+          <rect class="box" x="570" y="40" width="250" height="86"></rect>
+          <text class="t" x="588" y="76">SSDM</text><text class="s" x="588" y="100">depth overlap fix</text>
+          <rect class="box" x="570" y="170" width="250" height="86"></rect>
+          <text class="t" x="588" y="206">Contact shadows</text><text class="s" x="588" y="230">height-aware</text>
+          <rect class="box" x="880" y="105" width="110" height="86"></rect>
+          <text class="t" x="898" y="141">Final</text><text class="s" x="898" y="165">image</text>
+          <path class="arrow" d="M210 83 C 245 83, 245 135, 278 135" marker-end="url(#ah)"></path>
+          <path class="arrow" d="M210 213 C 245 213, 245 162, 278 162" marker-end="url(#ah)"></path>
+          <path class="arrow hl" d="M500 135 C 535 135, 535 83, 568 83" marker-end="url(#ahA)"></path>
+          <path class="arrow hl" d="M500 162 C 535 162, 535 213, 568 213" marker-end="url(#ahA)"></path>
+          <path class="arrow" d="M820 83 C 850 83, 850 135, 878 135" marker-end="url(#ah)"></path>
+          <path class="arrow" d="M820 213 C 850 213, 850 162, 878 162" marker-end="url(#ah)"></path>
+        </svg>
+      </div>
+    </div>
+  </section><section class="block gut t-light" id="docs">
     <div class="wrap">
       <div class="head solo"><h2 class="display">FAQ</h2><a href="docs/">Read the docs →</a></div>
       <div class="faq">
-        <details open><summary>Does it support Nanite?</summary><p><b>No.</b> SSDM+ does not support Nanite meshes or Nanite landscapes. Use it on regular, non-Nanite geometry.</p></details>
+        <details open=""><summary>Does it support Nanite?</summary><p><b>No.</b> SSDM+ does not support Nanite meshes or Nanite landscapes. Use it on regular, non-Nanite geometry.</p></details>
         <details><summary>Do I need a source build of the engine?</summary><p>Draft: confirm before launch. The plugin makes no engine source changes.</p></details>
         <details><summary>Does it work on RVT landscapes?</summary><p>Yes. Contact shadows read height written into the RVT, where stock contact shadows lose pixel depth offset.</p></details>
         <details><summary>Where do I get support?</summary><p>Join the <a href="https://discord.gg/RDX7mExGZH" target="_blank" rel="noopener">support Discord</a> or email <a href="mailto:contact@michaelkinsey.xyz?subject=MK%20SSDM%2B%20support">contact@michaelkinsey.xyz</a>.</p></details>
@@ -443,43 +478,15 @@ footer .fmk{height:22px;width:auto;display:block;opacity:.9}
       </div>
       <form class="news" id="newsForm">
         <label for="newsEmail" class="label" style="flex-basis:100%">New tools and updates, by email <em class="soon-badge">Coming soon</em></label>
-        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required disabled>
-        <button class="btn" type="submit" id="newsBtn" disabled>Subscribe</button>
+        <input type="email" id="newsEmail" placeholder="Sign-ups open soon" required="" disabled="">
+        <button class="btn" type="submit" id="newsBtn" disabled="">Subscribe</button>
         <span class="msg" id="newsMsg">Not live yet. The newsletter opens soon. In the meantime, follow along on Patreon or YouTube.</span>
       </form>
       </div>
       <img class="cta-logo" src="logo.webp" width="512" height="512" alt="MK SSDM+ logo">
     </div>
   </section>
-  <section class="block gut t-dark" id="how">
-    <div class="wrap">
-      <div class="head solo"><h2 class="display">How It Works</h2><p>Materials and decals write height into one buffer. Displacement and contact shadows both read it.</p></div>
-      <div class="diagram">
-        <svg viewBox="0 0 1000 300" role="img" aria-label="Pipeline: materials and decals write height into one buffer, which feeds SSDM and contact shadows before the final image.">
-          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a7a7a7"/></marker>
-          <marker id="ahA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ffffff"/></marker></defs>
-          <rect class="box" x="10" y="40" width="200" height="86"/>
-          <text class="t" x="28" y="76">Materials</text><text class="s" x="28" y="100">custom height output</text>
-          <rect class="box" x="10" y="170" width="200" height="86"/>
-          <text class="t" x="28" y="206">Decals</text><text class="s" x="28" y="230">deferred + mesh</text>
-          <rect class="box hl" x="280" y="105" width="220" height="86"/>
-          <text class="t" x="298" y="141">Height buffer</text><text class="s" x="298" y="165">custom mesh pass</text>
-          <rect class="box" x="570" y="40" width="250" height="86"/>
-          <text class="t" x="588" y="76">SSDM</text><text class="s" x="588" y="100">depth overlap fix</text>
-          <rect class="box" x="570" y="170" width="250" height="86"/>
-          <text class="t" x="588" y="206">Contact shadows</text><text class="s" x="588" y="230">height-aware</text>
-          <rect class="box" x="880" y="105" width="110" height="86"/>
-          <text class="t" x="898" y="141">Final</text><text class="s" x="898" y="165">image</text>
-          <path class="arrow" d="M210 83 C 245 83, 245 135, 278 135" marker-end="url(#ah)"/>
-          <path class="arrow" d="M210 213 C 245 213, 245 162, 278 162" marker-end="url(#ah)"/>
-          <path class="arrow hl" d="M500 135 C 535 135, 535 83, 568 83" marker-end="url(#ahA)"/>
-          <path class="arrow hl" d="M500 162 C 535 162, 535 213, 568 213" marker-end="url(#ahA)"/>
-          <path class="arrow" d="M820 83 C 850 83, 850 135, 878 135" marker-end="url(#ah)"/>
-          <path class="arrow" d="M820 213 C 850 213, 850 162, 878 162" marker-end="url(#ah)"/>
-        </svg>
-      </div>
-    </div>
-  </section>
+  
 </main>
 
 <footer class="gut"><div class="wrap"><span class="fl"><img class="fmk" src="/assets/brand/mk.webp" alt="MK" width="26" height="22">© 2026 Michael Kinsey</span><span>Fab · Patreon · YouTube · Photography</span></div></footer>
@@ -522,5 +529,7 @@ document.getElementById('newsForm').addEventListener('submit',e=>{e.preventDefau
       r.value=v;ba.style.setProperty('--split',v+'%');if(k<1)requestAnimationFrame(step)};setTimeout(()=>requestAnimationFrame(step),400)},{threshold:.5});
   io.observe(ba)}}
 </script>
-</body>
-</html>
+
+
+
+</body></html>

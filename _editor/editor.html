@@ -33,6 +33,12 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
 .insp{background:var(--panel);border-left:1px solid var(--line);overflow:auto;min-height:0;padding:12px}
 .side h3,.insp h3{margin:0;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .side h3{padding:12px 12px 6px}
+.sidehead{display:flex;align-items:center;justify-content:space-between;padding-right:8px}
+.ltools{display:flex;gap:3px}.ltools button{padding:2px 7px;font-size:12px;line-height:18px;min-width:24px}
+.ltip{padding:0 12px;margin:0 0 14px}
+.node.dragging{opacity:.4}
+.node.drop-before{box-shadow:inset 0 2px 0 #4aa3ff}.node.drop-after{box-shadow:inset 0 -2px 0 #4aa3ff}
+.node.drop-inside{background:rgba(74,163,255,.22);outline:1px solid #4aa3ff}.node.drop-no{background:rgba(255,60,60,.12)}
 .stage{position:relative;display:flex;justify-content:center;align-items:flex-start;background:#050505;min-height:0;overflow:hidden}
 .stage .dev{width:100%;height:100%;flex:0 0 auto}
 .stage iframe{border:0;background:#fff;height:100%;width:100%;display:block;transform-origin:0 0}
@@ -104,7 +110,10 @@ kbd{background:#262626;border:1px solid #3a3a3a;border-radius:4px;padding:0 5px;
   <div class="stale" id="stale"><span><b>This page was changed on disk</b> (by Claude or another editor window) after you started editing here. Your unsaved edits are based on the older copy.</span>
     <button id="staleReload">Load the newer page (drop my unsaved edits)</button><button id="staleKeep">Keep my edits</button></div>
   <div class="main">
-    <aside class="side"><h3>Layers</h3><div class="tree" id="tree"></div></aside>
+    <aside class="side"><div class="sidehead"><h3>Layers</h3><div class="ltools" id="ltools">
+      <button data-lt="up" title="Move up among its neighbours">&#8593;</button><button data-lt="down" title="Move down among its neighbours">&#8595;</button>
+      <button data-lt="out" title="Move out of its parent (one level up the hierarchy)">&#8676;</button><button data-lt="in" title="Move into the block above it (one level down the hierarchy)">&#8677;</button>
+    </div></div><div class="tree" id="tree"></div><p class="hint ltip">Drag layers to reorder. Drop on the middle of a layer to put it inside.</p></aside>
     <div class="stage" id="stage"><div class="dev" id="dev"><iframe id="frame" title="Page"></iframe></div><span class="devlabel" id="devlabel"></span></div>
     <aside class="insp" id="insp"></aside>
   </div>
@@ -226,6 +235,10 @@ frame.addEventListener('load',()=>{
   .__ed_gc{border-left:1px dashed #ff3d7f}.__ed_gcx{border-top:1px dashed #ff3d7f}
   .__ed_gv span,.__ed_gh span,.__ed_gc span,.__ed_gcx span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#ff3d7f;color:#fff;font:600 10px/15px system-ui;padding:0 4px;border-radius:3px;white-space:nowrap}
   .__ed_drop{position:fixed;display:none;pointer-events:none;z-index:2147483647;outline:2px solid #4aa3ff;box-shadow:0 0 0 1px #fff}
+  .__ed_drop.in{outline:2px dashed #4aa3ff;background:rgba(74,163,255,.14);box-shadow:none}
+  .__ed_drop.no{outline-color:#ff4d4d}
+  .__ed_drop span{position:absolute;left:0;top:0;transform:translateY(-100%);background:#4aa3ff;color:#fff;font:600 10px/16px system-ui;padding:0 6px;border-radius:3px;white-space:nowrap}
+  .__ed_drop.no span{background:#ff4d4d}
   html.__ed_edit .__ed_dragging{cursor:grabbing!important}`;
   d.head.appendChild(st);
   const box=d.createElement('div');box.className='__ed_box';box.innerHTML='<span class="__ed_tag"></span>';
@@ -308,17 +321,88 @@ function renderTree(){
       if(SKIP.has(c.tagName)||!c.dataset.ed)continue;
       const kids=[...c.children].some(k=>!SKIP.has(k.tagName)&&k.dataset.ed);
       const id=c.dataset.ed,isOpen=open.has(id),l=label(c);
-      h+=`<div class="node${id===selId?' sel':''}${c.hasAttribute('hidden')?' hid':''}" data-id="${id}"><span class="tw" data-tw="${kids?id:''}">${kids?(isOpen?'▾':'▸'):''}</span><span class="tg">${l.tag}</span><span class="cl">${esc(l.cls)}</span><span class="tx">${esc(l.txt)}</span></div>`;
+      h+=`<div class="node${id===selId?' sel':''}${c.hasAttribute('hidden')?' hid':''}" data-id="${id}" draggable="true"><span class="tw" data-tw="${kids?id:''}">${kids?(isOpen?'▾':'▸'):''}</span><span class="tg">${l.tag}</span><span class="cl">${esc(l.cls)}</span><span class="tx">${esc(l.txt)}</span></div>`;
       if(kids&&isOpen)h+=`<div class="kids">${build(c,depth+1)}</div>`;
     }
     return h;
   };
   tree.innerHTML=build(cur.doc.body,0)||'<div class="welcome">No elements.</div>';
 }
+
+// =====================================================================
+// Moving blocks: shared by Layers drag, page drag and the hierarchy buttons
+// =====================================================================
+const VOID=new Set(['IMG','VIDEO','SOURCE','BR','HR','INPUT','META','LINK','IFRAME','SVG','PATH','TEXTAREA','SELECT','PICTURE','CANVAS','AUDIO','TRACK','WBR']);
+const LEAF=new Set(['P','H1','H2','H3','H4','H5','H6','SPAN','B','I','EM','STRONG','SMALL','CODE','LABEL','SUMMARY','BUTTON','TD','TH','OPTION','SUP','SUB']);
+function canHold(el){if(!el)return false;const t=el.tagName.toUpperCase();if(VOID.has(t)||SKIP.has(t))return false;if(LEAF.has(t))return false;if(t==='A')return [...el.children].some(c=>!VOID.has(c.tagName.toUpperCase())||c.children.length);return true}
+function canMove(L,T,where){
+  if(!L||!T||L===T)return 'Pick a different spot';
+  if(L.contains(T))return 'Can’t move a block inside itself';
+  if(where==='inside'&&!canHold(T))return 'That block can’t hold other blocks';
+  if(where!=='inside'&&(T===cur.doc.body||!T.parentElement||T.parentElement===cur.doc.documentElement))return 'Pick a spot inside the page';
+  return '';
+}
+function moveBlock(id,targetId,where,{silent}={}){
+  const L=srcEl(id),T=srcEl(targetId),why=canMove(L,T,where);
+  if(why){if(!silent)toast(why);return Promise.resolve(false)}
+  if(where==='inside')open.add(targetId);
+  return change(()=>{where==='before'?T.before(L):where==='after'?T.after(L):T.appendChild(L)},{label:where==='inside'?'Moved into '+lbl(T):'Moved'}).then(()=>true);
+}
+function lbl(el){const l=label(el);return l.tag+l.cls}
+function outLevel(id){
+  const L=srcEl(id),P=L&&L.parentElement;
+  if(!P||P===cur.doc.body){toast('Already at the top level');return}
+  change(()=>P.after(L),{label:'Moved out of '+lbl(P)});
+}
+function intoAbove(id){
+  const L=srcEl(id);if(!L)return;let prev=L.previousElementSibling;
+  while(prev&&(SKIP.has(prev.tagName)||!prev.dataset.ed))prev=prev.previousElementSibling;
+  if(!prev){toast('Nothing above it to move into');return}
+  if(!canHold(prev)){toast('The block above ('+lbl(prev)+') can’t hold other blocks');return}
+  open.add(prev.dataset.ed);
+  change(()=>prev.appendChild(L),{label:'Moved into '+lbl(prev)});
+}
+function sibMove(id,dir){
+  const el=srcEl(id);if(!el)return;
+  if(dir<0){const p=el.previousElementSibling;if(!p){toast('Already first in its group');return}change(()=>p.before(el))}
+  else{const n=el.nextElementSibling;if(!n){toast('Already last in its group');return}change(()=>n.after(el))}
+}
+
+// ---------- Layers drag and drop ----------
+let treeDrag=null;
+function treeZone(node,e){
+  const r=node.getBoundingClientRect(),y=(e.clientY-r.top)/r.height,T=srcEl(node.dataset.id);
+  if(canHold(T)){return y<.28?'before':y>.72?'after':'inside'}
+  return y<.5?'before':'after';
+}
+function clearTreeMarks(){tree.querySelectorAll('.drop-before,.drop-after,.drop-inside,.drop-no').forEach(n=>n.classList.remove('drop-before','drop-after','drop-inside','drop-no'))}
+tree.addEventListener('dragstart',e=>{
+  const n=e.target.closest('.node');if(!n)return;
+  treeDrag={id:n.dataset.id};n.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',n.dataset.id)}catch(x){}
+});
+tree.addEventListener('dragover',e=>{
+  if(!treeDrag)return;const n=e.target.closest('.node');clearTreeMarks();if(!n)return;
+  const z=treeZone(n,e),ok=!canMove(srcEl(treeDrag.id),srcEl(n.dataset.id),z);
+  e.preventDefault();e.dataTransfer.dropEffect=ok?'move':'none';
+  n.classList.add(ok?'drop-'+z:'drop-no');
+  // hovering in the middle of a closed group opens it
+  if(z==='inside'&&ok&&!open.has(n.dataset.id)){if(treeDrag.hover!==n.dataset.id){treeDrag.hover=n.dataset.id;clearTimeout(treeDrag.t);treeDrag.t=setTimeout(()=>{if(treeDrag&&treeDrag.hover===n.dataset.id){open.add(n.dataset.id);renderTree()}},700)}}
+  else if(treeDrag.hover){treeDrag.hover=null;clearTimeout(treeDrag.t)}
+  // auto-scroll near the edges
+  const R=tree.parentElement.getBoundingClientRect();if(e.clientY<R.top+30)tree.parentElement.scrollTop-=10;else if(e.clientY>R.bottom-30)tree.parentElement.scrollTop+=10;
+});
+tree.addEventListener('dragleave',e=>{if(!tree.contains(e.relatedTarget))clearTreeMarks()});
+tree.addEventListener('drop',e=>{
+  if(!treeDrag)return;e.preventDefault();const n=e.target.closest('.node'),d=treeDrag;treeDrag=null;clearTreeMarks();
+  if(!n)return;moveBlock(d.id,n.dataset.id,treeZone(n,e)).then(ok=>{if(ok)select(d.id)});
+});
+tree.addEventListener('dragend',()=>{treeDrag=null;clearTreeMarks();tree.querySelectorAll('.dragging').forEach(n=>n.classList.remove('dragging'))});
+
 tree.addEventListener('click',e=>{
   const tw=e.target.closest('[data-tw]');
   if(tw&&tw.dataset.tw){const id=tw.dataset.tw;open.has(id)?open.delete(id):open.add(id);renderTree();return}
-  const n=e.target.closest('.node');if(n)select(n.dataset.id,{scroll:true});
+  const tb=e.target.closest('[data-tb]');if(tb)return;const n=e.target.closest('.node');if(n)select(n.dataset.id,{scroll:true});
 });
 
 // ---------- inspector ----------
@@ -367,7 +451,7 @@ function renderInsp(){
     <button id="bPasteA" ${clip?'':'disabled'} title="Paste after this block (Ctrl+V)">Paste after</button>
     <button id="bPasteI" ${clip?'':'disabled'} title="Paste as the last item inside this block">Paste inside</button>
     <button id="bDup" title="Copy this block and place the copy right after it">Duplicate</button>
-    <button id="bUp">Move up</button><button id="bDown">Move down</button>
+    <button id="bUp">Move up</button><button id="bDown">Move down</button><button id="bOut" title="Move it out of its parent, right after it">Out a level</button><button id="bIn" title="Move it inside the block above it">Into block above</button>
     <button id="bHide">${el.hasAttribute('hidden')?'Show':'Hide'}</button>
     <button id="bDel" class="danger">Delete</button></div>
     ${clip?`<p class="hint">Clipboard: <b>${esc(clip.label)}</b> from ${esc(clip.from)}</p>`:''}
@@ -433,8 +517,10 @@ function wireInsp(el){
   if(q('#bPasteI'))q('#bPasteI').addEventListener('click',()=>pasteClip('inside'));
   wireLayout(el);
   q('#bDup').addEventListener('click',()=>change(()=>{const c=el.cloneNode(true);renumber(c);el.after(c);selId=c.dataset.ed},{label:'Duplicated. The copy is selected.'}));
-  q('#bUp').addEventListener('click',()=>{const p=el.previousElementSibling;if(!p){toast('Already first in its group');return}change(()=>p.before(el))});
-  q('#bDown').addEventListener('click',()=>{const n=el.nextElementSibling;if(!n){toast('Already last in its group');return}change(()=>n.after(el))});
+  q('#bUp').addEventListener('click',()=>sibMove(el.dataset.ed,-1));
+  q('#bDown').addEventListener('click',()=>sibMove(el.dataset.ed,1));
+  q('#bOut').addEventListener('click',()=>outLevel(el.dataset.ed));
+  q('#bIn').addEventListener('click',()=>intoAbove(el.dataset.ed));
   q('#bHide').addEventListener('click',()=>change(doc=>{if(el.hasAttribute('hidden'))el.removeAttribute('hidden');else{el.setAttribute('hidden','');ensureHiddenRule(doc)}},{label:el.hasAttribute('hidden')?'Shown':'Hidden. It stays in Layers so you can show it again.'}));
   q('#bDel').addEventListener('click',()=>{if(!confirm('Delete this block? You can undo with Ctrl+Z before saving.'))return;const par=el.parentElement;change(()=>{el.remove();selId=par&&par.dataset.ed||null},{label:'Deleted'})});
   q('#bOuter').addEventListener('click',()=>{const v=q('#fOuter').value;const t=cur.doc.createElement('template');t.innerHTML=v.trim();const nodes=[...t.content.childNodes];if(!nodes.some(n=>n.nodeType===1)){toast('No HTML element found');return}
@@ -484,6 +570,8 @@ function keys(e){
 document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea')&&!((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'))return;keys(e)});
 $('#guides').onclick=()=>{showGuides=!showGuides;$('#guides').classList.toggle('on',showGuides);drawSel()};
 function isTextSelection(e){const sel=(e.target.ownerDocument||document).getSelection();return sel&&String(sel).length>0}
+$('#ltools').addEventListener('click',e=>{const b=e.target.closest('[data-lt]');if(!b)return;if(!selId){toast('Select a layer first');return}
+  ({up:()=>sibMove(selId,-1),down:()=>sibMove(selId,1),out:()=>outLevel(selId),in:()=>intoAbove(selId)})[b.dataset.lt]()});
 $('#save').onclick=save;$('#discard').onclick=discard;$('#undo').onclick=undo;$('#redo').onclick=redo;
 $('#pageSel').onchange=e=>openPage(e.target.value);
 function setMode(m){mode=m;$('#modeEdit').classList.toggle('on',m==='edit');$('#modePrev').classList.toggle('on',m==='prev');const d=liveDoc();if(d)d.documentElement.classList.toggle('__ed_edit',m==='edit');if(editing)finishEdit();drawSel();const h=d&&d.querySelector('.__ed_hov');if(h)h.style.display='none'}
@@ -679,7 +767,7 @@ function layoutPanel(el){
     h+=`<div class="field"><label>Align its children</label><div class="row">${['start','center','end','stretch'].map(v=>`<button data-ai="${v}" class="${cs.alignItems.includes(v)?'on':''}">${v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>`}
   h+=`<div class="field"><label>Margin / padding (CSS, e.g. 0 auto or 20px 0)</label><div class="row"><input id="lMargin" placeholder="margin" value="${esc(el.style?el.style.margin:'')}" style="flex:1"><input id="lPad" placeholder="padding" value="${esc(el.style?el.style.padding:'')}" style="flex:1"></div></div>
   <div class="field"><label>Width / height</label><div class="row"><input id="lW" placeholder="${Math.round(live.getBoundingClientRect().width)}px" value="${esc(el.style?el.style.width:'')}" style="flex:1"><input id="lH" placeholder="${Math.round(live.getBoundingClientRect().height)}px" value="${esc(el.style?el.style.height:'')}" style="flex:1"></div></div>
-  <p class="hint">${a?'Drag it in the page to move it; it snaps to the centre. Arrow keys nudge 1px (Shift: 10px).':'Drag it in the page to move it before or after its neighbours. Hold Alt while dragging to drop it inside another block instead.'}</p></div>`;
+  <p class="hint">${a?'Drag it in the page to move it; it snaps to the centre. Arrow keys nudge 1px (Shift: 10px).':'Drag it in the page: drop on the middle of a block to put it inside, or on a side to place it on that side. Hold Alt to target the exact block under the cursor.'}</p></div>`;
   return h;
 }
 function wireLayout(el){
@@ -726,15 +814,28 @@ function wireDrag(d){
       Object.assign(s.live.style,{left:nx+'px',top:ny+'px'});s.nx=nx;s.ny=ny;
       Object.assign(ind.style,{display:(s.snapX||s.snapY)?'block':'none',left:(s.snapX?s.C.left+cxC:s.C.left)+'px',top:(s.snapY?s.C.top+cyC:s.C.top)+'px',width:s.snapX?'0':s.C.width+'px',height:s.snapX?s.C.height+'px':'0'});
     }else{
-      let hit=d.elementsFromPoint(e.clientX,e.clientY).find(n=>n.dataset&&n.dataset.ed&&!s.live.contains(n)&&!n.contains(s.live)&&n!==d.body&&n!==d.documentElement&&!String(n.className).includes('__ed'));
-      let tgt=hit||null;
-      // prefer the neighbour at the same level as the dragged block, so it can't drop inside another card by accident
-      if(tgt){let n=tgt;while(n&&n.parentElement!==s.live.parentElement)n=n.parentElement;if(n&&n!==s.live&&!e.altKey)tgt=n}
-      s.target=tgt;hit=tgt;if(!hit){ind.style.display='none';return}
-      const R=hit.getBoundingClientRect(),pcs=cssOf(hit.parentElement||hit),row=/flex/.test(pcs.display)&&pcs.flexDirection.startsWith('row')||/grid/.test(pcs.display);
-      s.before=row?(e.clientX<R.left+R.width/2):(e.clientY<R.top+R.height/2);
-      if(row)Object.assign(ind.style,{display:'block',left:(s.before?R.left-2:R.right+1)+'px',top:R.top+'px',width:'0',height:R.height+'px'});
-      else Object.assign(ind.style,{display:'block',left:R.left+'px',top:(s.before?R.top-2:R.bottom+1)+'px',width:R.width+'px',height:'0'});
+      const pickable=n=>n.dataset&&n.dataset.ed&&!s.live.contains(n)&&n!==d.body&&n!==d.documentElement&&!String(n.className).includes('__ed');
+      const stack=d.elementsFromPoint(e.clientX,e.clientY).filter(pickable);
+      let tgt=stack[0]||null;
+      // prefer a neighbour at the same level so cards don't land inside each other's text; Alt targets the exact block under the cursor
+      if(tgt&&!e.altKey){let n=tgt;while(n&&n.parentElement!==s.live.parentElement)n=n.parentElement;if(n&&n!==s.live)tgt=n}
+      s.target=tgt;if(!tgt){ind.style.display='none';s.zone=null;return}
+      const R=tgt.getBoundingClientRect(),T=srcEl(tgt.dataset.ed);
+      const fx=(e.clientX-R.left)/R.width,fy=(e.clientY-R.top)/R.height;
+      const pcs=cssOf(tgt.parentElement||tgt),row=(/flex/.test(pcs.display)&&pcs.flexDirection.startsWith('row'))||/grid/.test(pcs.display);
+      // centre of a block that can hold children = put it inside; the sides = before/after on that side
+      let side;
+      if(canHold(T)&&fx>.25&&fx<.75&&fy>.25&&fy<.75)side='inside';
+      else{const dl=fx,dr=1-fx,dt=fy,db=1-fy,m=Math.min(dl,dr,dt,db);side=m===dl?'left':m===dr?'right':m===dt?'top':'bottom'}
+      s.zone=side==='inside'?'inside':(side==='left'||side==='top')?'before':'after';
+      s.side=side;
+      const ok=!canMove(srcEl(s.live.dataset.ed),T,s.zone);
+      ind.className='__ed_drop'+(ok?'':' no')+(side==='inside'?' in':'');
+      const L=ind.querySelector('span')||ind.appendChild(d.createElement('span'));
+      L.textContent=!ok?'can’t drop here':side==='inside'?'inside '+lbl(T):(s.zone==='before'?'before ':'after ')+lbl(T);
+      if(side==='inside')Object.assign(ind.style,{display:'block',left:R.left+'px',top:R.top+'px',width:R.width+'px',height:R.height+'px'});
+      else if(side==='left'||side==='right')Object.assign(ind.style,{display:'block',left:(side==='left'?R.left-2:R.right+1)+'px',top:R.top+'px',width:'0',height:R.height+'px'});
+      else Object.assign(ind.style,{display:'block',left:R.left+'px',top:(side==='top'?R.top-2:R.bottom+1)+'px',width:R.width+'px',height:'0'});
     }
   },true);
   d.addEventListener('mouseup',e=>{
@@ -749,9 +850,8 @@ function wireDrag(d){
       if(s.snapY){props.top='50%';ty='-50%'}else if(s.ny+s.h/2>s.C.height/2)props.bottom=Math.round(s.C.height-s.ny-s.h)+'px';else props.top=Math.round(s.ny)+'px';
       props.transform=(tx!=='0'||ty!=='0')?`translate(${tx},${ty})`:'none';
       setStyle(s.live,props);styleBoth(id,props,'Moved').then(renderInsp);
-    }else if(s.target){
-      const T=srcEl(s.target.dataset.ed),L=srcEl(id);if(!T||!L)return;
-      change(()=>{s.before?T.before(L):T.after(L)},{label:'Moved'});
+    }else if(s.target&&s.zone){
+      moveBlock(id,s.target.dataset.ed,s.zone).then(ok=>{if(ok)select(id)});
     }
   },true);
   d.addEventListener('click',e=>{if(suppressClick){e.preventDefault();e.stopPropagation()}},true);
